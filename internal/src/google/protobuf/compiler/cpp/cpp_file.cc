@@ -34,6 +34,9 @@
 
 #include <google/protobuf/compiler/cpp/cpp_file.h>
 #include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 #include <set>
 
 #include <google/protobuf/compiler/cpp/cpp_enum.h>
@@ -56,13 +59,13 @@ namespace cpp {
 FileGenerator::FileGenerator(const FileDescriptor* file, const Options& options)
     : file_(file),
       message_generators_(
-          new scoped_ptr<MessageGenerator>[file->message_type_count()]),
+          new google::protobuf::scoped_ptr<MessageGenerator>[file->message_type_count()]),
       enum_generators_(
-          new scoped_ptr<EnumGenerator>[file->enum_type_count()]),
+          new google::protobuf::scoped_ptr<EnumGenerator>[file->enum_type_count()]),
       service_generators_(
-          new scoped_ptr<ServiceGenerator>[file->service_count()]),
+          new google::protobuf::scoped_ptr<ServiceGenerator>[file->service_count()]),
       extension_generators_(
-          new scoped_ptr<ExtensionGenerator>[file->extension_count()]),
+          new google::protobuf::scoped_ptr<ExtensionGenerator>[file->extension_count()]),
       options_(options) {
 
   for (int i = 0; i < file->message_type_count(); i++) {
@@ -131,7 +134,10 @@ void FileGenerator::GenerateHeader(io::Printer* printer) {
 
   // OK, it's now safe to #include other files.
   printer->Print(
-    "#include <google/protobuf/generated_message_util.h>\n");
+    "#include <google/protobuf/arena.h>\n"
+    "#include <google/protobuf/arenastring.h>\n"
+    "#include <google/protobuf/generated_message_util.h>\n"
+    "#include <google/protobuf/metadata.h>\n");
   if (file_->message_type_count() > 0) {
     if (HasDescriptorMethods(file_)) {
       printer->Print(
@@ -144,6 +150,11 @@ void FileGenerator::GenerateHeader(io::Printer* printer) {
   printer->Print(
     "#include <google/protobuf/repeated_field.h>\n"
     "#include <google/protobuf/extension_set.h>\n");
+  if (HasMapFields(file_)) {
+    printer->Print(
+      "#include <google/protobuf/map.h>\n"
+      "#include <google/protobuf/map_field_inl.h>\n");
+  }
 
   if (HasDescriptorMethods(file_) && HasEnumDefinitions(file_)) {
     printer->Print(
@@ -181,6 +192,7 @@ void FileGenerator::GenerateHeader(io::Printer* printer) {
     "// @@protoc_insertion_point(includes)\n");
 
 
+
   // Open namespace.
   GenerateNamespaceOpeners(printer);
 
@@ -189,9 +201,10 @@ void FileGenerator::GenerateHeader(io::Printer* printer) {
   printer->Print(
     "\n"
     "// Internal implementation detail -- do not call these.\n"
-    "void $dllexport_decl$ $adddescriptorsname$();\n",
+    "void $dllexport_decl$$adddescriptorsname$();\n",
     "adddescriptorsname", GlobalAddDescriptorsName(file_->name()),
-    "dllexport_decl", options_.dllexport_decl);
+    "dllexport_decl",
+    options_.dllexport_decl.empty() ? "" : options_.dllexport_decl + " ");
 
   printer->Print(
     // Note that we don't put dllexport_decl on these because they are only
@@ -295,7 +308,7 @@ void FileGenerator::GenerateHeader(io::Printer* printer) {
     }
     printer->Print(
         "\n"
-        "}  // namespace google\n}  // namespace protobuf\n"
+        "}  // namespace protobuf\n}  // namespace google\n"
         "#endif  // SWIG\n");
   }
 
@@ -387,6 +400,19 @@ void FileGenerator::GenerateSource(io::Printer* printer) {
 
   // Generate classes.
   for (int i = 0; i < file_->message_type_count(); i++) {
+    if (i == 0 && HasGeneratedMethods(file_)) {
+      printer->Print(
+          "\n"
+          "namespace {\n"
+          "\n"
+          "static void MergeFromFail(int line) GOOGLE_ATTRIBUTE_COLD;\n"
+          "static void MergeFromFail(int line) {\n"
+          "  GOOGLE_CHECK(false) << __FILE__ << \":\" << line;\n"
+          "}\n"
+          "\n"
+          "}  // namespace\n"
+          "\n");
+    }
     printer->Print("\n");
     printer->Print(kThickSeparator);
     printer->Print("\n");

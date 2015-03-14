@@ -73,7 +73,7 @@ public class TextFormatTest extends TestCase {
   private static String exoticText =
     "repeated_int32: -1\n" +
     "repeated_int32: -2147483648\n" +
-    "repeated_int64: -1\n" +
+    "repeated_int64: -1,\n" +
     "repeated_int64: -9223372036854775808\n" +
     "repeated_uint32: 4294967295\n" +
     "repeated_uint32: 2147483648\n" +
@@ -101,7 +101,7 @@ public class TextFormatTest extends TestCase {
 
   private static String canonicalExoticText =
       exoticText.replace(": .", ": 0.").replace(": -.", ": -0.")   // short-form double
-      .replace("23e", "23E").replace("E+", "E").replace("0.23E17", "2.3E16");
+      .replace("23e", "23E").replace("E+", "E").replace("0.23E17", "2.3E16").replace(",", "");
 
   private String messageSetText =
     "[protobuf_unittest.TestMessageSetExtension1] {\n" +
@@ -118,6 +118,7 @@ public class TextFormatTest extends TestCase {
       "[protobuf_unittest.TestMessageSetExtension1] {\n" +
       "  i: 456\n" +
       "}\n";
+
 
   private final TextFormat.Parser parserWithOverwriteForbidden =
       TextFormat.Parser.newBuilder()
@@ -460,6 +461,7 @@ public class TextFormatTest extends TestCase {
     }
   }
 
+
   private void assertParseErrorWithOverwriteForbidden(String error,
       String text) {
     TestAllTypes.Builder builder = TestAllTypes.newBuilder();
@@ -553,10 +555,10 @@ public class TextFormatTest extends TestCase {
 
   public void testEscape() throws Exception {
     // Escape sequences.
-    assertEquals("\\000\\001\\a\\b\\f\\n\\r\\t\\v\\\\\\'\\\"",
-      TextFormat.escapeBytes(bytes("\0\001\007\b\f\n\r\t\013\\\'\"")));
-    assertEquals("\\000\\001\\a\\b\\f\\n\\r\\t\\v\\\\\\'\\\"",
-      TextFormat.escapeText("\0\001\007\b\f\n\r\t\013\\\'\""));
+    assertEquals("\\000\\001\\a\\b\\f\\n\\r\\t\\v\\\\\\'\\\"\\177",
+      TextFormat.escapeBytes(bytes("\0\001\007\b\f\n\r\t\013\\\'\"\177")));
+    assertEquals("\\000\\001\\a\\b\\f\\n\\r\\t\\v\\\\\\'\\\"\\177",
+      TextFormat.escapeText("\0\001\007\b\f\n\r\t\013\\\'\"\177"));
     assertEquals(bytes("\0\001\007\b\f\n\r\t\013\\\'\""),
       TextFormat.unescapeBytes("\\000\\001\\a\\b\\f\\n\\r\\t\\v\\\\\\'\\\""));
     assertEquals("\0\001\007\b\f\n\r\t\013\\\'\"",
@@ -862,15 +864,15 @@ public class TextFormatTest extends TestCase {
     assertEquals(message.getOptionalString(), builder.getOptionalString());
   }
   
-  public void testPrintToUnicodeStringWithNewlines() {
+  public void testPrintToUnicodeStringWithNewlines() throws Exception {
     // No newlines at start and end
-    assertEquals("optional_string: \"test newlines\n\nin\nstring\"\n",
+    assertEquals("optional_string: \"test newlines\\n\\nin\\nstring\"\n",
         TextFormat.printToUnicodeString(TestAllTypes.newBuilder()
             .setOptionalString("test newlines\n\nin\nstring")
             .build()));
 
     // Newlines at start and end
-    assertEquals("optional_string: \"\ntest\nnewlines\n\nin\nstring\n\"\n",
+    assertEquals("optional_string: \"\\ntest\\nnewlines\\n\\nin\\nstring\\n\"\n",
         TextFormat.printToUnicodeString(TestAllTypes.newBuilder()
             .setOptionalString("\ntest\nnewlines\n\nin\nstring\n")
             .build()));
@@ -880,14 +882,22 @@ public class TextFormatTest extends TestCase {
         TextFormat.printToUnicodeString(TestAllTypes.newBuilder()
             .setOptionalString("")
             .build()));
-    assertEquals("optional_string: \"\n\"\n",
+    assertEquals("optional_string: \"\\n\"\n",
         TextFormat.printToUnicodeString(TestAllTypes.newBuilder()
             .setOptionalString("\n")
             .build()));
-    assertEquals("optional_string: \"\n\n\"\n",
+    assertEquals("optional_string: \"\\n\\n\"\n",
         TextFormat.printToUnicodeString(TestAllTypes.newBuilder()
             .setOptionalString("\n\n")
             .build()));
+
+    // Test escaping roundtrip
+    TestAllTypes message = TestAllTypes.newBuilder()
+        .setOptionalString("\ntest\nnewlines\n\nin\nstring\n")
+        .build();
+    TestAllTypes.Builder builder = TestAllTypes.newBuilder();
+    TextFormat.merge(TextFormat.printToUnicodeString(message), builder);
+    assertEquals(message.getOptionalString(), builder.getOptionalString());
   }
 
   public void testPrintToUnicodeString_unknown() {
@@ -899,6 +909,7 @@ public class TextFormatTest extends TestCase {
                 .addLengthDelimited(bytes(0xe3, 0x81, 0x82)).build())
             .build()));
   }
+
 
   public void testParseNonRepeatedFields() throws Exception {
     assertParseSuccessWithOverwriteForbidden(

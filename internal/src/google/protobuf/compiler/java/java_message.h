@@ -121,6 +121,7 @@ class ImmutableMessageGenerator : public MessageGenerator {
   void GenerateBuilderParsingMethods(io::Printer* printer);
   void GenerateIsInitialized(io::Printer* printer,
       UseMemoization useMemoization);
+  void GenerateInitializers(io::Printer* printer);
   void GenerateEqualsAndHashCode(io::Printer* printer);
   void GenerateParser(io::Printer* printer);
   void GenerateParsingConstructor(io::Printer* printer);

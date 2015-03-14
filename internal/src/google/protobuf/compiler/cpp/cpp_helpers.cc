@@ -60,16 +60,17 @@ string DotsToColons(const string& name) {
 }
 
 const char* const kKeywordList[] = {
-  "and", "and_eq", "asm", "auto", "bitand", "bitor", "bool", "break", "case",
-  "catch", "char", "class", "compl", "const", "const_cast", "continue",
-  "default", "delete", "do", "double", "dynamic_cast", "else", "enum",
-  "explicit", "extern", "false", "float", "for", "friend", "goto", "if",
-  "inline", "int", "long", "mutable", "namespace", "new", "not", "not_eq",
-  "operator", "or", "or_eq", "private", "protected", "public", "register",
-  "reinterpret_cast", "return", "short", "signed", "sizeof", "static",
-  "static_cast", "struct", "switch", "template", "this", "throw", "true", "try",
-  "typedef", "typeid", "typename", "union", "unsigned", "using", "virtual",
-  "void", "volatile", "wchar_t", "while", "xor", "xor_eq"
+  "alignas", "alignof", "and", "and_eq", "asm", "auto", "bitand", "bitor",
+  "bool", "break", "case", "catch", "char", "class", "compl", "const",
+  "constexpr", "const_cast", "continue", "decltype", "default", "delete", "do",
+  "double", "dynamic_cast", "else", "enum", "explicit", "extern", "false",
+  "float", "for", "friend", "goto", "if", "inline", "int", "long", "mutable",
+  "namespace", "new", "noexcept", "not", "not_eq", "nullptr", "operator", "or",
+  "or_eq", "private", "protected", "public", "register", "reinterpret_cast",
+  "return", "short", "signed", "sizeof", "static", "static_assert",
+  "static_cast", "struct", "switch", "template", "this", "thread_local",
+  "throw", "true", "try", "typedef", "typeid", "typename", "union", "unsigned",
+  "using", "virtual", "void", "volatile", "wchar_t", "while", "xor", "xor_eq"
 };
 
 hash_set<string> MakeKeywordsMap() {
@@ -451,6 +452,25 @@ void PrintHandlingOptionalStaticInitializers(
   }
 }
 
+
+static bool HasMapFields(const Descriptor* descriptor) {
+  for (int i = 0; i < descriptor->field_count(); ++i) {
+    if (descriptor->field(i)->is_map()) {
+      return true;
+    }
+  }
+  for (int i = 0; i < descriptor->nested_type_count(); ++i) {
+    if (HasMapFields(descriptor->nested_type(i))) return true;
+  }
+  return false;
+}
+
+bool HasMapFields(const FileDescriptor* file) {
+  for (int i = 0; i < file->message_type_count(); ++i) {
+    if (HasMapFields(file->message_type(i))) return true;
+  }
+  return false;
+}
 
 static bool HasEnumDefinitions(const Descriptor* message_type) {
   if (message_type->enum_type_count() > 0) return true;
