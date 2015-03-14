@@ -35,7 +35,7 @@
 # indirect testing of the protocol compiler output.
 
 """Unittest that directly tests the output of the pure-Python protocol
-compiler.  See //google/protobuf/reflection_test.py for a test which
+compiler.  See //google/protobuf/internal/reflection_test.py for a test which
 further ensures that we can use Python protocol message objects as we expect.
 """
 
@@ -149,7 +149,7 @@ class GeneratorTest(basetest.TestCase):
     proto = unittest_custom_options_pb2.TestMessageWithCustomOptions()
     enum_options = proto.DESCRIPTOR.enum_types_by_name['AnEnum'].GetOptions()
     self.assertTrue(enum_options is not None)
-    # TODO(gps): We really should test for the presense of the enum_opt1
+    # TODO(gps): We really should test for the presence of the enum_opt1
     # extension and for its value to be set to -789.
 
   def testNestedTypes(self):

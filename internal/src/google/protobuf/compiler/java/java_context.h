@@ -33,6 +33,9 @@
 
 #include <map>
 #include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 #include <vector>
 
 #include <google/protobuf/stubs/common.h>
@@ -81,7 +84,7 @@ class Context {
   void InitializeFieldGeneratorInfoForFields(
       const vector<const FieldDescriptor*>& fields);
 
-  scoped_ptr<ClassNameResolver> name_resolver_;
+  google::protobuf::scoped_ptr<ClassNameResolver> name_resolver_;
   map<const FieldDescriptor*, FieldGeneratorInfo> field_generator_info_map_;
   map<const OneofDescriptor*, OneofGeneratorInfo> oneof_generator_info_map_;
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(Context);

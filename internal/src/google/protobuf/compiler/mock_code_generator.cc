@@ -33,6 +33,9 @@
 #include <google/protobuf/compiler/mock_code_generator.h>
 
 #include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 
 #include <google/protobuf/testing/file.h>
 #include <google/protobuf/descriptor.pb.h>
@@ -157,7 +160,7 @@ bool MockCodeGenerator::Generate(
 
     for (int i = 0; i < insert_into.size(); i++) {
       {
-        scoped_ptr<io::ZeroCopyOutputStream> output(context->OpenForInsert(
+        google::protobuf::scoped_ptr<io::ZeroCopyOutputStream> output(context->OpenForInsert(
             GetOutputFileName(insert_into[i], file), kFirstInsertionPointName));
         io::Printer printer(output.get(), '$');
         printer.PrintRaw(GetOutputFileContent(name_, "first_insert",
@@ -169,7 +172,7 @@ bool MockCodeGenerator::Generate(
       }
 
       {
-        scoped_ptr<io::ZeroCopyOutputStream> output(
+        google::protobuf::scoped_ptr<io::ZeroCopyOutputStream> output(
             context->OpenForInsert(GetOutputFileName(insert_into[i], file),
                                    kSecondInsertionPointName));
         io::Printer printer(output.get(), '$');
@@ -182,7 +185,7 @@ bool MockCodeGenerator::Generate(
       }
     }
   } else {
-    scoped_ptr<io::ZeroCopyOutputStream> output(
+    google::protobuf::scoped_ptr<io::ZeroCopyOutputStream> output(
         context->Open(GetOutputFileName(name_, file)));
 
     io::Printer printer(output.get(), '$');

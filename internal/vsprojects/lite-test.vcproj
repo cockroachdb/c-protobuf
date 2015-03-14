@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="lite-test"
 	ProjectGUID="{12015ACE-42BE-4952-A5A0-44A9A46908E2}"
 	RootNamespace="tests"
@@ -19,7 +19,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
-			IntermediateDirectory="Debug"
+			IntermediateDirectory="$(OutDir)\$(ProjectName)"
 			ConfigurationType="1"
 			>
 			<Tool
@@ -96,7 +96,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="Release"
-			IntermediateDirectory="Release"
+			IntermediateDirectory="$(OutDir)\$(ProjectName)"
 			ConfigurationType="1"
 			>
 			<Tool

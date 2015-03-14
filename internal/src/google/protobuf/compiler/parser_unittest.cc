@@ -33,6 +33,9 @@
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
 #include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 #include <vector>
 #include <algorithm>
 #include <map>
@@ -175,9 +178,9 @@ class ParserTest : public testing::Test {
   MockErrorCollector error_collector_;
   DescriptorPool pool_;
 
-  scoped_ptr<io::ZeroCopyInputStream> raw_input_;
-  scoped_ptr<io::Tokenizer> input_;
-  scoped_ptr<Parser> parser_;
+  google::protobuf::scoped_ptr<io::ZeroCopyInputStream> raw_input_;
+  google::protobuf::scoped_ptr<io::Tokenizer> input_;
+  google::protobuf::scoped_ptr<Parser> parser_;
   bool require_syntax_identifier_;
 };
 
@@ -211,6 +214,15 @@ TEST_F(ParserTest, StopAfterSyntaxIdentifierWithErrors) {
   parser_->SetStopAfterSyntaxIdentifier(true);
   EXPECT_FALSE(parser_->Parse(input_.get(), NULL));
   EXPECT_EQ("1:9: Expected syntax identifier.\n", error_collector_.text_);
+}
+
+TEST_F(ParserTest, WarnIfSyntaxIdentifierOmmitted) {
+  SetupParser("message A {}");
+  FileDescriptorProto file;
+  CaptureTestStderr();
+  EXPECT_TRUE(parser_->Parse(input_.get(), &file));
+  EXPECT_TRUE(
+      GetCapturedTestStderr().find("No syntax specified") != string::npos);
 }
 
 // ===================================================================
@@ -250,6 +262,7 @@ TEST_F(ParseMessageTest, ExplicitSyntaxIdentifier) {
     "  required int32 foo = 1;\n"
     "}\n",
 
+    "syntax: 'proto2' "
     "message_type {"
     "  name: \"TestMessage\""
     "  field { name:\"foo\" label:LABEL_REQUIRED type:TYPE_INT32 number:1 }"
@@ -265,6 +278,7 @@ TEST_F(ParseMessageTest, ExplicitRequiredSyntaxIdentifier) {
     "  required int32 foo = 1;\n"
     "}\n",
 
+    "syntax: 'proto2' "
     "message_type {"
     "  name: \"TestMessage\""
     "  field { name:\"foo\" label:LABEL_REQUIRED type:TYPE_INT32 number:1 }"
@@ -365,35 +379,49 @@ TEST_F(ParseMessageTest, FieldDefaults) {
 #define ETC "name:\"foo\" label:LABEL_REQUIRED number:1"
     "message_type {"
     "  name: \"TestMessage\""
-    "  field { type:TYPE_INT32   default_value:\"1\"         "ETC" }"
-    "  field { type:TYPE_INT32   default_value:\"-2\"        "ETC" }"
-    "  field { type:TYPE_INT64   default_value:\"3\"         "ETC" }"
-    "  field { type:TYPE_INT64   default_value:\"-4\"        "ETC" }"
-    "  field { type:TYPE_UINT32  default_value:\"5\"         "ETC" }"
-    "  field { type:TYPE_UINT64  default_value:\"6\"         "ETC" }"
-    "  field { type:TYPE_FLOAT   default_value:\"7.5\"       "ETC" }"
-    "  field { type:TYPE_FLOAT   default_value:\"-8.5\"      "ETC" }"
-    "  field { type:TYPE_FLOAT   default_value:\"9\"         "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"10.5\"      "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"-11.5\"     "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"12\"        "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"inf\"       "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"-inf\"      "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"nan\"       "ETC" }"
-    "  field { type:TYPE_STRING  default_value:\"13\\001\"   "ETC" }"
-    "  field { type:TYPE_STRING  default_value:\"abc\"       "ETC" }"
-    "  field { type:TYPE_BYTES   default_value:\"14\\\\002\" "ETC" }"
-    "  field { type:TYPE_BYTES   default_value:\"abc\"       "ETC" }"
-    "  field { type:TYPE_BOOL    default_value:\"true\"      "ETC" }"
-    "  field { type_name:\"Foo\" default_value:\"FOO\"       "ETC" }"
+    "  field { type:TYPE_INT32   default_value:\"1\"         " ETC " }"
+    "  field { type:TYPE_INT32   default_value:\"-2\"        " ETC " }"
+    "  field { type:TYPE_INT64   default_value:\"3\"         " ETC " }"
+    "  field { type:TYPE_INT64   default_value:\"-4\"        " ETC " }"
+    "  field { type:TYPE_UINT32  default_value:\"5\"         " ETC " }"
+    "  field { type:TYPE_UINT64  default_value:\"6\"         " ETC " }"
+    "  field { type:TYPE_FLOAT   default_value:\"7.5\"       " ETC " }"
+    "  field { type:TYPE_FLOAT   default_value:\"-8.5\"      " ETC " }"
+    "  field { type:TYPE_FLOAT   default_value:\"9\"         " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"10.5\"      " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"-11.5\"     " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"12\"        " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"inf\"       " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"-inf\"      " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"nan\"       " ETC " }"
+    "  field { type:TYPE_STRING  default_value:\"13\\001\"   " ETC " }"
+    "  field { type:TYPE_STRING  default_value:\"abc\"       " ETC " }"
+    "  field { type:TYPE_BYTES   default_value:\"14\\\\002\" " ETC " }"
+    "  field { type:TYPE_BYTES   default_value:\"abc\"       " ETC " }"
+    "  field { type:TYPE_BOOL    default_value:\"true\"      " ETC " }"
+    "  field { type_name:\"Foo\" default_value:\"FOO\"       " ETC " }"
 
-    "  field { type:TYPE_INT32   default_value:\"2147483647\"           "ETC" }"
-    "  field { type:TYPE_INT32   default_value:\"-2147483648\"          "ETC" }"
-    "  field { type:TYPE_UINT32  default_value:\"4294967295\"           "ETC" }"
-    "  field { type:TYPE_INT64   default_value:\"9223372036854775807\"  "ETC" }"
-    "  field { type:TYPE_INT64   default_value:\"-9223372036854775808\" "ETC" }"
-    "  field { type:TYPE_UINT64  default_value:\"18446744073709551615\" "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"43981\"                "ETC" }"
+    "  field {"
+    "    type:TYPE_INT32   default_value:\"2147483647\"           " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_INT32   default_value:\"-2147483648\"          " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_UINT32  default_value:\"4294967295\"           " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_INT64   default_value:\"9223372036854775807\"  " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_INT64   default_value:\"-9223372036854775808\" " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_UINT64  default_value:\"18446744073709551615\" " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_DOUBLE  default_value:\"43981\"                " ETC
+    "  }"
     "}");
 #undef ETC
 }
@@ -496,6 +524,54 @@ TEST_F(ParseMessageTest, MultipleOneofs) {
     "  }"
     "  oneof_decl {"
     "    name: \"bar\""
+    "  }"
+    "}");
+}
+
+TEST_F(ParseMessageTest, Maps) {
+  ExpectParsesTo(
+    "message TestMessage {\n"
+    "  map<int32, string> primitive_type_map = 1;\n"
+    "  map<KeyType, ValueType> composite_type_map = 2;\n"
+    "}\n",
+
+    "message_type {"
+    "  name: \"TestMessage\""
+    "  nested_type {"
+    "    name: \"PrimitiveTypeMapEntry\""
+    "    field { "
+    "       name: \"key\" number: 1 label:LABEL_OPTIONAL"
+    "       type:TYPE_INT32"
+    "    }"
+    "    field { "
+    "       name: \"value\" number: 2 label:LABEL_OPTIONAL"
+    "       type:TYPE_STRING"
+    "    }"
+    "    options { map_entry: true }"
+    "  }"
+    "  nested_type {"
+    "    name: \"CompositeTypeMapEntry\""
+    "    field { "
+    "       name: \"key\" number: 1 label:LABEL_OPTIONAL"
+    "       type_name: \"KeyType\""
+    "    }"
+    "    field { "
+    "       name: \"value\" number: 2 label:LABEL_OPTIONAL"
+    "       type_name: \"ValueType\""
+    "    }"
+    "    options { map_entry: true }"
+    "  }"
+    "  field {"
+    "    name: \"primitive_type_map\""
+    "    label: LABEL_REPEATED"
+    "    type_name: \"PrimitiveTypeMapEntry\""
+    "    number: 1"
+    "  }"
+    "  field {"
+    "    name: \"composite_type_map\""
+    "    label: LABEL_REPEATED"
+    "    type_name: \"CompositeTypeMapEntry\""
+    "    number: 2"
     "  }"
     "}");
 }
@@ -639,6 +715,20 @@ TEST_F(ParseMessageTest, MultipleExtensionsOneExtendee) {
     "            type_name:\"TestMessage\" extendee: \"Extendee1\" }");
 }
 
+TEST_F(ParseMessageTest, OptionalOptionalLabelProto3) {
+  ExpectParsesTo(
+    "syntax = \"proto3\";\n"
+    "message TestMessage {\n"
+    "  int32 foo = 1;\n"
+    "  optional int32 bar = 2;\n"
+    "}\n",
+
+    "syntax: \"proto3\" "
+    "message_type {"
+    "  name: \"TestMessage\""
+    "  field { name:\"foo\" label:LABEL_OPTIONAL type:TYPE_INT32 number:1 }"
+    "  field { name:\"bar\" label:LABEL_OPTIONAL type:TYPE_INT32 number:2 } }");
+}
 
 // ===================================================================
 
@@ -828,9 +918,9 @@ typedef ParserTest ParseErrorTest;
 
 TEST_F(ParseErrorTest, MissingSyntaxIdentifier) {
   require_syntax_identifier_ = true;
-  ExpectHasEarlyExitErrors(
-    "message TestMessage {}",
-    "0:0: File must begin with 'syntax = \"proto2\";'.\n");
+  ExpectHasEarlyExitErrors("message TestMessage {}",
+                           "0:0: File must begin with a syntax statement, e.g. "
+                           "'syntax = \"proto2\";'.\n");
   EXPECT_EQ("", parser_->GetSyntaxIdentifier());
 }
 
@@ -838,7 +928,7 @@ TEST_F(ParseErrorTest, UnknownSyntaxIdentifier) {
   ExpectHasEarlyExitErrors(
     "syntax = \"no_such_syntax\";",
     "0:9: Unrecognized syntax identifier \"no_such_syntax\".  This parser "
-      "only recognizes \"proto2\".\n");
+      "only recognizes \"proto2\" and \"proto3\".\n");
   EXPECT_EQ("no_such_syntax", parser_->GetSyntaxIdentifier());
 }
 
@@ -1039,6 +1129,55 @@ TEST_F(ParseErrorTest, LabelInOneof) {
     "}\n",
     "2:4: Fields in oneofs must not have labels (required / optional "
       "/ repeated).\n");
+}
+
+TEST_F(ParseErrorTest, MapInOneof) {
+  ExpectHasErrors(
+    "message TestMessage {\n"
+    "  oneof foo {\n"
+    "    map<int32, int32> foo_map = 1;\n"
+    "    map message_field = 2;\n"  // a normal message field is OK
+    "  }\n"
+    "}\n",
+    "2:7: Map fields are not allowed in oneofs.\n");
+}
+
+TEST_F(ParseErrorTest, LabelForMap) {
+  ExpectHasErrors(
+    "message TestMessage {\n"
+    "  optional map<int32, int32> int_map = 1;\n"
+    "  required map<int32, int32> int_map2 = 2;\n"
+    "  repeated map<int32, int32> int_map3 = 3;\n"
+    "  optional map map_message = 4;\n"  // a normal message field is OK
+    "}\n",
+    "1:14: Field labels (required/optional/repeated) are not allowed on map "
+    "fields.\n"
+    "2:14: Field labels (required/optional/repeated) are not allowed on map "
+    "fields.\n"
+    "3:14: Field labels (required/optional/repeated) are not allowed on map "
+    "fields.\n");
+}
+
+TEST_F(ParseErrorTest, MalformedMaps) {
+  ExpectHasErrors(
+    "message TestMessage {\n"
+    "  map map_message = 1;\n"   // a normal message field lacking label
+    "  map<string> str_map = 2;\n"
+    "  map<string,> str_map2 = 3;\n"
+    "  map<,string> str_map3 = 4;\n"
+    "  map<> empty_map = 5;\n"
+    "  map<string,string str_map6 = 6;\n"
+    "}"
+    "extend SomeMessage {\n"
+    "  map<int32, int32> int_map = 1;\n"
+    "}",
+    "1:6: Expected \"required\", \"optional\", or \"repeated\".\n"
+    "2:12: Expected \",\".\n"
+    "3:13: Expected type name.\n"
+    "4:6: Expected type name.\n"
+    "5:6: Expected type name.\n"
+    "6:20: Expected \">\".\n"
+    "8:5: Map fields are not allowed to be extensions.\n");
 }
 
 TEST_F(ParseErrorTest, GroupNotCapitalized) {
@@ -1413,7 +1552,7 @@ TEST_F(ParserValidationErrorTest, ResovledUndefinedOptionError) {
 // definitions again afoter parsing (note, however, that the order of messages
 // cannot be guaranteed to be the same)
 
-typedef ParserTest ParseDecriptorDebugTest;
+typedef ParserTest ParseDescriptorDebugTest;
 
 class CompareDescriptorNames {
  public:
@@ -1447,7 +1586,28 @@ void SortMessages(FileDescriptorProto *file_descriptor_proto) {
   sort(data, data + size, CompareDescriptorNames());
 }
 
-TEST_F(ParseDecriptorDebugTest, TestAllDescriptorTypes) {
+// Strips the message and enum field type names for comparison purpose only.
+void StripFieldTypeName(DescriptorProto* proto) {
+  for (int i = 0; i < proto->field_size(); ++i) {
+    string type_name = proto->field(i).type_name();
+    string::size_type pos = type_name.find_last_of(".");
+    if (pos != string::npos) {
+      proto->mutable_field(i)->mutable_type_name()->assign(
+          type_name.begin() + pos + 1, type_name.end());
+    }
+  }
+  for (int i = 0; i < proto->nested_type_size(); ++i) {
+    StripFieldTypeName(proto->mutable_nested_type(i));
+  }
+}
+
+void StripFieldTypeName(FileDescriptorProto* file_proto) {
+  for (int i = 0; i < file_proto->message_type_size(); ++i) {
+    StripFieldTypeName(file_proto->mutable_message_type(i));
+  }
+}
+
+TEST_F(ParseDescriptorDebugTest, TestAllDescriptorTypes) {
   const FileDescriptor* original_file =
      protobuf_unittest::TestAllTypes::descriptor()->file();
   FileDescriptorProto expected;
@@ -1499,7 +1659,7 @@ TEST_F(ParseDecriptorDebugTest, TestAllDescriptorTypes) {
   EXPECT_EQ(expected.DebugString(), parsed.DebugString());
 }
 
-TEST_F(ParseDecriptorDebugTest, TestCustomOptions) {
+TEST_F(ParseDescriptorDebugTest, TestCustomOptions) {
   const FileDescriptor* original_file =
      protobuf_unittest::AggregateMessage::descriptor()->file();
   FileDescriptorProto expected;
@@ -1536,6 +1696,106 @@ TEST_F(ParseDecriptorDebugTest, TestCustomOptions) {
   SortMessages(&parsed);
 
   EXPECT_EQ(expected.DebugString(), parsed.DebugString());
+}
+
+// Ensure that DebugStringWithOptions(), with |include_comments| set to true,
+// includes comments from the original parser input in all of the appropriate
+// places.
+TEST_F(ParseDescriptorDebugTest, TestCommentsInDebugString) {
+  SetupParser(
+      "// Message comment.\n"
+      "message TestMessage1 {\n"
+      "  // Field comment.\n"
+      "  optional int32 foo = 1;\n"
+      "\n"
+      "  // Nested-message comment.\n"
+      "  message NestedMessage {\n"
+      "    optional int32 bar = 1;\n"
+      "  }\n"
+      "}\n"
+      "\n"
+      "// Enum comment.\n"
+      "enum MyEnumType {\n"
+      "  // Enum-value comment.\n"
+      "  ASDF = 1;\n"
+      "}\n"
+      "\n"
+      "// Service comment.\n"
+      "service MyService {\n"
+      "  // RPC comment.\n"
+      "  rpc MyRPCCall(TestMessage1) returns (TestMessage1) { }\n"
+      "}\n");
+
+  FileDescriptorProto parsed_desc;
+  parsed_desc.set_name("foo.proto");
+  SourceLocationTable source_locations;
+  parser_->RecordSourceLocationsTo(&source_locations);
+  parser_->Parse(input_.get(), &parsed_desc);
+  EXPECT_EQ(io::Tokenizer::TYPE_END, input_->current().type);
+  ASSERT_EQ("", error_collector_.text_);
+
+  // We need to import the FileDescriptorProto to get a FileDescriptor.
+  MockValidationErrorCollector collector(source_locations, &error_collector_);
+  const FileDescriptor* descriptor =
+      pool_.BuildFileCollectingErrors(parsed_desc, &collector);
+  ASSERT_TRUE(descriptor != NULL);
+
+  DebugStringOptions debug_string_options;
+  debug_string_options.include_comments = true;
+  const string debug_string =
+      descriptor->DebugStringWithOptions(debug_string_options);
+
+  // Ensure that each of the comments appears somewhere in the DebugString(),
+  // and that these comments appear in order. We don't test the exact comment
+  // placement or formatting, because we do not want to be too fragile here.
+  const char* expected_comments[] = {
+    "Message comment.",
+    "Field comment",
+    "Nested-message comment",
+    "Enum comment",
+    "Enum-value comment",
+    "Service comment",
+    "RPC comment",
+  };
+
+  for (int i = 0; i < GOOGLE_ARRAYSIZE(expected_comments); ++i) {
+    string::size_type found_pos = debug_string.find(expected_comments[i]);
+    ASSERT_TRUE(found_pos != string::npos);
+  }
+}
+
+TEST_F(ParseDescriptorDebugTest, TestMaps) {
+  SetupParser(
+      "syntax = \"proto3\"; "
+      "message Foo { "
+      "  message Bar { } "
+      "  map<int32, Bar> enum_message_map = 1; "
+      "  map<string, float> primitive_map = 2; "
+      "} ");
+  FileDescriptorProto original;
+  EXPECT_TRUE(parser_->Parse(input_.get(), &original));
+  original.set_name("foo.proto");
+  const FileDescriptor* file = pool_.BuildFile(original);
+  ASSERT_TRUE(file != NULL);
+
+  // Make sure the debug string uses map syntax and does not have the auto
+  // generated entry.
+  string debug_string = file->DebugString();
+  EXPECT_TRUE(debug_string.find("map<") != string::npos);
+  EXPECT_TRUE(debug_string.find("option map_entry") == string::npos);
+  EXPECT_TRUE(debug_string.find("MapEntry") == string::npos);
+
+  // Make sure the descriptor debug string is parsable.
+  FileDescriptorProto parsed;
+  SetupParser(debug_string.c_str());
+  parsed.set_name("foo.proto");
+  ASSERT_TRUE(parser_->Parse(input_.get(), &parsed));
+
+  original.clear_source_code_info();
+  parsed.clear_source_code_info();
+  StripFieldTypeName(&original);
+  StripFieldTypeName(&parsed);
+  EXPECT_EQ(original.DebugString(), parsed.DebugString());
 }
 
 // ===================================================================

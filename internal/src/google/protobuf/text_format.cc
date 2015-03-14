@@ -50,6 +50,7 @@
 #include <google/protobuf/unknown_field_set.h>
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/io/tokenizer.h>
+#include <google/protobuf/stubs/stringprintf.h>
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/map_util.h>
 #include <google/protobuf/stubs/stl_util.h>
@@ -319,16 +320,16 @@ class TextFormat::Parser::ParserImpl {
                   message);
   }
 
-  // Consumes the specified message with the given starting delimeter.
-  // This method checks to see that the end delimeter at the conclusion of
-  // the consumption matches the starting delimeter passed in here.
-  bool ConsumeMessage(Message* message, const string delimeter) {
+  // Consumes the specified message with the given starting delimiter.
+  // This method checks to see that the end delimiter at the conclusion of
+  // the consumption matches the starting delimiter passed in here.
+  bool ConsumeMessage(Message* message, const string delimiter) {
     while (!LookingAt(">") &&  !LookingAt("}")) {
       DO(ConsumeField(message));
     }
 
-    // Confirm that we have a valid ending delimeter.
-    DO(Consume(delimeter));
+    // Confirm that we have a valid ending delimiter.
+    DO(Consume(delimiter));
 
     return true;
   }
@@ -428,7 +429,7 @@ class TextFormat::Parser::ParserImpl {
       // Try to guess the type of this field.
       // If this field is not a message, there should be a ":" between the
       // field name and the field value and also the field value should not
-      // start with "{" or "<" which indicates the begining of a message body.
+      // start with "{" or "<" which indicates the beginning of a message body.
       // If there is no ":" or there is a "{" or "<" after ":", this field has
       // to be a message or the input is ill-formed.
       if (TryConsume(":") && !LookingAt("{") && !LookingAt("<")) {
@@ -526,7 +527,7 @@ class TextFormat::Parser::ParserImpl {
     // Try to guess the type of this field.
     // If this field is not a message, there should be a ":" between the
     // field name and the field value and also the field value should not
-    // start with "{" or "<" which indicates the begining of a message body.
+    // start with "{" or "<" which indicates the beginning of a message body.
     // If there is no ":" or there is a "{" or "<" after ":", this field has
     // to be a message or the input is ill-formed.
     if (TryConsume(":") && !LookingAt("{") && !LookingAt("<")) {
@@ -551,19 +552,19 @@ class TextFormat::Parser::ParserImpl {
       parse_info_tree_ = CreateNested(parent, field);
     }
 
-    string delimeter;
+    string delimiter;
     if (TryConsume("<")) {
-      delimeter = ">";
+      delimiter = ">";
     } else {
       DO(Consume("{"));
-      delimeter = "}";
+      delimiter = "}";
     }
 
     if (field->is_repeated()) {
-      DO(ConsumeMessage(reflection->AddMessage(message, field), delimeter));
+      DO(ConsumeMessage(reflection->AddMessage(message, field), delimiter));
     } else {
       DO(ConsumeMessage(reflection->MutableMessage(message, field),
-                        delimeter));
+                        delimiter));
     }
 
     // Reset the parse information tree.
@@ -571,20 +572,20 @@ class TextFormat::Parser::ParserImpl {
     return true;
   }
 
-  // Skips the whole body of a message including the begining delimeter and
-  // the ending delimeter.
+  // Skips the whole body of a message including the beginning delimiter and
+  // the ending delimiter.
   bool SkipFieldMessage() {
-    string delimeter;
+    string delimiter;
     if (TryConsume("<")) {
-      delimeter = ">";
+      delimiter = ">";
     } else {
       DO(Consume("{"));
-      delimeter = "}";
+      delimiter = "}";
     }
     while (!LookingAt(">") &&  !LookingAt("}")) {
       DO(SkipField());
     }
-    DO(Consume(delimeter));
+    DO(Consume(delimiter));
     return true;
   }
 
@@ -1583,10 +1584,23 @@ void TextFormat::Printer::PrintFieldValue(
     }
 
     case FieldDescriptor::CPPTYPE_ENUM: {
-      const EnumValueDescriptor *enum_val = field->is_repeated()
-          ? reflection->GetRepeatedEnum(message, field, index)
-          : reflection->GetEnum(message, field);
-      generator.Print(printer->PrintEnum(enum_val->number(), enum_val->name()));
+      int enum_value = field->is_repeated()
+          ? reflection->GetRepeatedEnumValue(message, field, index)
+          : reflection->GetEnumValue(message, field);
+      const EnumValueDescriptor* enum_desc =
+          field->enum_type()->FindValueByNumber(enum_value);
+      if (enum_desc != NULL) {
+        generator.Print(printer->PrintEnum(enum_value, enum_desc->name()));
+      } else {
+        // Ordinarily, enum_desc should not be null, because proto2 has the
+        // invariant that set enum field values must be in-range, but with the
+        // new integer-based API for enums (or the RepeatedField<int> loophole),
+        // it is possible for the user to force an unknown integer value.  So we
+        // simply use the integer value itself as the enum value name in this
+        // case.
+        generator.Print(printer->PrintEnum(enum_value,
+                                           StringPrintf("%d", enum_value)));
+      }
       break;
     }
 

@@ -1,0 +1,21 @@
+require "rake/extensiontask"
+require "rake/testtask"
+
+spec = Gem::Specification.load("google-protobuf.gemspec")
+
+Rake::ExtensionTask.new("protobuf_c", spec) do |ext|
+  ext.ext_dir = "ext/google/protobuf_c"
+  ext.lib_dir = "lib/google"
+end
+
+Rake::TestTask.new(:test => :build) do |t|
+  t.test_files = FileList["tests/*.rb"]
+end
+
+Gem::PackageTask.new(spec) do |pkg|
+end
+
+task :build => [:clean, :compile]
+task :default => [:build]
+
+# vim:sw=2:et

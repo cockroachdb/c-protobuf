@@ -36,6 +36,9 @@
 #define GOOGLE_PROTOBUF_COMPILER_JAVA_SHARED_CODE_GENERATOR_H__
 
 #include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 #include <string>
 #include <vector>
 
@@ -68,6 +71,7 @@ class SharedCodeGenerator {
 
   void Generate(GeneratorContext* generator_context,
                 vector<string>* file_list);
+
   void GenerateDescriptors(io::Printer* printer);
 
  private:
@@ -76,7 +80,7 @@ class SharedCodeGenerator {
   // improve compatibility with version 1 of protocol buffers.
   bool ShouldIncludeDependency(const FileDescriptor* descriptor);
 
-  scoped_ptr<ClassNameResolver> name_resolver_;
+  google::protobuf::scoped_ptr<ClassNameResolver> name_resolver_;
   const FileDescriptor* file_;
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(SharedCodeGenerator);
 };
