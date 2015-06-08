@@ -291,14 +291,32 @@ class LIBPROTOBUF_EXPORT WireFormatLite {
   template <typename CType, enum FieldType DeclaredType>
   static bool ReadPackedPrimitiveNoInline(input, RepeatedField<CType>* value);
 
-  // Read a packed enum field. Values for which is_valid() returns false are
-  // dropped.
+  // Read a packed enum field. If the is_valid function is not NULL, values for
+  // which is_valid(value) returns false are silently dropped.
   static bool ReadPackedEnumNoInline(input,
                                      bool (*is_valid)(int),
-                                     RepeatedField<int>* value);
+                                     RepeatedField<int>* values);
 
-  static bool ReadString(input, string* value);
-  static bool ReadBytes (input, string* value);
+  // Read a packed enum field. If the is_valid function is not NULL, values for
+  // which is_valid(value) returns false are appended to unknown_fields_stream.
+  static bool ReadPackedEnumPreserveUnknowns(
+      input,
+      field_number,
+      bool (*is_valid)(int),
+      io::CodedOutputStream* unknown_fields_stream,
+      RepeatedField<int>* values);
+
+  // Read a string.  ReadString(..., string* value) requires an existing string.
+  static inline bool ReadString(input, string* value);
+  // ReadString(..., string** p) is internal-only, and should only be called
+  // from generated code. It starts by setting *p to "new string"
+  // if *p == &GetEmptyStringAlreadyInited().  It then invokes
+  // ReadString(input, *p).  This is useful for reducing code size.
+  static inline bool ReadString(input, string** p);
+  // Analogous to ReadString().
+  static bool ReadBytes(input, string* value);
+  static bool ReadBytes(input, string** p);
+
 
   static inline bool ReadGroup  (field_number, input, MessageLite* value);
   static inline bool ReadMessage(input, MessageLite* value);
@@ -311,6 +329,17 @@ class LIBPROTOBUF_EXPORT WireFormatLite {
                                         MessageType* value);
   template<typename MessageType>
   static inline bool ReadMessageNoVirtual(input, MessageType* value);
+
+  // The same, but do not modify input's recursion depth.  This is useful
+  // when reading a bunch of groups or messages in a loop, because then the
+  // recursion depth can be incremented before the loop and decremented after.
+  template<typename MessageType>
+  static inline bool ReadGroupNoVirtualNoRecursionDepth(field_number, input,
+                                                        MessageType* value);
+
+  template<typename MessageType>
+  static inline bool ReadMessageNoVirtualNoRecursionDepth(input,
+                                                          MessageType* value);
 
   // Write a tag.  The Write*() functions typically include the tag, so
   // normally there's no need to call this unless using the Write*NoTag()
@@ -638,7 +667,7 @@ inline double WireFormatLite::DecodeDouble(uint64 value) {
 
 inline uint32 WireFormatLite::ZigZagEncode32(int32 n) {
   // Note:  the right-shift must be arithmetic
-  return (n << 1) ^ (n >> 31);
+  return (static_cast<uint32>(n) << 1) ^ (n >> 31);
 }
 
 inline int32 WireFormatLite::ZigZagDecode32(uint32 n) {
@@ -647,11 +676,24 @@ inline int32 WireFormatLite::ZigZagDecode32(uint32 n) {
 
 inline uint64 WireFormatLite::ZigZagEncode64(int64 n) {
   // Note:  the right-shift must be arithmetic
-  return (n << 1) ^ (n >> 63);
+  return (static_cast<uint64>(n) << 1) ^ (n >> 63);
 }
 
 inline int64 WireFormatLite::ZigZagDecode64(uint64 n) {
   return (n >> 1) ^ -static_cast<int64>(n & 1);
+}
+
+// String is for UTF-8 text only, but, even so, ReadString() can simply
+// call ReadBytes().
+
+inline bool WireFormatLite::ReadString(io::CodedInputStream* input,
+                                       string* value) {
+  return ReadBytes(input, value);
+}
+
+inline bool WireFormatLite::ReadString(io::CodedInputStream* input,
+                                       string** p) {
+  return ReadBytes(input, p);
 }
 
 }  // namespace internal

@@ -12,7 +12,7 @@ import (
 // #cgo darwin LDFLAGS: -Wl,-undefined -Wl,dynamic_lookup
 // #cgo !darwin LDFLAGS: -Wl,-unresolved-symbols=ignore-all
 //
-// void cmain(int argc, char **argv);
+// int cmain(int argc, char* argv[]);
 import "C"
 
 func main() {

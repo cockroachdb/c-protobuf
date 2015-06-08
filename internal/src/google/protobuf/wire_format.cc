@@ -141,7 +141,7 @@ bool WireFormat::SkipField(io::CodedInputStream* input, uint32 tag,
 
 bool WireFormat::SkipMessage(io::CodedInputStream* input,
                              UnknownFieldSet* unknown_fields) {
-  while(true) {
+  while (true) {
     uint32 tag = input->ReadTag();
     if (tag == 0) {
       // End of input.  This is a valid place to end, so return true.
@@ -158,6 +158,31 @@ bool WireFormat::SkipMessage(io::CodedInputStream* input,
     if (!SkipField(input, tag, unknown_fields)) return false;
   }
 }
+
+bool WireFormat::ReadPackedEnumPreserveUnknowns(io::CodedInputStream* input,
+                                                uint32 field_number,
+                                                bool (*is_valid)(int),
+                                                UnknownFieldSet* unknown_fields,
+                                                RepeatedField<int>* values) {
+  uint32 length;
+  if (!input->ReadVarint32(&length)) return false;
+  io::CodedInputStream::Limit limit = input->PushLimit(length);
+  while (input->BytesUntilLimit() > 0) {
+    int value;
+    if (!google::protobuf::internal::WireFormatLite::ReadPrimitive<
+        int, WireFormatLite::TYPE_ENUM>(input, &value)) {
+      return false;
+    }
+    if (is_valid == NULL || is_valid(value)) {
+      values->Add(value);
+    } else {
+      unknown_fields->AddVarint(field_number, value);
+    }
+  }
+  input->PopLimit(limit);
+  return true;
+}
+
 
 void WireFormat::SerializeUnknownFields(const UnknownFieldSet& unknown_fields,
                                         io::CodedOutputStream* output) {
@@ -512,10 +537,23 @@ bool WireFormat::ParseAndMergeField(
           int value;
           if (!WireFormatLite::ReadPrimitive<int, WireFormatLite::TYPE_ENUM>(
                   input, &value)) return false;
-          const EnumValueDescriptor* enum_value =
-              field->enum_type()->FindValueByNumber(value);
-          if (enum_value != NULL) {
-            message_reflection->AddEnum(message, field, enum_value);
+          if (message->GetDescriptor()->file()->syntax() ==
+              FileDescriptor::SYNTAX_PROTO3) {
+            message_reflection->AddEnumValue(message, field, value);
+          } else {
+            const EnumValueDescriptor* enum_value =
+                field->enum_type()->FindValueByNumber(value);
+            if (enum_value != NULL) {
+              message_reflection->AddEnum(message, field, enum_value);
+            } else {
+              // The enum value is not one of the known values.  Add it to the
+              // UnknownFieldSet.
+              int64 sign_extended_value = static_cast<int64>(value);
+              message_reflection->MutableUnknownFields(message)
+                  ->AddVarint(
+                      WireFormatLite::GetTagFieldNumber(tag),
+                      sign_extended_value);
+            }
           }
         }
 
@@ -572,21 +610,31 @@ bool WireFormat::ParseAndMergeField(
         int value;
         if (!WireFormatLite::ReadPrimitive<int, WireFormatLite::TYPE_ENUM>(
                 input, &value)) return false;
-        const EnumValueDescriptor* enum_value =
-          field->enum_type()->FindValueByNumber(value);
-        if (enum_value != NULL) {
+        if (message->GetDescriptor()->file()->syntax() ==
+            FileDescriptor::SYNTAX_PROTO3) {
           if (field->is_repeated()) {
-            message_reflection->AddEnum(message, field, enum_value);
+            message_reflection->AddEnumValue(message, field, value);
           } else {
-            message_reflection->SetEnum(message, field, enum_value);
+            message_reflection->SetEnumValue(message, field, value);
           }
         } else {
-          // The enum value is not one of the known values.  Add it to the
-          // UnknownFieldSet.
-          int64 sign_extended_value = static_cast<int64>(value);
-          message_reflection->MutableUnknownFields(message)
-                            ->AddVarint(WireFormatLite::GetTagFieldNumber(tag),
-                                        sign_extended_value);
+          const EnumValueDescriptor* enum_value =
+              field->enum_type()->FindValueByNumber(value);
+          if (enum_value != NULL) {
+            if (field->is_repeated()) {
+              message_reflection->AddEnum(message, field, enum_value);
+            } else {
+              message_reflection->SetEnum(message, field, enum_value);
+            }
+          } else {
+            // The enum value is not one of the known values.  Add it to the
+            // UnknownFieldSet.
+            int64 sign_extended_value = static_cast<int64>(value);
+            message_reflection->MutableUnknownFields(message)
+                              ->AddVarint(
+                                  WireFormatLite::GetTagFieldNumber(tag),
+                                  sign_extended_value);
+          }
         }
         break;
       }
@@ -781,7 +829,7 @@ void WireFormat::SerializeFieldWithCachedSizes(
     count = 1;
   }
 
-  const bool is_packed = field->options().packed();
+  const bool is_packed = field->is_packed();
   if (is_packed && count > 0) {
     WireFormatLite::WriteTag(field->number(),
         WireFormatLite::WIRETYPE_LENGTH_DELIMITED, output);
@@ -948,7 +996,7 @@ int WireFormat::FieldByteSize(
 
   const int data_size = FieldDataOnlyByteSize(field, message);
   int our_size = data_size;
-  if (field->options().packed()) {
+  if (field->is_packed()) {
     if (data_size > 0) {
       // Packed fields get serialized like a string, not their native type.
       // Technically this doesn't really matter; the size only changes if it's

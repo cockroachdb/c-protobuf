@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 #
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
@@ -34,7 +34,7 @@
 
 __author__ = 'matthewtoia@google.com (Matt Toia)'
 
-from google.apputils import basetest
+import unittest
 from google.protobuf import descriptor_pb2
 from google.protobuf.internal import factory_test1_pb2
 from google.protobuf.internal import factory_test2_pb2
@@ -43,7 +43,7 @@ from google.protobuf import descriptor_pool
 from google.protobuf import message_factory
 
 
-class MessageFactoryTest(basetest.TestCase):
+class MessageFactoryTest(unittest.TestCase):
 
   def setUp(self):
     self.factory_test1_fd = descriptor_pb2.FileDescriptorProto.FromString(
@@ -104,17 +104,18 @@ class MessageFactoryTest(basetest.TestCase):
     for _ in range(2):
       messages = message_factory.GetMessages([self.factory_test2_fd,
                                               self.factory_test1_fd])
-      self.assertContainsSubset(
-          ['google.protobuf.python.internal.Factory2Message',
-           'google.protobuf.python.internal.Factory1Message'],
-          messages.keys())
+      self.assertTrue(
+          set(['google.protobuf.python.internal.Factory2Message',
+               'google.protobuf.python.internal.Factory1Message'],
+             ).issubset(set(messages.keys())))
       self._ExerciseDynamicClass(
           messages['google.protobuf.python.internal.Factory2Message'])
-      self.assertContainsSubset(
-          ['google.protobuf.python.internal.Factory2Message.one_more_field',
-           'google.protobuf.python.internal.another_field'],
-          (messages['google.protobuf.python.internal.Factory1Message']
-           ._extensions_by_name.keys()))
+      self.assertTrue(
+          set(['google.protobuf.python.internal.Factory2Message.one_more_field',
+               'google.protobuf.python.internal.another_field'],
+             ).issubset(
+                set(messages['google.protobuf.python.internal.Factory1Message']
+                     ._extensions_by_name.keys())))
       factory_msg1 = messages['google.protobuf.python.internal.Factory1Message']
       msg1 = messages['google.protobuf.python.internal.Factory1Message']()
       ext1 = factory_msg1._extensions_by_name[
@@ -128,4 +129,4 @@ class MessageFactoryTest(basetest.TestCase):
 
 
 if __name__ == '__main__':
-  basetest.main()
+  unittest.main()

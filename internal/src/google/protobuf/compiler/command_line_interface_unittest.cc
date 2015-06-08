@@ -41,6 +41,9 @@
 #include <unistd.h>
 #endif
 #include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 #include <vector>
 
 #include <google/protobuf/descriptor.pb.h>
@@ -48,6 +51,7 @@
 #include <google/protobuf/io/zero_copy_stream.h>
 #include <google/protobuf/compiler/command_line_interface.h>
 #include <google/protobuf/compiler/code_generator.h>
+#include <google/protobuf/testing/file.h>
 #include <google/protobuf/compiler/mock_code_generator.h>
 #include <google/protobuf/compiler/subprocess.h>
 #include <google/protobuf/io/printer.h>
@@ -59,6 +63,10 @@
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
 
+
+// Disable the whole test when we use tcmalloc for "draconian" heap checks, in
+// which case tcmalloc will print warnings that fail the plugin tests.
+#if !GOOGLE_PROTOBUF_HEAP_CHECK_DRACONIAN
 namespace google {
 namespace protobuf {
 namespace compiler {
@@ -76,6 +84,10 @@ namespace compiler {
 #endif
 
 namespace {
+
+bool FileExists(const string& path) {
+  return File::Exists(path);
+}
 
 class CommandLineInterfaceTest : public testing::Test {
  protected:
@@ -102,6 +114,16 @@ class CommandLineInterfaceTest : public testing::Test {
 
   // Create a subdirectory within temp_directory_.
   void CreateTempDir(const string& name);
+
+#ifdef PROTOBUF_OPENSOURCE
+  // Change working directory to temp directory.
+  void SwitchToTempDirectory() {
+    File::ChangeWorkingDirectory(temp_directory_);
+  }
+#else  // !PROTOBUF_OPENSOURCE
+  // TODO(teboring): Figure out how to change and get working directory in
+  // google3.
+#endif  // !PROTOBUF_OPENSOURCE
 
   void SetInputsAreProtoPathRelative(bool enable) {
     cli_.SetInputsAreProtoPathRelative(enable);
@@ -167,6 +189,9 @@ class CommandLineInterfaceTest : public testing::Test {
   void ReadDescriptorSet(const string& filename,
                          FileDescriptorSet* descriptor_set);
 
+  void ExpectFileContent(const string& filename,
+                         const string& content);
+
  private:
   // The object we are testing.
   CommandLineInterface cli_;
@@ -226,7 +251,7 @@ void CommandLineInterfaceTest::SetUp() {
 
   // If the temp directory already exists, it must be left over from a
   // previous run.  Delete it.
-  if (File::Exists(temp_directory_)) {
+  if (FileExists(temp_directory_)) {
     File::DeleteRecursively(temp_directory_, NULL, NULL);
   }
 
@@ -252,7 +277,9 @@ void CommandLineInterfaceTest::SetUp() {
 
 void CommandLineInterfaceTest::TearDown() {
   // Delete the temp directory.
-  File::DeleteRecursively(temp_directory_, NULL, NULL);
+  if (FileExists(temp_directory_)) {
+    File::DeleteRecursively(temp_directory_, NULL, NULL);
+  }
 
   // Delete all the MockCodeGenerators.
   for (int i = 0; i < mock_generators_to_delete_.size(); i++) {
@@ -266,6 +293,7 @@ void CommandLineInterfaceTest::Run(const string& command) {
 
   if (!disallow_plugins_) {
     cli_.AllowPlugins("prefix-");
+#ifndef GOOGLE_THIRD_PARTY_PROTOBUF
     const char* possible_paths[] = {
       // When building with shared libraries, libtool hides the real executable
       // in .libs and puts a fake wrapper in the current directory.
@@ -294,6 +322,11 @@ void CommandLineInterfaceTest::Run(const string& command) {
     }
 
     if (plugin_path.empty()) {
+#else
+    string plugin_path = "third_party/protobuf/test_plugin";
+
+    if (access(plugin_path.c_str(), F_OK) != 0) {
+#endif  // GOOGLE_THIRD_PARTY_PROTOBUF
       GOOGLE_LOG(ERROR)
           << "Plugin executable not found.  Plugin tests are likely to fail.";
     } else {
@@ -301,7 +334,7 @@ void CommandLineInterfaceTest::Run(const string& command) {
     }
   }
 
-  scoped_array<const char*> argv(new const char* [args.size()]);
+  google::protobuf::scoped_array<const char * > argv(new const char* [args.size()]);
 
   for (int i = 0; i < args.size(); i++) {
     args[i] = StringReplace(args[i], "$tmpdir", temp_directory_, true);
@@ -333,7 +366,7 @@ void CommandLineInterfaceTest::CreateTempFile(
   string::size_type slash_pos = name.find_last_of('/');
   if (slash_pos != string::npos) {
     string dir = name.substr(0, slash_pos);
-    if (!File::Exists(temp_directory_ + "/" + dir)) {
+    if (!FileExists(temp_directory_ + "/" + dir)) {
       GOOGLE_CHECK_OK(File::RecursivelyCreateDir(temp_directory_ + "/" + dir,
                                           0777));
     }
@@ -443,6 +476,17 @@ void CommandLineInterfaceTest::ReadDescriptorSet(
 void CommandLineInterfaceTest::ExpectCapturedStdout(
     const string& expected_text) {
   EXPECT_EQ(expected_text, captured_stdout_);
+}
+
+
+void CommandLineInterfaceTest::ExpectFileContent(
+    const string& filename, const string& content) {
+  string path = temp_directory_ + "/" + filename;
+  string file_contents;
+  GOOGLE_CHECK_OK(File::GetContents(path, &file_contents, true));
+
+  EXPECT_EQ(StringReplace(content, "$tmpdir", temp_directory_, true),
+            file_contents);
 }
 
 // ===================================================================
@@ -714,7 +758,7 @@ TEST_F(CommandLineInterfaceTest, ColonDelimitedPath) {
 #endif
 
   Run("protocol_compiler --test_out=$tmpdir "
-      "--proto_path=$tmpdir/a"PATH_SEPARATOR"$tmpdir/b foo.proto");
+      "--proto_path=$tmpdir/a" PATH_SEPARATOR "$tmpdir/b foo.proto");
 
 #undef PATH_SEPARATOR
 
@@ -928,6 +972,80 @@ TEST_F(CommandLineInterfaceTest, WriteTransitiveDescriptorSetWithSourceInfo) {
   EXPECT_TRUE(descriptor_set.file(0).has_source_code_info());
   EXPECT_TRUE(descriptor_set.file(1).has_source_code_info());
 }
+
+#ifdef _WIN32
+// TODO(teboring): Figure out how to write test on windows.
+#else
+TEST_F(CommandLineInterfaceTest, WriteDependencyManifestFileGivenTwoInputs) {
+  CreateTempFile("foo.proto",
+    "syntax = \"proto2\";\n"
+    "message Foo {}\n");
+  CreateTempFile("bar.proto",
+    "syntax = \"proto2\";\n"
+    "import \"foo.proto\";\n"
+    "message Bar {\n"
+    "  optional Foo foo = 1;\n"
+    "}\n");
+
+  Run("protocol_compiler --dependency_out=$tmpdir/manifest "
+      "--test_out=$tmpdir --proto_path=$tmpdir bar.proto foo.proto");
+
+  ExpectErrorText(
+      "Can only process one input file when using --dependency_out=FILE.\n");
+}
+
+#ifdef PROTOBUF_OPENSOURCE
+TEST_F(CommandLineInterfaceTest, WriteDependencyManifestFile) {
+  CreateTempFile("foo.proto",
+    "syntax = \"proto2\";\n"
+    "message Foo {}\n");
+  CreateTempFile("bar.proto",
+    "syntax = \"proto2\";\n"
+    "import \"foo.proto\";\n"
+    "message Bar {\n"
+    "  optional Foo foo = 1;\n"
+    "}\n");
+
+  string current_working_directory = getcwd(NULL, 0);
+  SwitchToTempDirectory();
+
+  Run("protocol_compiler --dependency_out=manifest --test_out=. "
+      "bar.proto");
+
+  ExpectNoErrors();
+
+  ExpectFileContent("manifest",
+                    "bar.proto.MockCodeGenerator.test_generator: "
+                    "foo.proto\\\n bar.proto");
+
+  File::ChangeWorkingDirectory(current_working_directory);
+}
+#else  // !PROTOBUF_OPENSOURCE
+// TODO(teboring): Figure out how to change and get working directory in
+// google3.
+#endif  // !PROTOBUF_OPENSOURCE
+
+TEST_F(CommandLineInterfaceTest, WriteDependencyManifestFileForAbsolutePath) {
+  CreateTempFile("foo.proto",
+    "syntax = \"proto2\";\n"
+    "message Foo {}\n");
+  CreateTempFile("bar.proto",
+    "syntax = \"proto2\";\n"
+    "import \"foo.proto\";\n"
+    "message Bar {\n"
+    "  optional Foo foo = 1;\n"
+    "}\n");
+
+  Run("protocol_compiler --dependency_out=$tmpdir/manifest "
+      "--test_out=$tmpdir --proto_path=$tmpdir bar.proto");
+
+  ExpectNoErrors();
+
+  ExpectFileContent("manifest",
+                    "$tmpdir/bar.proto.MockCodeGenerator.test_generator: "
+                    "$tmpdir/foo.proto\\\n $tmpdir/bar.proto");
+}
+#endif  // !_WIN32
 
 // -------------------------------------------------------------------
 
@@ -1539,7 +1657,7 @@ class EncodeDecodeTest : public testing::Test {
     SplitStringUsing(command, " ", &args);
     args.push_back("--proto_path=" + TestSourceDir());
 
-    scoped_array<const char*> argv(new const char* [args.size()]);
+    google::protobuf::scoped_array<const char * > argv(new const char* [args.size()]);
     for (int i = 0; i < args.size(); i++) {
       argv[i] = args[i].c_str();
     }
@@ -1651,4 +1769,6 @@ TEST_F(EncodeDecodeTest, ProtoParseError) {
 
 }  // namespace compiler
 }  // namespace protobuf
+
+#endif  // !GOOGLE_PROTOBUF_HEAP_CHECK_DRACONIAN
 }  // namespace google

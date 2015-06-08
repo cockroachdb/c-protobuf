@@ -79,6 +79,81 @@ TEST(CommandLineFlagsTest, CanBeAccessedInCodeOnceGTestHIsIncluded) {
 namespace testing {
 namespace internal {
 
+#if GTEST_CAN_STREAM_RESULTS_
+
+class StreamingListenerTest : public Test {
+ public:
+  class FakeSocketWriter : public StreamingListener::AbstractSocketWriter {
+   public:
+    // Sends a string to the socket.
+    virtual void Send(const string& message) { output_ += message; }
+
+    string output_;
+  };
+
+  StreamingListenerTest()
+      : fake_sock_writer_(new FakeSocketWriter),
+        streamer_(fake_sock_writer_),
+        test_info_obj_("FooTest", "Bar", NULL, NULL, 0, NULL) {}
+
+ protected:
+  string* output() { return &(fake_sock_writer_->output_); }
+
+  FakeSocketWriter* const fake_sock_writer_;
+  StreamingListener streamer_;
+  UnitTest unit_test_;
+  TestInfo test_info_obj_;  // The name test_info_ was taken by testing::Test.
+};
+
+TEST_F(StreamingListenerTest, OnTestProgramEnd) {
+  *output() = "";
+  streamer_.OnTestProgramEnd(unit_test_);
+  EXPECT_EQ("event=TestProgramEnd&passed=1\n", *output());
+}
+
+TEST_F(StreamingListenerTest, OnTestIterationEnd) {
+  *output() = "";
+  streamer_.OnTestIterationEnd(unit_test_, 42);
+  EXPECT_EQ("event=TestIterationEnd&passed=1&elapsed_time=0ms\n", *output());
+}
+
+TEST_F(StreamingListenerTest, OnTestCaseStart) {
+  *output() = "";
+  streamer_.OnTestCaseStart(TestCase("FooTest", "Bar", NULL, NULL));
+  EXPECT_EQ("event=TestCaseStart&name=FooTest\n", *output());
+}
+
+TEST_F(StreamingListenerTest, OnTestCaseEnd) {
+  *output() = "";
+  streamer_.OnTestCaseEnd(TestCase("FooTest", "Bar", NULL, NULL));
+  EXPECT_EQ("event=TestCaseEnd&passed=1&elapsed_time=0ms\n", *output());
+}
+
+TEST_F(StreamingListenerTest, OnTestStart) {
+  *output() = "";
+  streamer_.OnTestStart(test_info_obj_);
+  EXPECT_EQ("event=TestStart&name=Bar\n", *output());
+}
+
+TEST_F(StreamingListenerTest, OnTestEnd) {
+  *output() = "";
+  streamer_.OnTestEnd(test_info_obj_);
+  EXPECT_EQ("event=TestEnd&passed=1&elapsed_time=0ms\n", *output());
+}
+
+TEST_F(StreamingListenerTest, OnTestPartResult) {
+  *output() = "";
+  streamer_.OnTestPartResult(TestPartResult(
+      TestPartResult::kFatalFailure, "foo.cc", 42, "failed=\n&%"));
+
+  // Meta characters in the failure message should be properly escaped.
+  EXPECT_EQ(
+      "event=TestPartResult&file=foo.cc&line=42&message=failed%3D%0A%26%25\n",
+      *output());
+}
+
+#endif  // GTEST_CAN_STREAM_RESULTS_
+
 // Provides access to otherwise private parts of the TestEventListeners class
 // that are needed to test it.
 class TestEventListenersAccessor {
@@ -105,6 +180,18 @@ class TestEventListenersAccessor {
   }
 };
 
+class UnitTestRecordPropertyTestHelper : public Test {
+ protected:
+  UnitTestRecordPropertyTestHelper() {}
+
+  // Forwards to UnitTest::RecordProperty() to bypass access controls.
+  void UnitTestRecordProperty(const char* key, const std::string& value) {
+    unit_test_.RecordProperty(key, value);
+  }
+
+  UnitTest unit_test_;
+};
+
 }  // namespace internal
 }  // namespace testing
 
@@ -113,6 +200,7 @@ using testing::AssertionResult;
 using testing::AssertionSuccess;
 using testing::DoubleLE;
 using testing::EmptyTestEventListener;
+using testing::Environment;
 using testing::FloatLE;
 using testing::GTEST_FLAG(also_run_disabled_tests);
 using testing::GTEST_FLAG(break_on_failure);
@@ -138,6 +226,7 @@ using testing::StaticAssertTypeEq;
 using testing::Test;
 using testing::TestCase;
 using testing::TestEventListeners;
+using testing::TestInfo;
 using testing::TestPartResult;
 using testing::TestPartResultArray;
 using testing::TestProperty;
@@ -423,15 +512,6 @@ TEST(NullLiteralTest, IsTrueForNullLiterals) {
   EXPECT_TRUE(GTEST_IS_NULL_LITERAL_(0));
   EXPECT_TRUE(GTEST_IS_NULL_LITERAL_(0U));
   EXPECT_TRUE(GTEST_IS_NULL_LITERAL_(0L));
-
-# ifndef __BORLANDC__
-
-  // Some compilers may fail to detect some null pointer literals;
-  // as long as users of the framework don't use such literals, this
-  // is harmless.
-  EXPECT_TRUE(GTEST_IS_NULL_LITERAL_(1 - 1));
-
-# endif
 }
 
 // Tests that GTEST_IS_NULL_LITERAL_(x) is false when x is not a null
@@ -454,45 +534,41 @@ TEST(NullLiteralTest, IsFalseForNonNullLiterals) {
 
 // Tests that the NUL character L'\0' is encoded correctly.
 TEST(CodePointToUtf8Test, CanEncodeNul) {
-  char buffer[32];
-  EXPECT_STREQ("", CodePointToUtf8(L'\0', buffer));
+  EXPECT_EQ("", CodePointToUtf8(L'\0'));
 }
 
 // Tests that ASCII characters are encoded correctly.
 TEST(CodePointToUtf8Test, CanEncodeAscii) {
-  char buffer[32];
-  EXPECT_STREQ("a", CodePointToUtf8(L'a', buffer));
-  EXPECT_STREQ("Z", CodePointToUtf8(L'Z', buffer));
-  EXPECT_STREQ("&", CodePointToUtf8(L'&', buffer));
-  EXPECT_STREQ("\x7F", CodePointToUtf8(L'\x7F', buffer));
+  EXPECT_EQ("a", CodePointToUtf8(L'a'));
+  EXPECT_EQ("Z", CodePointToUtf8(L'Z'));
+  EXPECT_EQ("&", CodePointToUtf8(L'&'));
+  EXPECT_EQ("\x7F", CodePointToUtf8(L'\x7F'));
 }
 
 // Tests that Unicode code-points that have 8 to 11 bits are encoded
 // as 110xxxxx 10xxxxxx.
 TEST(CodePointToUtf8Test, CanEncode8To11Bits) {
-  char buffer[32];
   // 000 1101 0011 => 110-00011 10-010011
-  EXPECT_STREQ("\xC3\x93", CodePointToUtf8(L'\xD3', buffer));
+  EXPECT_EQ("\xC3\x93", CodePointToUtf8(L'\xD3'));
 
   // 101 0111 0110 => 110-10101 10-110110
   // Some compilers (e.g., GCC on MinGW) cannot handle non-ASCII codepoints
   // in wide strings and wide chars. In order to accomodate them, we have to
   // introduce such character constants as integers.
-  EXPECT_STREQ("\xD5\xB6",
-               CodePointToUtf8(static_cast<wchar_t>(0x576), buffer));
+  EXPECT_EQ("\xD5\xB6",
+            CodePointToUtf8(static_cast<wchar_t>(0x576)));
 }
 
 // Tests that Unicode code-points that have 12 to 16 bits are encoded
 // as 1110xxxx 10xxxxxx 10xxxxxx.
 TEST(CodePointToUtf8Test, CanEncode12To16Bits) {
-  char buffer[32];
   // 0000 1000 1101 0011 => 1110-0000 10-100011 10-010011
-  EXPECT_STREQ("\xE0\xA3\x93",
-               CodePointToUtf8(static_cast<wchar_t>(0x8D3), buffer));
+  EXPECT_EQ("\xE0\xA3\x93",
+            CodePointToUtf8(static_cast<wchar_t>(0x8D3)));
 
   // 1100 0111 0100 1101 => 1110-1100 10-011101 10-001101
-  EXPECT_STREQ("\xEC\x9D\x8D",
-               CodePointToUtf8(static_cast<wchar_t>(0xC74D), buffer));
+  EXPECT_EQ("\xEC\x9D\x8D",
+            CodePointToUtf8(static_cast<wchar_t>(0xC74D)));
 }
 
 #if !GTEST_WIDE_STRING_USES_UTF16_
@@ -503,22 +579,19 @@ TEST(CodePointToUtf8Test, CanEncode12To16Bits) {
 // Tests that Unicode code-points that have 17 to 21 bits are encoded
 // as 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx.
 TEST(CodePointToUtf8Test, CanEncode17To21Bits) {
-  char buffer[32];
   // 0 0001 0000 1000 1101 0011 => 11110-000 10-010000 10-100011 10-010011
-  EXPECT_STREQ("\xF0\x90\xA3\x93", CodePointToUtf8(L'\x108D3', buffer));
+  EXPECT_EQ("\xF0\x90\xA3\x93", CodePointToUtf8(L'\x108D3'));
 
   // 0 0001 0000 0100 0000 0000 => 11110-000 10-010000 10-010000 10-000000
-  EXPECT_STREQ("\xF0\x90\x90\x80", CodePointToUtf8(L'\x10400', buffer));
+  EXPECT_EQ("\xF0\x90\x90\x80", CodePointToUtf8(L'\x10400'));
 
   // 1 0000 1000 0110 0011 0100 => 11110-100 10-001000 10-011000 10-110100
-  EXPECT_STREQ("\xF4\x88\x98\xB4", CodePointToUtf8(L'\x108634', buffer));
+  EXPECT_EQ("\xF4\x88\x98\xB4", CodePointToUtf8(L'\x108634'));
 }
 
 // Tests that encoding an invalid code-point generates the expected result.
 TEST(CodePointToUtf8Test, CanEncodeInvalidCodePoint) {
-  char buffer[32];
-  EXPECT_STREQ("(Invalid Unicode 0x1234ABCD)",
-               CodePointToUtf8(L'\x1234ABCD', buffer));
+  EXPECT_EQ("(Invalid Unicode 0x1234ABCD)", CodePointToUtf8(L'\x1234ABCD'));
 }
 
 #endif  // !GTEST_WIDE_STRING_USES_UTF16_
@@ -960,33 +1033,6 @@ TEST(StringTest, CaseInsensitiveWideCStringEquals) {
   EXPECT_TRUE(String::CaseInsensitiveWideCStringEquals(L"FOOBAR", L"foobar"));
 }
 
-// Tests that String::Format() works.
-TEST(StringTest, FormatWorks) {
-  // Normal case: the format spec is valid, the arguments match the
-  // spec, and the result is < 4095 characters.
-  EXPECT_STREQ("Hello, 42", String::Format("%s, %d", "Hello", 42).c_str());
-
-  // Edge case: the result is 4095 characters.
-  char buffer[4096];
-  const size_t kSize = sizeof(buffer);
-  memset(buffer, 'a', kSize - 1);
-  buffer[kSize - 1] = '\0';
-  EXPECT_EQ(buffer, String::Format("%s", buffer));
-
-  // The result needs to be 4096 characters, exceeding Format()'s limit.
-  EXPECT_EQ("<formatting error or buffer exceeded>",
-            String::Format("x%s", buffer));
-
-#if GTEST_OS_LINUX && !GTEST_OS_LINUX_ANDROID
-  // On Linux, invalid format spec should lead to an error message.
-  // In other environment (e.g. MSVC on Windows), String::Format() may
-  // simply ignore a bad format spec, so this assertion is run on
-  // Linux only.
-  EXPECT_EQ("<formatting error or buffer exceeded>",
-            String::Format("%"));
-#endif
-}
-
 #if GTEST_OS_WINDOWS
 
 // Tests String::ShowWideCString().
@@ -1406,7 +1452,7 @@ TEST(TestResultPropertyTest, NoPropertiesFoundWhenNoneAreAdded) {
 TEST(TestResultPropertyTest, OnePropertyFoundWhenAdded) {
   TestResult test_result;
   TestProperty property("key_1", "1");
-  TestResultAccessor::RecordProperty(&test_result, property);
+  TestResultAccessor::RecordProperty(&test_result, "testcase", property);
   ASSERT_EQ(1, test_result.test_property_count());
   const TestProperty& actual_property = test_result.GetTestProperty(0);
   EXPECT_STREQ("key_1", actual_property.key());
@@ -1418,8 +1464,8 @@ TEST(TestResultPropertyTest, MultiplePropertiesFoundWhenAdded) {
   TestResult test_result;
   TestProperty property_1("key_1", "1");
   TestProperty property_2("key_2", "2");
-  TestResultAccessor::RecordProperty(&test_result, property_1);
-  TestResultAccessor::RecordProperty(&test_result, property_2);
+  TestResultAccessor::RecordProperty(&test_result, "testcase", property_1);
+  TestResultAccessor::RecordProperty(&test_result, "testcase", property_2);
   ASSERT_EQ(2, test_result.test_property_count());
   const TestProperty& actual_property_1 = test_result.GetTestProperty(0);
   EXPECT_STREQ("key_1", actual_property_1.key());
@@ -1437,10 +1483,10 @@ TEST(TestResultPropertyTest, OverridesValuesForDuplicateKeys) {
   TestProperty property_2_1("key_2", "2");
   TestProperty property_1_2("key_1", "12");
   TestProperty property_2_2("key_2", "22");
-  TestResultAccessor::RecordProperty(&test_result, property_1_1);
-  TestResultAccessor::RecordProperty(&test_result, property_2_1);
-  TestResultAccessor::RecordProperty(&test_result, property_1_2);
-  TestResultAccessor::RecordProperty(&test_result, property_2_2);
+  TestResultAccessor::RecordProperty(&test_result, "testcase", property_1_1);
+  TestResultAccessor::RecordProperty(&test_result, "testcase", property_2_1);
+  TestResultAccessor::RecordProperty(&test_result, "testcase", property_1_2);
+  TestResultAccessor::RecordProperty(&test_result, "testcase", property_2_2);
 
   ASSERT_EQ(2, test_result.test_property_count());
   const TestProperty& actual_property_1 = test_result.GetTestProperty(0);
@@ -1453,14 +1499,14 @@ TEST(TestResultPropertyTest, OverridesValuesForDuplicateKeys) {
 }
 
 // Tests TestResult::GetTestProperty().
-TEST(TestResultPropertyDeathTest, GetTestProperty) {
+TEST(TestResultPropertyTest, GetTestProperty) {
   TestResult test_result;
   TestProperty property_1("key_1", "1");
   TestProperty property_2("key_2", "2");
   TestProperty property_3("key_3", "3");
-  TestResultAccessor::RecordProperty(&test_result, property_1);
-  TestResultAccessor::RecordProperty(&test_result, property_2);
-  TestResultAccessor::RecordProperty(&test_result, property_3);
+  TestResultAccessor::RecordProperty(&test_result, "testcase", property_1);
+  TestResultAccessor::RecordProperty(&test_result, "testcase", property_2);
+  TestResultAccessor::RecordProperty(&test_result, "testcase", property_3);
 
   const TestProperty& fetched_property_1 = test_result.GetTestProperty(0);
   const TestProperty& fetched_property_2 = test_result.GetTestProperty(1);
@@ -1477,42 +1523,6 @@ TEST(TestResultPropertyDeathTest, GetTestProperty) {
 
   EXPECT_DEATH_IF_SUPPORTED(test_result.GetTestProperty(3), "");
   EXPECT_DEATH_IF_SUPPORTED(test_result.GetTestProperty(-1), "");
-}
-
-// When a property using a reserved key is supplied to this function, it tests
-// that a non-fatal failure is added, a fatal failure is not added, and that the
-// property is not recorded.
-void ExpectNonFatalFailureRecordingPropertyWithReservedKey(const char* key) {
-  TestResult test_result;
-  TestProperty property(key, "1");
-  EXPECT_NONFATAL_FAILURE(
-      TestResultAccessor::RecordProperty(&test_result, property),
-      "Reserved key");
-  ASSERT_EQ(0, test_result.test_property_count()) << "Not recorded";
-}
-
-// Attempting to recording a property with the Reserved literal "name"
-// should add a non-fatal failure and the property should not be recorded.
-TEST(TestResultPropertyTest, AddFailureWhenUsingReservedKeyCalledName) {
-  ExpectNonFatalFailureRecordingPropertyWithReservedKey("name");
-}
-
-// Attempting to recording a property with the Reserved literal "status"
-// should add a non-fatal failure and the property should not be recorded.
-TEST(TestResultPropertyTest, AddFailureWhenUsingReservedKeyCalledStatus) {
-  ExpectNonFatalFailureRecordingPropertyWithReservedKey("status");
-}
-
-// Attempting to recording a property with the Reserved literal "time"
-// should add a non-fatal failure and the property should not be recorded.
-TEST(TestResultPropertyTest, AddFailureWhenUsingReservedKeyCalledTime) {
-  ExpectNonFatalFailureRecordingPropertyWithReservedKey("time");
-}
-
-// Attempting to recording a property with the Reserved literal "classname"
-// should add a non-fatal failure and the property should not be recorded.
-TEST(TestResultPropertyTest, AddFailureWhenUsingReservedKeyCalledClassname) {
-  ExpectNonFatalFailureRecordingPropertyWithReservedKey("classname");
 }
 
 // Tests that GTestFlagSaver works on Windows and Mac.
@@ -1919,6 +1929,168 @@ TEST(UnitTestTest, ReturnsPlausibleTimestamp) {
   EXPECT_LT(0, UnitTest::GetInstance()->start_timestamp());
   EXPECT_LE(UnitTest::GetInstance()->start_timestamp(), GetTimeInMillis());
 }
+
+// When a property using a reserved key is supplied to this function, it
+// tests that a non-fatal failure is added, a fatal failure is not added,
+// and that the property is not recorded.
+void ExpectNonFatalFailureRecordingPropertyWithReservedKey(
+    const TestResult& test_result, const char* key) {
+  EXPECT_NONFATAL_FAILURE(Test::RecordProperty(key, "1"), "Reserved key");
+  ASSERT_EQ(0, test_result.test_property_count()) << "Property for key '" << key
+                                                  << "' recorded unexpectedly.";
+}
+
+void ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTest(
+    const char* key) {
+  const TestInfo* test_info = UnitTest::GetInstance()->current_test_info();
+  ASSERT_TRUE(test_info != NULL);
+  ExpectNonFatalFailureRecordingPropertyWithReservedKey(*test_info->result(),
+                                                        key);
+}
+
+void ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTestCase(
+    const char* key) {
+  const TestCase* test_case = UnitTest::GetInstance()->current_test_case();
+  ASSERT_TRUE(test_case != NULL);
+  ExpectNonFatalFailureRecordingPropertyWithReservedKey(
+      test_case->ad_hoc_test_result(), key);
+}
+
+void ExpectNonFatalFailureRecordingPropertyWithReservedKeyOutsideOfTestCase(
+    const char* key) {
+  ExpectNonFatalFailureRecordingPropertyWithReservedKey(
+      UnitTest::GetInstance()->ad_hoc_test_result(), key);
+}
+
+// Tests that property recording functions in UnitTest outside of tests
+// functions correcly.  Creating a separate instance of UnitTest ensures it
+// is in a state similar to the UnitTest's singleton's between tests.
+class UnitTestRecordPropertyTest :
+    public testing::internal::UnitTestRecordPropertyTestHelper {
+ public:
+  static void SetUpTestCase() {
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTestCase(
+        "disabled");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTestCase(
+        "errors");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTestCase(
+        "failures");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTestCase(
+        "name");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTestCase(
+        "tests");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTestCase(
+        "time");
+
+    Test::RecordProperty("test_case_key_1", "1");
+    const TestCase* test_case = UnitTest::GetInstance()->current_test_case();
+    ASSERT_TRUE(test_case != NULL);
+
+    ASSERT_EQ(1, test_case->ad_hoc_test_result().test_property_count());
+    EXPECT_STREQ("test_case_key_1",
+                 test_case->ad_hoc_test_result().GetTestProperty(0).key());
+    EXPECT_STREQ("1",
+                 test_case->ad_hoc_test_result().GetTestProperty(0).value());
+  }
+};
+
+// Tests TestResult has the expected property when added.
+TEST_F(UnitTestRecordPropertyTest, OnePropertyFoundWhenAdded) {
+  UnitTestRecordProperty("key_1", "1");
+
+  ASSERT_EQ(1, unit_test_.ad_hoc_test_result().test_property_count());
+
+  EXPECT_STREQ("key_1",
+               unit_test_.ad_hoc_test_result().GetTestProperty(0).key());
+  EXPECT_STREQ("1",
+               unit_test_.ad_hoc_test_result().GetTestProperty(0).value());
+}
+
+// Tests TestResult has multiple properties when added.
+TEST_F(UnitTestRecordPropertyTest, MultiplePropertiesFoundWhenAdded) {
+  UnitTestRecordProperty("key_1", "1");
+  UnitTestRecordProperty("key_2", "2");
+
+  ASSERT_EQ(2, unit_test_.ad_hoc_test_result().test_property_count());
+
+  EXPECT_STREQ("key_1",
+               unit_test_.ad_hoc_test_result().GetTestProperty(0).key());
+  EXPECT_STREQ("1", unit_test_.ad_hoc_test_result().GetTestProperty(0).value());
+
+  EXPECT_STREQ("key_2",
+               unit_test_.ad_hoc_test_result().GetTestProperty(1).key());
+  EXPECT_STREQ("2", unit_test_.ad_hoc_test_result().GetTestProperty(1).value());
+}
+
+// Tests TestResult::RecordProperty() overrides values for duplicate keys.
+TEST_F(UnitTestRecordPropertyTest, OverridesValuesForDuplicateKeys) {
+  UnitTestRecordProperty("key_1", "1");
+  UnitTestRecordProperty("key_2", "2");
+  UnitTestRecordProperty("key_1", "12");
+  UnitTestRecordProperty("key_2", "22");
+
+  ASSERT_EQ(2, unit_test_.ad_hoc_test_result().test_property_count());
+
+  EXPECT_STREQ("key_1",
+               unit_test_.ad_hoc_test_result().GetTestProperty(0).key());
+  EXPECT_STREQ("12",
+               unit_test_.ad_hoc_test_result().GetTestProperty(0).value());
+
+  EXPECT_STREQ("key_2",
+               unit_test_.ad_hoc_test_result().GetTestProperty(1).key());
+  EXPECT_STREQ("22",
+               unit_test_.ad_hoc_test_result().GetTestProperty(1).value());
+}
+
+TEST_F(UnitTestRecordPropertyTest,
+       AddFailureInsideTestsWhenUsingTestCaseReservedKeys) {
+  ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTest(
+      "name");
+  ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTest(
+      "value_param");
+  ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTest(
+      "type_param");
+  ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTest(
+      "status");
+  ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTest(
+      "time");
+  ExpectNonFatalFailureRecordingPropertyWithReservedKeyForCurrentTest(
+      "classname");
+}
+
+TEST_F(UnitTestRecordPropertyTest,
+       AddRecordWithReservedKeysGeneratesCorrectPropertyList) {
+  EXPECT_NONFATAL_FAILURE(
+      Test::RecordProperty("name", "1"),
+      "'classname', 'name', 'status', 'time', 'type_param', and 'value_param'"
+      " are reserved");
+}
+
+class UnitTestRecordPropertyTestEnvironment : public Environment {
+ public:
+  virtual void TearDown() {
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyOutsideOfTestCase(
+        "tests");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyOutsideOfTestCase(
+        "failures");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyOutsideOfTestCase(
+        "disabled");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyOutsideOfTestCase(
+        "errors");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyOutsideOfTestCase(
+        "name");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyOutsideOfTestCase(
+        "timestamp");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyOutsideOfTestCase(
+        "time");
+    ExpectNonFatalFailureRecordingPropertyWithReservedKeyOutsideOfTestCase(
+        "random_seed");
+  }
+};
+
+// This will test property recording outside of any test or test case.
+static Environment* record_property_env =
+    AddGlobalTestEnvironment(new UnitTestRecordPropertyTestEnvironment);
 
 // This group of tests is for predicate assertions (ASSERT_PRED*, etc)
 // of various arities.  They do not attempt to be exhaustive.  Rather,
@@ -3731,10 +3903,10 @@ TEST(HRESULTAssertionTest, EXPECT_HRESULT_FAILED) {
 
   EXPECT_NONFATAL_FAILURE(EXPECT_HRESULT_FAILED(OkHRESULTSuccess()),
     "Expected: (OkHRESULTSuccess()) fails.\n"
-    "  Actual: 0x00000000");
+    "  Actual: 0x0");
   EXPECT_NONFATAL_FAILURE(EXPECT_HRESULT_FAILED(FalseHRESULTSuccess()),
     "Expected: (FalseHRESULTSuccess()) fails.\n"
-    "  Actual: 0x00000001");
+    "  Actual: 0x1");
 }
 
 TEST(HRESULTAssertionTest, ASSERT_HRESULT_FAILED) {
@@ -3745,12 +3917,12 @@ TEST(HRESULTAssertionTest, ASSERT_HRESULT_FAILED) {
   // ICE's in C++Builder 2007 and 2009.
   EXPECT_FATAL_FAILURE(ASSERT_HRESULT_FAILED(OkHRESULTSuccess()),
     "Expected: (OkHRESULTSuccess()) fails.\n"
-    "  Actual: 0x00000000");
+    "  Actual: 0x0");
 # endif
 
   EXPECT_FATAL_FAILURE(ASSERT_HRESULT_FAILED(FalseHRESULTSuccess()),
     "Expected: (FalseHRESULTSuccess()) fails.\n"
-    "  Actual: 0x00000001");
+    "  Actual: 0x1");
 }
 
 // Tests that streaming to the HRESULT macros works.
@@ -4477,7 +4649,7 @@ TEST(EqAssertionTest, StdString) {
   // Compares a const char* to an std::string that has different
   // content
   EXPECT_NONFATAL_FAILURE(EXPECT_EQ("Test", ::std::string("test")),
-                          "::std::string(\"test\")");
+                          "\"test\"");
 
   // Compares an std::string to a char* that has different content.
   char* const p1 = const_cast<char*>("foo");
@@ -6386,6 +6558,9 @@ TEST(ColoredOutputTest, UsesColorsWhenTermSupportsColors) {
   EXPECT_TRUE(ShouldUseColor(true));  // Stdout is a TTY.
 
   SetEnv("TERM", "screen");  // TERM supports colors.
+  EXPECT_TRUE(ShouldUseColor(true));  // Stdout is a TTY.
+
+  SetEnv("TERM", "screen-256color");  // TERM supports colors.
   EXPECT_TRUE(ShouldUseColor(true));  // Stdout is a TTY.
 
   SetEnv("TERM", "linux");  // TERM supports colors.

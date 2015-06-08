@@ -47,6 +47,7 @@
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/wire_format_lite.h>
 #include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/arenastring.h>
 
 
 namespace google {
@@ -380,7 +381,7 @@ inline bool WireFormatLite::ReadPackedFixedSizePrimitive(
 #else
     values->Reserve(old_entries + new_entries);
     CType value;
-    for (int i = 0; i < new_entries; ++i) {
+    for (uint32 i = 0; i < new_entries; ++i) {
       if (!ReadPrimitive<CType, DeclaredType>(input, &value)) return false;
       values->AddAlreadyReserved(value);
     }
@@ -426,6 +427,7 @@ bool WireFormatLite::ReadPackedPrimitiveNoInline(io::CodedInputStream* input,
 }
 
 
+
 inline bool WireFormatLite::ReadGroup(int field_number,
                                       io::CodedInputStream* input,
                                       MessageLite* value) {
@@ -442,15 +444,12 @@ inline bool WireFormatLite::ReadMessage(io::CodedInputStream* input,
                                         MessageLite* value) {
   uint32 length;
   if (!input->ReadVarint32(&length)) return false;
-  if (!input->IncrementRecursionDepth()) return false;
-  io::CodedInputStream::Limit limit = input->PushLimit(length);
-  if (!value->MergePartialFromCodedStream(input)) return false;
+  std::pair<io::CodedInputStream::Limit, int> p =
+      input->IncrementRecursionDepthAndPushLimit(length);
+  if (p.second < 0 || !value->MergePartialFromCodedStream(input)) return false;
   // Make sure that parsing stopped when the limit was hit, not at an endgroup
   // tag.
-  if (!input->ConsumedEntireMessage()) return false;
-  input->PopLimit(limit);
-  input->DecrementRecursionDepth();
-  return true;
+  return input->DecrementRecursionDepthAndPopLimit(p.first);
 }
 
 // We name the template parameter something long and extremely unlikely to occur
@@ -471,7 +470,7 @@ inline bool WireFormatLite::ReadGroupNoVirtual(
   if (!value->
       MessageType_WorkAroundCppLookupDefect::MergePartialFromCodedStream(input))
     return false;
-  input->DecrementRecursionDepth();
+  input->UnsafeDecrementRecursionDepth();
   // Make sure the last thing read was an end tag for this group.
   if (!input->LastTagWas(MakeTag(field_number, WIRETYPE_END_GROUP))) {
     return false;
@@ -479,21 +478,37 @@ inline bool WireFormatLite::ReadGroupNoVirtual(
   return true;
 }
 template<typename MessageType_WorkAroundCppLookupDefect>
+inline bool WireFormatLite::ReadGroupNoVirtualNoRecursionDepth(
+    int field_number, io::CodedInputStream* input,
+    MessageType_WorkAroundCppLookupDefect* value) {
+  return value->MessageType_WorkAroundCppLookupDefect::
+             MergePartialFromCodedStream(input) &&
+         input->LastTagWas(MakeTag(field_number, WIRETYPE_END_GROUP));
+}
+template<typename MessageType_WorkAroundCppLookupDefect>
 inline bool WireFormatLite::ReadMessageNoVirtual(
     io::CodedInputStream* input, MessageType_WorkAroundCppLookupDefect* value) {
   uint32 length;
   if (!input->ReadVarint32(&length)) return false;
-  if (!input->IncrementRecursionDepth()) return false;
-  io::CodedInputStream::Limit limit = input->PushLimit(length);
+  std::pair<io::CodedInputStream::Limit, int> p =
+      input->IncrementRecursionDepthAndPushLimit(length);
+  if (p.second < 0 || !value->
+      MessageType_WorkAroundCppLookupDefect::MergePartialFromCodedStream(input))
+    return false;
+  // Make sure that parsing stopped when the limit was hit, not at an endgroup
+  // tag.
+  return input->DecrementRecursionDepthAndPopLimit(p.first);
+}
+template<typename MessageType_WorkAroundCppLookupDefect>
+inline bool WireFormatLite::ReadMessageNoVirtualNoRecursionDepth(
+    io::CodedInputStream* input, MessageType_WorkAroundCppLookupDefect* value) {
+  io::CodedInputStream::Limit old_limit = input->ReadLengthAndPushLimit();
   if (!value->
       MessageType_WorkAroundCppLookupDefect::MergePartialFromCodedStream(input))
     return false;
   // Make sure that parsing stopped when the limit was hit, not at an endgroup
   // tag.
-  if (!input->ConsumedEntireMessage()) return false;
-  input->PopLimit(limit);
-  input->DecrementRecursionDepth();
-  return true;
+  return input->CheckEntireMessageConsumedAndPopLimit(old_limit);
 }
 
 // ===================================================================

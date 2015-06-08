@@ -36,6 +36,9 @@
 #define GOOGLE_PROTOBUF_COMPILER_CPP_FILE_H__
 
 #include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 #include <string>
 #include <vector>
 #include <google/protobuf/stubs/common.h>
@@ -77,12 +80,41 @@ class FileGenerator {
   void GenerateNamespaceOpeners(io::Printer* printer);
   void GenerateNamespaceClosers(io::Printer* printer);
 
+  // Generates top or bottom of a header file.
+  void GenerateTopHeaderGuard(io::Printer* printer);
+  void GenerateBottomHeaderGuard(io::Printer* printer);
+
+  // Generates #include directives.
+  void GenerateLibraryIncludes(io::Printer* printer);
+  void GenerateDependencyIncludes(io::Printer* printer);
+
+  // Generates a couple of different pieces before definitions:
+  void GenerateGlobalStateFunctionDeclarations(io::Printer* printer);
+
+  // Generates types for classes.
+  void GenerateMessageForwardDeclarations(io::Printer* printer);
+  void GenerateMessageDefinitions(io::Printer* printer);
+
+  // Generates enum definitions.
+  void GenerateEnumDefinitions(io::Printer* printer);
+
+  // Generates generic service definitions.
+  void GenerateServiceDefinitions(io::Printer* printer);
+
+  // Generates extension identifiers.
+  void GenerateExtensionIdentifiers(io::Printer* printer);
+
+  // Generates inline function defintions.
+  void GenerateInlineFunctionDefinitions(io::Printer* printer);
+
+  void GenerateProto2NamespaceEnumSpecializations(io::Printer* printer);
+
   const FileDescriptor* file_;
 
-  scoped_array<scoped_ptr<MessageGenerator> > message_generators_;
-  scoped_array<scoped_ptr<EnumGenerator> > enum_generators_;
-  scoped_array<scoped_ptr<ServiceGenerator> > service_generators_;
-  scoped_array<scoped_ptr<ExtensionGenerator> > extension_generators_;
+  google::protobuf::scoped_array<google::protobuf::scoped_ptr<MessageGenerator> > message_generators_;
+  google::protobuf::scoped_array<google::protobuf::scoped_ptr<EnumGenerator> > enum_generators_;
+  google::protobuf::scoped_array<google::protobuf::scoped_ptr<ServiceGenerator> > service_generators_;
+  google::protobuf::scoped_array<google::protobuf::scoped_ptr<ExtensionGenerator> > extension_generators_;
 
   // E.g. if the package is foo.bar, package_parts_ is {"foo", "bar"}.
   vector<string> package_parts_;
