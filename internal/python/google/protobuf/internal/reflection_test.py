@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Protocol Buffers - Google's data interchange format
@@ -35,14 +35,12 @@
 pure-Python protocol compiler.
 """
 
-__author__ = 'robinson@google.com (Will Robinson)'
-
 import copy
 import gc
 import operator
 import struct
 
-from google.apputils import basetest
+import unittest
 from google.protobuf import unittest_import_pb2
 from google.protobuf import unittest_mset_pb2
 from google.protobuf import unittest_pb2
@@ -104,7 +102,7 @@ class _MiniDecoder(object):
     return self._pos == len(self._bytes)
 
 
-class ReflectionTest(basetest.TestCase):
+class ReflectionTest(unittest.TestCase):
 
   def assertListsEqual(self, values, others):
     self.assertEqual(len(values), len(others))
@@ -1252,15 +1250,18 @@ class ReflectionTest(basetest.TestCase):
 
     # Try something that *is* an extension handle, just not for
     # this message...
-    unknown_handle = more_extensions_pb2.optional_int_extension
-    self.assertRaises(KeyError, extendee_proto.HasExtension,
-                      unknown_handle)
-    self.assertRaises(KeyError, extendee_proto.ClearExtension,
-                      unknown_handle)
-    self.assertRaises(KeyError, extendee_proto.Extensions.__getitem__,
-                      unknown_handle)
-    self.assertRaises(KeyError, extendee_proto.Extensions.__setitem__,
-                      unknown_handle, 5)
+    for unknown_handle in (more_extensions_pb2.optional_int_extension,
+                           more_extensions_pb2.optional_message_extension,
+                           more_extensions_pb2.repeated_int_extension,
+                           more_extensions_pb2.repeated_message_extension):
+      self.assertRaises(KeyError, extendee_proto.HasExtension,
+                        unknown_handle)
+      self.assertRaises(KeyError, extendee_proto.ClearExtension,
+                        unknown_handle)
+      self.assertRaises(KeyError, extendee_proto.Extensions.__getitem__,
+                        unknown_handle)
+      self.assertRaises(KeyError, extendee_proto.Extensions.__setitem__,
+                        unknown_handle, 5)
 
     # Try call HasExtension() with a valid handle, but for a
     # *repeated* field.  (Just as with non-extension repeated
@@ -1618,7 +1619,7 @@ class ReflectionTest(basetest.TestCase):
     self.assertFalse(proto.IsInitialized(errors))
     self.assertEqual(errors, ['a', 'b', 'c'])
 
-  @basetest.unittest.skipIf(
+  @unittest.skipIf(
       api_implementation.Type() != 'cpp' or api_implementation.Version() != 2,
       'Errors are only available from the most recent C++ implementation.')
   def testFileDescriptorErrors(self):
@@ -1669,16 +1670,15 @@ class ReflectionTest(basetest.TestCase):
     proto.optional_string = str('Testing')
     self.assertEqual(proto.optional_string, unicode('Testing'))
 
-    # Try to assign a 'str' value which contains bytes that aren't 7-bit ASCII.
+    # Try to assign a 'bytes' object which contains non-UTF-8.
     self.assertRaises(ValueError,
                       setattr, proto, 'optional_string', b'a\x80a')
-    if str is bytes:  # PY2
-      # Assign a 'str' object which contains a UTF-8 encoded string.
-      self.assertRaises(ValueError,
-                        setattr, proto, 'optional_string', 'Тест')
-    else:
-      proto.optional_string = 'Тест'
-    # No exception thrown.
+    # No exception: Assign already encoded UTF-8 bytes to a string field.
+    utf8_bytes = u'Тест'.encode('utf-8')
+    proto.optional_string = utf8_bytes
+    # No exception: Assign the a non-ascii unicode object.
+    proto.optional_string = u'Тест'
+    # No exception thrown (normal str assignment containing ASCII).
     proto.optional_string = 'abc'
 
   def testStringUTF8Serialization(self):
@@ -1774,12 +1774,41 @@ class ReflectionTest(basetest.TestCase):
     proto.optionalgroup.SetInParent()
     self.assertTrue(proto.HasField('optionalgroup'))
 
+  def testPackageInitializationImport(self):
+    """Test that we can import nested messages from their __init__.py.
+
+    Such setup is not trivial since at the time of processing of __init__.py one
+    can't refer to its submodules by name in code, so expressions like
+    google.protobuf.internal.import_test_package.inner_pb2
+    don't work. They do work in imports, so we have assign an alias at import
+    and then use that alias in generated code.
+    """
+    # We import here since it's the import that used to fail, and we want
+    # the failure to have the right context.
+    # pylint: disable=g-import-not-at-top
+    from google.protobuf.internal import import_test_package
+    # pylint: enable=g-import-not-at-top
+    msg = import_test_package.myproto.Outer()
+    # Just check the default value.
+    self.assertEqual(57, msg.inner.value)
+
+  @unittest.skipIf(
+      api_implementation.Type() != 'cpp' or api_implementation.Version() != 2,
+      'CPPv2-specific test')
+  def testBadArguments(self):
+    # Some of these assertions used to segfault.
+    from google.protobuf.pyext import _message
+    self.assertRaises(TypeError, _message.default_pool.FindFieldByName, 3)
+    self.assertRaises(TypeError, _message.default_pool.FindExtensionByName, 42)
+    self.assertRaises(TypeError,
+                      unittest_pb2.TestAllTypes().__getattribute__, 42)
+
 
 #  Since we had so many tests for protocol buffer equality, we broke these out
 #  into separate TestCase classes.
 
 
-class TestAllTypesEqualityTest(basetest.TestCase):
+class TestAllTypesEqualityTest(unittest.TestCase):
 
   def setUp(self):
     self.first_proto = unittest_pb2.TestAllTypes()
@@ -1795,7 +1824,7 @@ class TestAllTypesEqualityTest(basetest.TestCase):
     self.assertEqual(self.first_proto, self.second_proto)
 
 
-class FullProtosEqualityTest(basetest.TestCase):
+class FullProtosEqualityTest(unittest.TestCase):
 
   """Equality tests using completely-full protos as a starting point."""
 
@@ -1881,7 +1910,7 @@ class FullProtosEqualityTest(basetest.TestCase):
     self.assertEqual(self.first_proto, self.second_proto)
 
 
-class ExtensionEqualityTest(basetest.TestCase):
+class ExtensionEqualityTest(unittest.TestCase):
 
   def testExtensionEquality(self):
     first_proto = unittest_pb2.TestAllExtensions()
@@ -1914,7 +1943,7 @@ class ExtensionEqualityTest(basetest.TestCase):
     self.assertEqual(first_proto, second_proto)
 
 
-class MutualRecursionEqualityTest(basetest.TestCase):
+class MutualRecursionEqualityTest(unittest.TestCase):
 
   def testEqualityWithMutualRecursion(self):
     first_proto = unittest_pb2.TestMutualRecursionA()
@@ -1926,7 +1955,7 @@ class MutualRecursionEqualityTest(basetest.TestCase):
     self.assertEqual(first_proto, second_proto)
 
 
-class ByteSizeTest(basetest.TestCase):
+class ByteSizeTest(unittest.TestCase):
 
   def setUp(self):
     self.proto = unittest_pb2.TestAllTypes()
@@ -2222,7 +2251,7 @@ class ByteSizeTest(basetest.TestCase):
 #   * Handling of empty submessages (with and without "has"
 #     bits set).
 
-class SerializationTest(basetest.TestCase):
+class SerializationTest(unittest.TestCase):
 
   def testSerializeEmtpyMessage(self):
     first_proto = unittest_pb2.TestAllTypes()
@@ -2773,7 +2802,7 @@ class SerializationTest(basetest.TestCase):
     self.assertEqual(3, proto.repeated_int32[2])
 
 
-class OptionsTest(basetest.TestCase):
+class OptionsTest(unittest.TestCase):
 
   def testMessageOptions(self):
     proto = unittest_mset_pb2.TestMessageSet()
@@ -2800,8 +2829,11 @@ class OptionsTest(basetest.TestCase):
 
 
 
-class ClassAPITest(basetest.TestCase):
+class ClassAPITest(unittest.TestCase):
 
+  @unittest.skipIf(
+      api_implementation.Type() == 'cpp' and api_implementation.Version() == 2,
+      'C++ implementation requires a call to MakeDescriptor()')
   def testMakeClassWithNestedDescriptor(self):
     leaf_desc = descriptor.Descriptor('leaf', 'package.parent.child.leaf', '',
                                       containing_type=None, fields=[],
@@ -2931,4 +2963,4 @@ class ClassAPITest(basetest.TestCase):
     self.assertEqual(msg.bar.baz.deep, 4)
 
 if __name__ == '__main__':
-  basetest.main()
+  unittest.main()

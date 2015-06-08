@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 #
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
@@ -37,7 +37,7 @@ __author__ = 'matthewtoia@google.com (Matt Toia)'
 import os
 import unittest
 
-from google.apputils import basetest
+import unittest
 from google.protobuf import unittest_pb2
 from google.protobuf import descriptor_pb2
 from google.protobuf.internal import api_implementation
@@ -48,9 +48,10 @@ from google.protobuf.internal import factory_test2_pb2
 from google.protobuf import descriptor
 from google.protobuf import descriptor_database
 from google.protobuf import descriptor_pool
+from google.protobuf import symbol_database
 
 
-class DescriptorPoolTest(basetest.TestCase):
+class DescriptorPoolTest(unittest.TestCase):
 
   def setUp(self):
     self.pool = descriptor_pool.DescriptorPool()
@@ -226,6 +227,13 @@ class DescriptorPoolTest(basetest.TestCase):
     db.Add(self.factory_test2_fd)
     self.testFindMessageTypeByName()
 
+  def testAddSerializedFile(self):
+    db = descriptor_database.DescriptorDatabase()
+    self.pool = descriptor_pool.DescriptorPool(db)
+    self.pool.AddSerializedFile(self.factory_test1_fd.SerializeToString())
+    self.pool.AddSerializedFile(self.factory_test2_fd.SerializeToString())
+    self.testFindMessageTypeByName()
+
   def testComplexNesting(self):
     test1_desc = descriptor_pb2.FileDescriptorProto.FromString(
         descriptor_pool_test1_pb2.DESCRIPTOR.serialized_pb)
@@ -236,6 +244,32 @@ class DescriptorPoolTest(basetest.TestCase):
     TEST1_FILE.CheckFile(self, self.pool)
     TEST2_FILE.CheckFile(self, self.pool)
 
+
+  def testEnumDefaultValue(self):
+    """Test the default value of enums which don't start at zero."""
+    def _CheckDefaultValue(file_descriptor):
+      default_value = (file_descriptor
+                       .message_types_by_name['DescriptorPoolTest1']
+                       .fields_by_name['nested_enum']
+                       .default_value)
+      self.assertEqual(default_value,
+                       descriptor_pool_test1_pb2.DescriptorPoolTest1.BETA)
+    # First check what the generated descriptor contains.
+    _CheckDefaultValue(descriptor_pool_test1_pb2.DESCRIPTOR)
+    # Then check the generated pool. Normally this is the same descriptor.
+    file_descriptor = symbol_database.Default().pool.FindFileByName(
+        'google/protobuf/internal/descriptor_pool_test1.proto')
+    self.assertIs(file_descriptor, descriptor_pool_test1_pb2.DESCRIPTOR)
+    _CheckDefaultValue(file_descriptor)
+
+    # Then check the dynamic pool and its internal DescriptorDatabase.
+    descriptor_proto = descriptor_pb2.FileDescriptorProto.FromString(
+        descriptor_pool_test1_pb2.DESCRIPTOR.serialized_pb)
+    self.pool.Add(descriptor_proto)
+    # And do the same check as above
+    file_descriptor = self.pool.FindFileByName(
+        'google/protobuf/internal/descriptor_pool_test1.proto')
+    _CheckDefaultValue(file_descriptor)
 
 
 class ProtoFile(object):
@@ -328,7 +362,7 @@ class EnumField(object):
     test.assertEqual(descriptor.FieldDescriptor.CPPTYPE_ENUM,
                      field_desc.cpp_type)
     test.assertTrue(field_desc.has_default_value)
-    test.assertEqual(enum_desc.values_by_name[self.default_value].index,
+    test.assertEqual(enum_desc.values_by_name[self.default_value].number,
                      field_desc.default_value)
     test.assertEqual(msg_desc, field_desc.containing_type)
     test.assertEqual(enum_desc, field_desc.enum_type)
@@ -399,7 +433,7 @@ class ExtensionField(object):
     test.assertEqual(self.extended_type, field_desc.containing_type.name)
 
 
-class AddDescriptorTest(basetest.TestCase):
+class AddDescriptorTest(unittest.TestCase):
 
   def _TestMessage(self, prefix):
     pool = descriptor_pool.DescriptorPool()
@@ -484,6 +518,43 @@ class AddDescriptorTest(basetest.TestCase):
           'protobuf_unittest.TestAllTypes')
 
 
+@unittest.skipIf(
+    api_implementation.Type() != 'cpp',
+    'default_pool is only supported by the C++ implementation')
+class DefaultPoolTest(unittest.TestCase):
+
+  def testFindMethods(self):
+    # pylint: disable=g-import-not-at-top
+    from google.protobuf.pyext import _message
+    pool = _message.default_pool
+    self.assertIs(
+        pool.FindFileByName('google/protobuf/unittest.proto'),
+        unittest_pb2.DESCRIPTOR)
+    self.assertIs(
+        pool.FindMessageTypeByName('protobuf_unittest.TestAllTypes'),
+        unittest_pb2.TestAllTypes.DESCRIPTOR)
+    self.assertIs(
+        pool.FindFieldByName('protobuf_unittest.TestAllTypes.optional_int32'),
+        unittest_pb2.TestAllTypes.DESCRIPTOR.fields_by_name['optional_int32'])
+    self.assertIs(
+        pool.FindExtensionByName('protobuf_unittest.optional_int32_extension'),
+        unittest_pb2.DESCRIPTOR.extensions_by_name['optional_int32_extension'])
+    self.assertIs(
+        pool.FindEnumTypeByName('protobuf_unittest.ForeignEnum'),
+        unittest_pb2.ForeignEnum.DESCRIPTOR)
+    self.assertIs(
+        pool.FindOneofByName('protobuf_unittest.TestAllTypes.oneof_field'),
+        unittest_pb2.TestAllTypes.DESCRIPTOR.oneofs_by_name['oneof_field'])
+
+  def testAddFileDescriptor(self):
+    # pylint: disable=g-import-not-at-top
+    from google.protobuf.pyext import _message
+    pool = _message.default_pool
+    file_desc = descriptor_pb2.FileDescriptorProto(name='some/file.proto')
+    pool.Add(file_desc)
+    pool.AddSerializedFile(file_desc.SerializeToString())
+
+
 TEST1_FILE = ProtoFile(
     'google/protobuf/internal/descriptor_pool_test1.proto',
     'google.protobuf.python.internal',
@@ -561,4 +632,4 @@ TEST2_FILE = ProtoFile(
 
 
 if __name__ == '__main__':
-  basetest.main()
+  unittest.main()

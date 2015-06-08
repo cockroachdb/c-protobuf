@@ -45,7 +45,6 @@ using testing::internal::AlwaysTrue;
 # else
 #  include <unistd.h>
 #  include <sys/wait.h>        // For waitpid.
-#  include <limits>            // For std::numeric_limits.
 # endif  // GTEST_OS_WINDOWS
 
 # include <limits.h>
@@ -465,6 +464,8 @@ TEST_F(TestForDeathTest, MixedStyles) {
   EXPECT_DEATH(_exit(1), "");
 }
 
+# if GTEST_HAS_CLONE && GTEST_HAS_PTHREAD
+
 namespace {
 
 bool pthread_flag;
@@ -474,8 +475,6 @@ void SetPthreadFlag() {
 }
 
 }  // namespace
-
-# if GTEST_HAS_CLONE && GTEST_HAS_PTHREAD
 
 TEST_F(TestForDeathTest, DoesNotExecuteAtforkHooks) {
   if (!testing::GTEST_FLAG(death_test_use_fork)) {
@@ -1123,16 +1122,15 @@ TEST(AutoHandleTest, AutoHandleWorks) {
 # if GTEST_OS_WINDOWS
 typedef unsigned __int64 BiggestParsable;
 typedef signed __int64 BiggestSignedParsable;
-const BiggestParsable kBiggestParsableMax = ULLONG_MAX;
-const BiggestSignedParsable kBiggestSignedParsableMax = LLONG_MAX;
 # else
 typedef unsigned long long BiggestParsable;
 typedef signed long long BiggestSignedParsable;
-const BiggestParsable kBiggestParsableMax =
-    ::std::numeric_limits<BiggestParsable>::max();
-const BiggestSignedParsable kBiggestSignedParsableMax =
-    ::std::numeric_limits<BiggestSignedParsable>::max();
 # endif  // GTEST_OS_WINDOWS
+
+// We cannot use std::numeric_limits<T>::max() as it clashes with the
+// max() macro defined by <windows.h>.
+const BiggestParsable kBiggestParsableMax = ULLONG_MAX;
+const BiggestSignedParsable kBiggestSignedParsableMax = LLONG_MAX;
 
 TEST(ParseNaturalNumberTest, RejectsInvalidFormat) {
   BiggestParsable result = 0;
@@ -1289,6 +1287,27 @@ TEST(ConditionalDeathMacrosTest, AssertDeatDoesNotReturnhIfUnsupported) {
   FuncWithAssert(&n);
   EXPECT_EQ(1, n);
 }
+
+TEST(InDeathTestChildDeathTest, ReportsDeathTestCorrectlyInFastStyle) {
+  testing::GTEST_FLAG(death_test_style) = "fast";
+  EXPECT_FALSE(InDeathTestChild());
+  EXPECT_DEATH({
+    fprintf(stderr, InDeathTestChild() ? "Inside" : "Outside");
+    fflush(stderr);
+    _exit(1);
+  }, "Inside");
+}
+
+TEST(InDeathTestChildDeathTest, ReportsDeathTestCorrectlyInThreadSafeStyle) {
+  testing::GTEST_FLAG(death_test_style) = "threadsafe";
+  EXPECT_FALSE(InDeathTestChild());
+  EXPECT_DEATH({
+    fprintf(stderr, InDeathTestChild() ? "Inside" : "Outside");
+    fflush(stderr);
+    _exit(1);
+  }, "Inside");
+}
+
 #endif  // GTEST_HAS_DEATH_TEST
 
 // Tests that the death test macros expand to code which may or may not
@@ -1339,26 +1358,6 @@ TEST(ConditionalDeathMacrosSyntaxDeathTest, SwitchStatement) {
 #ifdef _MSC_VER
 # pragma warning(pop)
 #endif  // _MSC_VER
-}
-
-TEST(InDeathTestChildDeathTest, ReportsDeathTestCorrectlyInFastStyle) {
-  testing::GTEST_FLAG(death_test_style) = "fast";
-  EXPECT_FALSE(InDeathTestChild());
-  EXPECT_DEATH({
-    fprintf(stderr, InDeathTestChild() ? "Inside" : "Outside");
-    fflush(stderr);
-    _exit(1);
-  }, "Inside");
-}
-
-TEST(InDeathTestChildDeathTest, ReportsDeathTestCorrectlyInThreadSafeStyle) {
-  testing::GTEST_FLAG(death_test_style) = "threadsafe";
-  EXPECT_FALSE(InDeathTestChild());
-  EXPECT_DEATH({
-    fprintf(stderr, InDeathTestChild() ? "Inside" : "Outside");
-    fflush(stderr);
-    _exit(1);
-  }, "Inside");
 }
 
 // Tests that a test case whose name ends with "DeathTest" works fine

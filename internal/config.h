@@ -82,8 +82,7 @@
 /* Enable classes using zlib compression. */
 #define HAVE_ZLIB 1
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* Name of package */
@@ -96,7 +95,7 @@
 #define PACKAGE_NAME "Protocol Buffers"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Protocol Buffers 2.6.1"
+#define PACKAGE_STRING "Protocol Buffers 3.0.0-alpha-3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "protobuf"
@@ -105,7 +104,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.6.1"
+#define PACKAGE_VERSION "3.0.0-alpha-3"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -140,7 +139,7 @@
 
 
 /* Version number of package */
-#define VERSION "2.6.1"
+#define VERSION "3.0.0-alpha-3"
 
 /* Define to 1 if on MINIX. */
 /* #undef _MINIX */

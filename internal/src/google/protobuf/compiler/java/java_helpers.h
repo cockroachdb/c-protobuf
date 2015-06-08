@@ -132,7 +132,7 @@ string FieldConstantName(const FieldDescriptor *field);
 
 // Returns the type of the FieldDescriptor.
 // This does nothing interesting for the open source release, but is used for
-// hacks that improve compatability with version 1 protocol buffers at Google.
+// hacks that improve compatibility with version 1 protocol buffers at Google.
 FieldDescriptor::Type GetType(const FieldDescriptor* field);
 
 enum JavaType {
@@ -148,6 +148,8 @@ enum JavaType {
 };
 
 JavaType GetJavaType(const FieldDescriptor* field);
+
+const char* PrimitiveTypeName(JavaType type);
 
 // Get the fully-qualified class name for a boxed primitive type, e.g.
 // "java.lang.Integer" for JAVATYPE_INT.  Returns NULL for enum and message
@@ -167,13 +169,6 @@ inline string ImmutableDefaultValue(const FieldDescriptor* field,
   return DefaultValue(field, true, name_resolver);
 }
 bool IsDefaultValueJavaDefault(const FieldDescriptor* field);
-
-// Does this message class use UnknownFieldSet?
-// Otherwise, unknown fields will be stored in a ByteString object
-inline bool UseUnknownFieldSet(const Descriptor* descriptor) {
-  return descriptor->file()->options().optimize_for() !=
-           FileOptions::LITE_RUNTIME;
-}
 
 // Does this message class have generated parsing, serialization, and other
 // standard methods for which reflection-based fallback implementations exist?
@@ -198,12 +193,6 @@ inline bool HasDescriptorMethods(const EnumDescriptor* descriptor) {
 }
 inline bool HasDescriptorMethods(const FileDescriptor* descriptor) {
   return descriptor->options().optimize_for() !=
-           FileOptions::LITE_RUNTIME;
-}
-
-inline bool HasNestedBuilders(const Descriptor* descriptor) {
-  // The proto-lite version doesn't support nested builders.
-  return descriptor->file()->options().optimize_for() !=
            FileOptions::LITE_RUNTIME;
 }
 
@@ -302,17 +291,46 @@ struct ExtensionRangeOrdering {
 // and return it. The caller should delete the returned array.
 const FieldDescriptor** SortFieldsByNumber(const Descriptor* descriptor);
 
+// Does this message class have any packed fields?
+inline bool HasPackedFields(const Descriptor* descriptor) {
+  for (int i = 0; i < descriptor->field_count(); i++) {
+    if (descriptor->field(i)->is_packed()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Check a message type and its sub-message types recursively to see if any of
 // them has a required field. Return true if a required field is found.
 bool HasRequiredFields(const Descriptor* descriptor);
 
 // Whether a .proto file supports field presence test for non-message types.
 inline bool SupportFieldPresence(const FileDescriptor* descriptor) {
-  return true;
+  return descriptor->syntax() != FileDescriptor::SYNTAX_PROTO3;
+}
+
+// Whether unknown enum values are kept (i.e., not stored in UnknownFieldSet
+// but in the message and can be queried using additional getters that return
+// ints.
+inline bool SupportUnknownEnumValue(const FileDescriptor* descriptor) {
+  return descriptor->syntax() == FileDescriptor::SYNTAX_PROTO3;
 }
 
 // Check whether a mesasge has repeated fields.
 bool HasRepeatedFields(const Descriptor* descriptor);
+
+inline bool IsMapEntry(const Descriptor* descriptor) {
+  return descriptor->options().map_entry();
+}
+
+inline bool IsMapField(const FieldDescriptor* descriptor) {
+  return descriptor->is_map();
+}
+
+inline bool PreserveUnknownFields(const Descriptor* descriptor) {
+  return descriptor->file()->syntax() != FileDescriptor::SYNTAX_PROTO3;
+}
 
 }  // namespace java
 }  // namespace compiler

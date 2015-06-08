@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 #
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
@@ -32,12 +32,12 @@
 
 """Tests for google.protobuf.symbol_database."""
 
-from google.apputils import basetest
+import unittest
 from google.protobuf import unittest_pb2
 from google.protobuf import symbol_database
 
 
-class SymbolDatabaseTest(basetest.TestCase):
+class SymbolDatabaseTest(unittest.TestCase):
 
   def _Database(self):
     db = symbol_database.SymbolDatabase()
@@ -117,4 +117,4 @@ class SymbolDatabaseTest(basetest.TestCase):
 
 
 if __name__ == '__main__':
-  basetest.main()
+  unittest.main()

@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 #
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
@@ -34,13 +34,13 @@
 
 __author__ = 'petar@google.com (Petar Petrov)'
 
-from google.apputils import basetest
+import unittest
 from google.protobuf import unittest_pb2
 from google.protobuf import service_reflection
 from google.protobuf import service
 
 
-class FooUnitTest(basetest.TestCase):
+class FooUnitTest(unittest.TestCase):
 
   def testService(self):
     class MockRpcChannel(service.RpcChannel):
@@ -118,7 +118,7 @@ class FooUnitTest(basetest.TestCase):
     rpc_controller = 'controller'
     request = 'request'
 
-    # GetDescriptor now static, still works as instance method for compatability
+    # GetDescriptor now static, still works as instance method for compatibility
     self.assertEqual(unittest_pb2.TestService_Stub.GetDescriptor(),
                      stub.GetDescriptor())
 
@@ -133,4 +133,4 @@ class FooUnitTest(basetest.TestCase):
 
 
 if __name__ == '__main__':
-  basetest.main()
+  unittest.main()

@@ -33,12 +33,14 @@
 #ifndef GOOGLE_PROTOBUF_PYTHON_CPP_SCOPED_PYOBJECT_PTR_H__
 #define GOOGLE_PROTOBUF_PYTHON_CPP_SCOPED_PYOBJECT_PTR_H__
 
+#include <google/protobuf/stubs/common.h>
+
 #include <Python.h>
 
 namespace google {
 class ScopedPyObjectPtr {
  public:
-  // Constructor.  Defaults to intializing with NULL.
+  // Constructor.  Defaults to initializing with NULL.
   // There is no way to create an uninitialized ScopedPyObjectPtr.
   explicit ScopedPyObjectPtr(PyObject* p = NULL) : ptr_(p) { }
 

@@ -33,6 +33,9 @@
 #include <google/protobuf/compiler/mock_code_generator.h>
 
 #include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 
 #include <google/protobuf/testing/file.h>
 #include <google/protobuf/descriptor.pb.h>
@@ -130,10 +133,10 @@ bool MockCodeGenerator::Generate(
         *error = "Saw message type MockCodeGenerator_Error.";
         return false;
       } else if (command == "Exit") {
-        cerr << "Saw message type MockCodeGenerator_Exit." << endl;
+        std::cerr << "Saw message type MockCodeGenerator_Exit." << std::endl;
         exit(123);
       } else if (command == "Abort") {
-        cerr << "Saw message type MockCodeGenerator_Abort." << endl;
+        std::cerr << "Saw message type MockCodeGenerator_Abort." << std::endl;
         abort();
       } else if (command == "HasSourceCodeInfo") {
         FileDescriptorProto file_descriptor_proto;
@@ -141,8 +144,8 @@ bool MockCodeGenerator::Generate(
         bool has_source_code_info =
             file_descriptor_proto.has_source_code_info() &&
             file_descriptor_proto.source_code_info().location_size() > 0;
-        cerr << "Saw message type MockCodeGenerator_HasSourceCodeInfo: "
-             << has_source_code_info << "." << endl;
+        std::cerr << "Saw message type MockCodeGenerator_HasSourceCodeInfo: "
+                  << has_source_code_info << "." << std::endl;
         abort();
       } else {
         GOOGLE_LOG(FATAL) << "Unknown MockCodeGenerator command: " << command;
@@ -157,7 +160,7 @@ bool MockCodeGenerator::Generate(
 
     for (int i = 0; i < insert_into.size(); i++) {
       {
-        scoped_ptr<io::ZeroCopyOutputStream> output(context->OpenForInsert(
+        google::protobuf::scoped_ptr<io::ZeroCopyOutputStream> output(context->OpenForInsert(
             GetOutputFileName(insert_into[i], file), kFirstInsertionPointName));
         io::Printer printer(output.get(), '$');
         printer.PrintRaw(GetOutputFileContent(name_, "first_insert",
@@ -169,7 +172,7 @@ bool MockCodeGenerator::Generate(
       }
 
       {
-        scoped_ptr<io::ZeroCopyOutputStream> output(
+        google::protobuf::scoped_ptr<io::ZeroCopyOutputStream> output(
             context->OpenForInsert(GetOutputFileName(insert_into[i], file),
                                    kSecondInsertionPointName));
         io::Printer printer(output.get(), '$');
@@ -182,7 +185,7 @@ bool MockCodeGenerator::Generate(
       }
     }
   } else {
-    scoped_ptr<io::ZeroCopyOutputStream> output(
+    google::protobuf::scoped_ptr<io::ZeroCopyOutputStream> output(
         context->Open(GetOutputFileName(name_, file)));
 
     io::Printer printer(output.get(), '$');
