@@ -5,6 +5,7 @@ import (
 	"unsafe"
 
 	_ "github.com/cockroachdb/c-protobuf"
+	_ "github.com/cockroachdb/c-protobuf/libprotoc"
 )
 
 // #cgo CXXFLAGS: -std=c++11

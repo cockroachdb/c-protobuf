@@ -1,1 +1,0 @@
-../../internal/src/google/protobuf/compiler/python/python_generator.cc
