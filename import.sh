@@ -162,7 +162,7 @@ google/protobuf/compiler/zip_writer.cc
 
 # symlink so cgo compiles them
 for file in $PROTOC_SOURCES; do
-  ln -sf ../../internal/src/$file cmd/protoc/
+  ln -sf ../internal/src/$file libprotoc
 done
 
 # restore the repo to what it would look like when first cloned
