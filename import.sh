@@ -2,13 +2,14 @@
 
 set -eu
 
-rm -rf *.cc internal/*
-curl -sL https://github.com/google/protobuf/archive/v3.0.0-alpha-3.tar.gz | tar zxf - -C internal --strip-components=1
-(cd internal && ./autogen.sh && ./configure && make -C src google/protobuf/stubs/pbconfig.h)
-patch -p1 < gitignore.patch
+rm -rf {,libprotoc/}*.{h,cc} internal
+mkdir -p internal
+
+curl -sL https://github.com/google/protobuf/releases/download/v3.0.0-beta-1/protobuf-cpp-3.0.0-beta-1.tar.gz | tar vzxf - -C internal/ --strip-components=1
+(cd internal && ./configure)
 
 # stuff we need to compile. Roughly:
-# grep -F '.cc' internal/src/Makefile.am | grep -vE '(test|gzip|mock|compiler)' | sed -E 's/ +\\?//g' | sort | uniq
+# grep -F '.cc' internal/src/Makefile.am | grep -vE '(testdata|unittest|(_|/)test|test_|gzip|mock|compiler)' | sed -E 's/ +\\?//g' | sort | uniq
 SOURCES='
 google/protobuf/any.cc
 google/protobuf/any.pb.cc
@@ -43,16 +44,41 @@ google/protobuf/source_context.pb.cc
 google/protobuf/struct.pb.cc
 google/protobuf/stubs/atomicops_internals_x86_gcc.cc
 google/protobuf/stubs/atomicops_internals_x86_msvc.cc
+google/protobuf/stubs/bytestream.cc
 google/protobuf/stubs/common.cc
+google/protobuf/stubs/int128.cc
+google/protobuf/stubs/mathlimits.cc
 google/protobuf/stubs/once.cc
+google/protobuf/stubs/status.cc
+google/protobuf/stubs/statusor.cc
+google/protobuf/stubs/stringpiece.cc
 google/protobuf/stubs/stringprintf.cc
 google/protobuf/stubs/structurally_valid.cc
 google/protobuf/stubs/strutil.cc
 google/protobuf/stubs/substitute.cc
+google/protobuf/stubs/time.cc
 google/protobuf/text_format.cc
 google/protobuf/timestamp.pb.cc
 google/protobuf/type.pb.cc
 google/protobuf/unknown_field_set.cc
+google/protobuf/util/field_comparator.cc
+google/protobuf/util/field_mask_util.cc
+google/protobuf/util/internal/datapiece.cc
+google/protobuf/util/internal/default_value_objectwriter.cc
+google/protobuf/util/internal/error_listener.cc
+google/protobuf/util/internal/field_mask_utility.cc
+google/protobuf/util/internal/json_escaping.cc
+google/protobuf/util/internal/json_objectwriter.cc
+google/protobuf/util/internal/json_stream_parser.cc
+google/protobuf/util/internal/object_writer.cc
+google/protobuf/util/internal/protostream_objectsource.cc
+google/protobuf/util/internal/protostream_objectwriter.cc
+google/protobuf/util/internal/type_info.cc
+google/protobuf/util/internal/utility.cc
+google/protobuf/util/json_util.cc
+google/protobuf/util/message_differencer.cc
+google/protobuf/util/time_util.cc
+google/protobuf/util/type_resolver_util.cc
 google/protobuf/wire_format.cc
 google/protobuf/wire_format_lite.cc
 google/protobuf/wrappers.pb.cc
@@ -86,10 +112,10 @@ google/protobuf/compiler/cpp/cpp_service.cc
 google/protobuf/compiler/cpp/cpp_string_field.cc
 google/protobuf/compiler/csharp/csharp_enum.cc
 google/protobuf/compiler/csharp/csharp_enum_field.cc
-google/protobuf/compiler/csharp/csharp_extension.cc
 google/protobuf/compiler/csharp/csharp_field_base.cc
 google/protobuf/compiler/csharp/csharp_generator.cc
 google/protobuf/compiler/csharp/csharp_helpers.cc
+google/protobuf/compiler/csharp/csharp_map_field.cc
 google/protobuf/compiler/csharp/csharp_message.cc
 google/protobuf/compiler/csharp/csharp_message_field.cc
 google/protobuf/compiler/csharp/csharp_primitive_field.cc
@@ -98,13 +124,14 @@ google/protobuf/compiler/csharp/csharp_repeated_message_field.cc
 google/protobuf/compiler/csharp/csharp_repeated_primitive_field.cc
 google/protobuf/compiler/csharp/csharp_source_generator_base.cc
 google/protobuf/compiler/csharp/csharp_umbrella_class.cc
-google/protobuf/compiler/csharp/csharp_writer.cc
+google/protobuf/compiler/csharp/csharp_wrapper_field.cc
 google/protobuf/compiler/importer.cc
 google/protobuf/compiler/java/java_context.cc
 google/protobuf/compiler/java/java_doc_comment.cc
 google/protobuf/compiler/java/java_enum.cc
 google/protobuf/compiler/java/java_enum_field.cc
 google/protobuf/compiler/java/java_enum_field_lite.cc
+google/protobuf/compiler/java/java_enum_lite.cc
 google/protobuf/compiler/java/java_extension.cc
 google/protobuf/compiler/java/java_field.cc
 google/protobuf/compiler/java/java_file.cc
@@ -164,6 +191,3 @@ google/protobuf/compiler/zip_writer.cc
 for file in $PROTOC_SOURCES; do
   ln -sf ../internal/src/$file libprotoc
 done
-
-# restore the repo to what it would look like when first cloned
-git clean -dxf
