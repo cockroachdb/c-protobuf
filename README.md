@@ -1,8 +1,9 @@
 # Google Protobuf's
 
-This is a go-gettable version of the Google C++ protobuf library for use in Go code that needs to
-link against the C++ protobuf library but wants to integrate with `go get` and `go build`. The
-protobuf source is currently pinned to the 2.6.1 release.
+This is a go-gettable version of the Google C++ protobuf library for use in Go
+code that needs to link against the C++ protobuf library but wants to integrate
+with `go get` and `go build`. The sources track the 3.0.0 release; take a look
+at `import.sh` to get the currently used version.
 
 To use in your project you need to import the package and set appropriate cgo flag directives:
 
