@@ -171,7 +171,7 @@ class Map {
 #if __cplusplus >= 201103L && !defined(GOOGLE_PROTOBUF_OS_APPLE)
     template<class NodeType, class... Args>
     void construct(NodeType* p, Args&&... args) {
-      new (p) NodeType(std::forward<Args>(args)...);
+      new ((pointer)p) NodeType(std::forward<Args>(args)...);
     }
 
     template<class NodeType>
