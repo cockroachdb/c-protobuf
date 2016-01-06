@@ -109,6 +109,7 @@
 #ifndef GOOGLE_PROTOBUF_IO_CODED_STREAM_H__
 #define GOOGLE_PROTOBUF_IO_CODED_STREAM_H__
 
+#include <assert.h>
 #include <string>
 #include <utility>
 #ifdef _MSC_VER
@@ -1035,7 +1036,7 @@ inline const uint8* CodedInputStream::ExpectTagFromArray(
 inline void CodedInputStream::GetDirectBufferPointerInline(const void** data,
                                                            int* size) {
   *data = buffer_;
-  *size = buffer_end_ - buffer_;
+  *size = static_cast<int>(buffer_end_ - buffer_);
 }
 
 inline bool CodedInputStream::ExpectAtEnd() {
@@ -1231,7 +1232,7 @@ inline MessageFactory* CodedInputStream::GetExtensionFactory() {
 }
 
 inline int CodedInputStream::BufferSize() const {
-  return buffer_end_ - buffer_;
+  return static_cast<int>(buffer_end_ - buffer_);
 }
 
 inline CodedInputStream::CodedInputStream(ZeroCopyInputStream* input)

@@ -350,7 +350,7 @@ void CollectMapInfo(const Descriptor* descriptor,
       (*variables)["val"] = FieldMessageTypeName(val);
       break;
     case FieldDescriptor::CPPTYPE_ENUM:
-      (*variables)["val"] = ClassName(val->enum_type(), false);
+      (*variables)["val"] = ClassName(val->enum_type(), true);
       break;
     default:
       (*variables)["val"] = PrimitiveTypeName(val->cpp_type());
@@ -1807,7 +1807,7 @@ GenerateClassMethods(io::Printer* printer) {
   }
 
   // Generate field number constants.
-  printer->Print("#ifndef _MSC_VER\n");
+  printer->Print("#if !defined(_MSC_VER) || _MSC_VER >= 1900\n");
   for (int i = 0; i < descriptor_->field_count(); i++) {
     const FieldDescriptor *field = descriptor_->field(i);
     printer->Print(
@@ -1816,7 +1816,7 @@ GenerateClassMethods(io::Printer* printer) {
       "constant_name", FieldConstantName(field));
   }
   printer->Print(
-    "#endif  // !_MSC_VER\n"
+    "#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900\n"
     "\n");
 
   // Define extension identifiers.
@@ -3364,7 +3364,7 @@ GenerateSerializeWithCachedSizesBody(io::Printer* printer, bool to_array) {
     } else {
       printer->Print(
         "output->WriteRaw(unknown_fields().data(),\n"
-        "                 unknown_fields().size());\n");
+        "                 static_cast<int>(unknown_fields().size()));\n");
     }
   }
 }
