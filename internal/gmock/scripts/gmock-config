@@ -227,7 +227,7 @@ if test "${this_bindir}" = "${this_bindir%${bindir}}"; then
   gmock_cxxflags=""
 
   # Directly invoke the gtest-config script used during the build process.
-  gtest_config="/Users/pmattis/Development/go/src/github.com/cockroachdb/c-protobuf/internal/gmock/gtest/scripts/gtest-config"
+  gtest_config="/Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/gmock/gtest/scripts/gtest-config"
 else
   # We're using an installed gmock, although it may be staged under some
   # prefix. Assume (as our own libraries do) that we can resolve the prefix,
