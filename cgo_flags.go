@@ -3,6 +3,6 @@
 // in.
 package protobuf
 
-// #cgo CXXFLAGS: -std=c++11
-// #cgo CPPFLAGS: -DLANG_CXX11 -DHAVE_CONFIG_H -DHAVE_PTHREAD -Iinternal/src
+// #cgo CXXFLAGS: -DLANG_CXX11 -std=c++11
+// #cgo CPPFLAGS: -DHAVE_CONFIG_H -DHAVE_PTHREAD -Iinternal/src
 import "C"
