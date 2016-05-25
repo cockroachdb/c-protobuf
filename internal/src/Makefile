@@ -79,9 +79,9 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-apple-darwin15.2.0
-host_triplet = x86_64-apple-darwin15.2.0
-target_triplet = x86_64-apple-darwin15.2.0
+build_triplet = x86_64-apple-darwin15.5.0
+host_triplet = x86_64-apple-darwin15.5.0
+target_triplet = x86_64-apple-darwin15.5.0
 bin_PROGRAMS = protoc$(EXEEXT)
 check_PROGRAMS = protoc$(EXEEXT) protobuf-test$(EXEEXT) \
 	protobuf-lazy-descriptor-test$(EXEEXT) \
@@ -270,6 +270,7 @@ am_libprotoc_la_OBJECTS = google/protobuf/compiler/code_generator.lo \
 	google/protobuf/compiler/java/java_enum_field.lo \
 	google/protobuf/compiler/java/java_enum_field_lite.lo \
 	google/protobuf/compiler/java/java_extension.lo \
+	google/protobuf/compiler/java/java_extension_lite.lo \
 	google/protobuf/compiler/java/java_field.lo \
 	google/protobuf/compiler/java/java_file.lo \
 	google/protobuf/compiler/java/java_generator.lo \
@@ -379,6 +380,8 @@ am__objects_4 = $(am__objects_3) \
 	google/protobuf/protobuf_lazy_descriptor_test-unittest_preserve_unknown_enum2.pb.$(OBJEXT) \
 	google/protobuf/protobuf_lazy_descriptor_test-unittest_preserve_unknown_enum.pb.$(OBJEXT) \
 	google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena.pb.$(OBJEXT) \
+	google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.$(OBJEXT) \
+	google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.$(OBJEXT) \
 	google/protobuf/protobuf_lazy_descriptor_test-unittest_well_known_types.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-anys.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-books.pb.$(OBJEXT) \
@@ -478,6 +481,8 @@ am_protobuf_test_OBJECTS = google/protobuf/stubs/protobuf_test-bytestream_unitte
 	google/protobuf/protobuf_test-no_field_presence_test.$(OBJEXT) \
 	google/protobuf/protobuf_test-preserve_unknown_enum_test.$(OBJEXT) \
 	google/protobuf/protobuf_test-proto3_arena_unittest.$(OBJEXT) \
+	google/protobuf/protobuf_test-proto3_arena_lite_unittest.$(OBJEXT) \
+	google/protobuf/protobuf_test-proto3_lite_unittest.$(OBJEXT) \
 	google/protobuf/protobuf_test-reflection_ops_unittest.$(OBJEXT) \
 	google/protobuf/protobuf_test-repeated_field_reflection_unittest.$(OBJEXT) \
 	google/protobuf/protobuf_test-repeated_field_unittest.$(OBJEXT) \
@@ -496,6 +501,7 @@ am_protobuf_test_OBJECTS = google/protobuf/stubs/protobuf_test-bytestream_unitte
 	google/protobuf/compiler/cpp/protobuf_test-cpp_bootstrap_unittest.$(OBJEXT) \
 	google/protobuf/compiler/cpp/protobuf_test-cpp_unittest.$(OBJEXT) \
 	google/protobuf/compiler/cpp/protobuf_test-cpp_plugin_unittest.$(OBJEXT) \
+	google/protobuf/compiler/cpp/protobuf_test-metadata_test.$(OBJEXT) \
 	google/protobuf/compiler/java/protobuf_test-java_plugin_unittest.$(OBJEXT) \
 	google/protobuf/compiler/java/protobuf_test-java_doc_comment_unittest.$(OBJEXT) \
 	google/protobuf/compiler/objectivec/protobuf_test-objectivec_helpers_unittest.$(OBJEXT) \
@@ -547,6 +553,8 @@ am__objects_11 = $(am__objects_10) \
 	google/protobuf/protobuf_test-unittest_preserve_unknown_enum2.pb.$(OBJEXT) \
 	google/protobuf/protobuf_test-unittest_preserve_unknown_enum.pb.$(OBJEXT) \
 	google/protobuf/protobuf_test-unittest_proto3_arena.pb.$(OBJEXT) \
+	google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.$(OBJEXT) \
+	google/protobuf/protobuf_test-unittest_proto3_lite.pb.$(OBJEXT) \
 	google/protobuf/protobuf_test-unittest_well_known_types.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_test-anys.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_test-books.pb.$(OBJEXT) \
@@ -1004,7 +1012,7 @@ MAINT =
 MAKEINFO = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = .././install-sh -c -d
-NM = /usr/bin/nm
+NM = /usr/bin/nm -B
 NMEDIT = nmedit
 OBJC = gcc
 OBJCDEPMODE = depmode=gcc3
@@ -1016,10 +1024,10 @@ OTOOL64 = :
 PACKAGE = protobuf
 PACKAGE_BUGREPORT = protobuf@googlegroups.com
 PACKAGE_NAME = Protocol Buffers
-PACKAGE_STRING = Protocol Buffers 3.0.0-beta-2
+PACKAGE_STRING = Protocol Buffers 3.0.0-beta-3
 PACKAGE_TARNAME = protobuf
 PACKAGE_URL = 
-PACKAGE_VERSION = 3.0.0-beta-2
+PACKAGE_VERSION = 3.0.0-beta-3
 PATH_SEPARATOR = :
 POW_LIB = 
 PROTOBUF_OPT_FLAG = -O2
@@ -1032,7 +1040,7 @@ SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 3.0.0-beta-2
+VERSION = 3.0.0-beta-3
 abs_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/src
 abs_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/src
 abs_top_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
@@ -1049,10 +1057,10 @@ am__quote =
 am__tar = tar --format=ustar -chf - "$$tardir"
 am__untar = tar -xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-apple-darwin15.2.0
+build = x86_64-apple-darwin15.5.0
 build_alias = 
 build_cpu = x86_64
-build_os = darwin15.2.0
+build_os = darwin15.5.0
 build_vendor = apple
 builddir = .
 datadir = ${datarootdir}
@@ -1060,10 +1068,10 @@ datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-apple-darwin15.2.0
+host = x86_64-apple-darwin15.5.0
 host_alias = 
 host_cpu = x86_64
-host_os = darwin15.2.0
+host_os = darwin15.5.0
 host_vendor = apple
 htmldir = ${docdir}
 includedir = ${prefix}/include
@@ -1085,10 +1093,10 @@ sharedstatedir = ${prefix}/com
 srcdir = .
 subdirs =  gmock
 sysconfdir = ${prefix}/etc
-target = x86_64-apple-darwin15.2.0
+target = x86_64-apple-darwin15.5.0
 target_alias = 
 target_cpu = x86_64
-target_os = darwin15.2.0
+target_os = darwin15.5.0
 target_vendor = apple
 top_build_prefix = ../
 top_builddir = ..
@@ -1417,6 +1425,8 @@ libprotoc_la_SOURCES = \
   google/protobuf/compiler/java/java_enum_lite.h               \
   google/protobuf/compiler/java/java_extension.cc              \
   google/protobuf/compiler/java/java_extension.h               \
+  google/protobuf/compiler/java/java_extension_lite.cc         \
+  google/protobuf/compiler/java/java_extension_lite.h          \
   google/protobuf/compiler/java/java_field.cc                  \
   google/protobuf/compiler/java/java_field.h                   \
   google/protobuf/compiler/java/java_file.cc                   \
@@ -1528,6 +1538,7 @@ libprotoc_la_SOURCES = \
   google/protobuf/compiler/csharp/csharp_message.h             \
   google/protobuf/compiler/csharp/csharp_message_field.cc      \
   google/protobuf/compiler/csharp/csharp_message_field.h       \
+  google/protobuf/compiler/csharp/csharp_options.h             \
   google/protobuf/compiler/csharp/csharp_primitive_field.cc    \
   google/protobuf/compiler/csharp/csharp_primitive_field.h     \
   google/protobuf/compiler/csharp/csharp_reflection_class.cc     \
@@ -1577,6 +1588,8 @@ protoc_inputs = \
   google/protobuf/unittest_preserve_unknown_enum.proto            \
   google/protobuf/unittest.proto                                  \
   google/protobuf/unittest_proto3_arena.proto                     \
+  google/protobuf/unittest_proto3_arena_lite.proto                     \
+  google/protobuf/unittest_proto3_lite.proto                     \
   google/protobuf/unittest_well_known_types.proto                 \
   google/protobuf/util/internal/testdata/anys.proto               \
   google/protobuf/util/internal/testdata/books.proto              \
@@ -1679,6 +1692,10 @@ protoc_outputs = \
   google/protobuf/unittest_preserve_unknown_enum.pb.h             \
   google/protobuf/unittest_proto3_arena.pb.cc                     \
   google/protobuf/unittest_proto3_arena.pb.h                      \
+  google/protobuf/unittest_proto3_arena_lite.pb.cc                     \
+  google/protobuf/unittest_proto3_arena_lite.pb.h                      \
+  google/protobuf/unittest_proto3_lite.pb.cc                     \
+  google/protobuf/unittest_proto3_lite.pb.h                      \
   google/protobuf/unittest_well_known_types.pb.cc                 \
   google/protobuf/unittest_well_known_types.pb.h                  \
   google/protobuf/util/internal/testdata/anys.pb.cc               \
@@ -1759,6 +1776,8 @@ protobuf_test_SOURCES = \
   google/protobuf/no_field_presence_test.cc                    \
   google/protobuf/preserve_unknown_enum_test.cc                \
   google/protobuf/proto3_arena_unittest.cc                     \
+  google/protobuf/proto3_arena_lite_unittest.cc                     \
+  google/protobuf/proto3_lite_unittest.cc                     \
   google/protobuf/reflection_ops_unittest.cc                   \
   google/protobuf/repeated_field_reflection_unittest.cc        \
   google/protobuf/repeated_field_unittest.cc                   \
@@ -1779,6 +1798,7 @@ protobuf_test_SOURCES = \
   google/protobuf/compiler/cpp/cpp_unittest.h                  \
   google/protobuf/compiler/cpp/cpp_unittest.cc                 \
   google/protobuf/compiler/cpp/cpp_plugin_unittest.cc          \
+  google/protobuf/compiler/cpp/metadata_test.cc                \
   google/protobuf/compiler/java/java_plugin_unittest.cc        \
   google/protobuf/compiler/java/java_doc_comment_unittest.cc   \
   google/protobuf/compiler/objectivec/objectivec_helpers_unittest.cc \
@@ -1886,9 +1906,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu src/Makefile
+	  $(AUTOMAKE) --foreign src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -2264,6 +2284,9 @@ google/protobuf/compiler/java/java_enum_field_lite.lo:  \
 	google/protobuf/compiler/java/$(am__dirstamp) \
 	google/protobuf/compiler/java/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/compiler/java/java_extension.lo:  \
+	google/protobuf/compiler/java/$(am__dirstamp) \
+	google/protobuf/compiler/java/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/compiler/java/java_extension_lite.lo:  \
 	google/protobuf/compiler/java/$(am__dirstamp) \
 	google/protobuf/compiler/java/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/compiler/java/java_field.lo:  \
@@ -2672,6 +2695,12 @@ google/protobuf/protobuf_lazy_descriptor_test-unittest_preserve_unknown_enum.pb.
 google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena.pb.$(OBJEXT):  \
 	google/protobuf/$(am__dirstamp) \
 	google/protobuf/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.$(OBJEXT):  \
+	google/protobuf/$(am__dirstamp) \
+	google/protobuf/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.$(OBJEXT):  \
+	google/protobuf/$(am__dirstamp) \
+	google/protobuf/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/protobuf_lazy_descriptor_test-unittest_well_known_types.pb.$(OBJEXT):  \
 	google/protobuf/$(am__dirstamp) \
 	google/protobuf/$(DEPDIR)/$(am__dirstamp)
@@ -2864,6 +2893,12 @@ google/protobuf/protobuf_test-preserve_unknown_enum_test.$(OBJEXT):  \
 google/protobuf/protobuf_test-proto3_arena_unittest.$(OBJEXT):  \
 	google/protobuf/$(am__dirstamp) \
 	google/protobuf/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/protobuf_test-proto3_arena_lite_unittest.$(OBJEXT):  \
+	google/protobuf/$(am__dirstamp) \
+	google/protobuf/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/protobuf_test-proto3_lite_unittest.$(OBJEXT):  \
+	google/protobuf/$(am__dirstamp) \
+	google/protobuf/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/protobuf_test-reflection_ops_unittest.$(OBJEXT):  \
 	google/protobuf/$(am__dirstamp) \
 	google/protobuf/$(DEPDIR)/$(am__dirstamp)
@@ -2916,6 +2951,9 @@ google/protobuf/compiler/cpp/protobuf_test-cpp_unittest.$(OBJEXT):  \
 	google/protobuf/compiler/cpp/$(am__dirstamp) \
 	google/protobuf/compiler/cpp/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/compiler/cpp/protobuf_test-cpp_plugin_unittest.$(OBJEXT):  \
+	google/protobuf/compiler/cpp/$(am__dirstamp) \
+	google/protobuf/compiler/cpp/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/compiler/cpp/protobuf_test-metadata_test.$(OBJEXT):  \
 	google/protobuf/compiler/cpp/$(am__dirstamp) \
 	google/protobuf/compiler/cpp/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/compiler/java/protobuf_test-java_plugin_unittest.$(OBJEXT):  \
@@ -3075,6 +3113,12 @@ google/protobuf/protobuf_test-unittest_preserve_unknown_enum.pb.$(OBJEXT):  \
 	google/protobuf/$(am__dirstamp) \
 	google/protobuf/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/protobuf_test-unittest_proto3_arena.pb.$(OBJEXT):  \
+	google/protobuf/$(am__dirstamp) \
+	google/protobuf/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.$(OBJEXT):  \
+	google/protobuf/$(am__dirstamp) \
+	google/protobuf/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/protobuf_test-unittest_proto3_lite.pb.$(OBJEXT):  \
 	google/protobuf/$(am__dirstamp) \
 	google/protobuf/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/protobuf_test-unittest_well_known_types.pb.$(OBJEXT):  \
@@ -3238,6 +3282,8 @@ include google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_optimiz
 include google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_preserve_unknown_enum.pb.Po
 include google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_preserve_unknown_enum2.pb.Po
 include google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_arena.pb.Po
+include google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.Po
+include google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.Po
 include google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_well_known_types.pb.Po
 include google/protobuf/$(DEPDIR)/protobuf_lite_arena_test-arena_test_util.Po
 include google/protobuf/$(DEPDIR)/protobuf_lite_arena_test-lite_arena_unittest.Po
@@ -3277,7 +3323,9 @@ include google/protobuf/$(DEPDIR)/protobuf_test-map_unittest.pb.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-message_unittest.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-no_field_presence_test.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-preserve_unknown_enum_test.Po
+include google/protobuf/$(DEPDIR)/protobuf_test-proto3_arena_lite_unittest.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-proto3_arena_unittest.Po
+include google/protobuf/$(DEPDIR)/protobuf_test-proto3_lite_unittest.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-reflection_ops_unittest.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-repeated_field_reflection_unittest.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-repeated_field_unittest.Po
@@ -3307,6 +3355,8 @@ include google/protobuf/$(DEPDIR)/protobuf_test-unittest_optimize_for.pb.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-unittest_preserve_unknown_enum.pb.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-unittest_preserve_unknown_enum2.pb.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_arena.pb.Po
+include google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_arena_lite.pb.Po
+include google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_lite.pb.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-unittest_well_known_types.pb.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-unknown_field_set_unittest.Po
 include google/protobuf/$(DEPDIR)/protobuf_test-well_known_types_unittest.Po
@@ -3359,6 +3409,7 @@ include google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-cpp_plugin_unittest
 include google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-cpp_test_bad_identifiers.pb.Po
 include google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-cpp_test_large_enum_value.pb.Po
 include google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-cpp_unittest.Po
+include google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-metadata_test.Po
 include google/protobuf/compiler/csharp/$(DEPDIR)/csharp_doc_comment.Plo
 include google/protobuf/compiler/csharp/$(DEPDIR)/csharp_enum.Plo
 include google/protobuf/compiler/csharp/$(DEPDIR)/csharp_enum_field.Plo
@@ -3383,6 +3434,7 @@ include google/protobuf/compiler/java/$(DEPDIR)/java_enum_field.Plo
 include google/protobuf/compiler/java/$(DEPDIR)/java_enum_field_lite.Plo
 include google/protobuf/compiler/java/$(DEPDIR)/java_enum_lite.Plo
 include google/protobuf/compiler/java/$(DEPDIR)/java_extension.Plo
+include google/protobuf/compiler/java/$(DEPDIR)/java_extension_lite.Plo
 include google/protobuf/compiler/java/$(DEPDIR)/java_field.Plo
 include google/protobuf/compiler/java/$(DEPDIR)/java_file.Plo
 include google/protobuf/compiler/java/$(DEPDIR)/java_generator.Plo
@@ -4065,6 +4117,34 @@ google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena.pb.obj: goog
 #	$(AM_V_CXX)source='google/protobuf/unittest_proto3_arena.pb.cc' object='google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena.pb.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena.pb.obj `if test -f 'google/protobuf/unittest_proto3_arena.pb.cc'; then $(CYGPATH_W) 'google/protobuf/unittest_proto3_arena.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/unittest_proto3_arena.pb.cc'; fi`
+
+google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.o: google/protobuf/unittest_proto3_arena_lite.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.o -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.Tpo -c -o google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.o `test -f 'google/protobuf/unittest_proto3_arena_lite.pb.cc' || echo '$(srcdir)/'`google/protobuf/unittest_proto3_arena_lite.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.Tpo google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/unittest_proto3_arena_lite.pb.cc' object='google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.o `test -f 'google/protobuf/unittest_proto3_arena_lite.pb.cc' || echo '$(srcdir)/'`google/protobuf/unittest_proto3_arena_lite.pb.cc
+
+google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.obj: google/protobuf/unittest_proto3_arena_lite.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.obj -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.Tpo -c -o google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.obj `if test -f 'google/protobuf/unittest_proto3_arena_lite.pb.cc'; then $(CYGPATH_W) 'google/protobuf/unittest_proto3_arena_lite.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/unittest_proto3_arena_lite.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.Tpo google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/unittest_proto3_arena_lite.pb.cc' object='google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_arena_lite.pb.obj `if test -f 'google/protobuf/unittest_proto3_arena_lite.pb.cc'; then $(CYGPATH_W) 'google/protobuf/unittest_proto3_arena_lite.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/unittest_proto3_arena_lite.pb.cc'; fi`
+
+google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.o: google/protobuf/unittest_proto3_lite.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.o -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.Tpo -c -o google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.o `test -f 'google/protobuf/unittest_proto3_lite.pb.cc' || echo '$(srcdir)/'`google/protobuf/unittest_proto3_lite.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.Tpo google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/unittest_proto3_lite.pb.cc' object='google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.o `test -f 'google/protobuf/unittest_proto3_lite.pb.cc' || echo '$(srcdir)/'`google/protobuf/unittest_proto3_lite.pb.cc
+
+google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.obj: google/protobuf/unittest_proto3_lite.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.obj -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.Tpo -c -o google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.obj `if test -f 'google/protobuf/unittest_proto3_lite.pb.cc'; then $(CYGPATH_W) 'google/protobuf/unittest_proto3_lite.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/unittest_proto3_lite.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.Tpo google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/unittest_proto3_lite.pb.cc' object='google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_lazy_descriptor_test-unittest_proto3_lite.pb.obj `if test -f 'google/protobuf/unittest_proto3_lite.pb.cc'; then $(CYGPATH_W) 'google/protobuf/unittest_proto3_lite.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/unittest_proto3_lite.pb.cc'; fi`
 
 google/protobuf/protobuf_lazy_descriptor_test-unittest_well_known_types.pb.o: google/protobuf/unittest_well_known_types.pb.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_lazy_descriptor_test-unittest_well_known_types.pb.o -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_lazy_descriptor_test-unittest_well_known_types.pb.Tpo -c -o google/protobuf/protobuf_lazy_descriptor_test-unittest_well_known_types.pb.o `test -f 'google/protobuf/unittest_well_known_types.pb.cc' || echo '$(srcdir)/'`google/protobuf/unittest_well_known_types.pb.cc
@@ -4878,6 +4958,34 @@ google/protobuf/protobuf_test-proto3_arena_unittest.obj: google/protobuf/proto3_
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_test-proto3_arena_unittest.obj `if test -f 'google/protobuf/proto3_arena_unittest.cc'; then $(CYGPATH_W) 'google/protobuf/proto3_arena_unittest.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/proto3_arena_unittest.cc'; fi`
 
+google/protobuf/protobuf_test-proto3_arena_lite_unittest.o: google/protobuf/proto3_arena_lite_unittest.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_test-proto3_arena_lite_unittest.o -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_test-proto3_arena_lite_unittest.Tpo -c -o google/protobuf/protobuf_test-proto3_arena_lite_unittest.o `test -f 'google/protobuf/proto3_arena_lite_unittest.cc' || echo '$(srcdir)/'`google/protobuf/proto3_arena_lite_unittest.cc
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_test-proto3_arena_lite_unittest.Tpo google/protobuf/$(DEPDIR)/protobuf_test-proto3_arena_lite_unittest.Po
+#	$(AM_V_CXX)source='google/protobuf/proto3_arena_lite_unittest.cc' object='google/protobuf/protobuf_test-proto3_arena_lite_unittest.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_test-proto3_arena_lite_unittest.o `test -f 'google/protobuf/proto3_arena_lite_unittest.cc' || echo '$(srcdir)/'`google/protobuf/proto3_arena_lite_unittest.cc
+
+google/protobuf/protobuf_test-proto3_arena_lite_unittest.obj: google/protobuf/proto3_arena_lite_unittest.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_test-proto3_arena_lite_unittest.obj -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_test-proto3_arena_lite_unittest.Tpo -c -o google/protobuf/protobuf_test-proto3_arena_lite_unittest.obj `if test -f 'google/protobuf/proto3_arena_lite_unittest.cc'; then $(CYGPATH_W) 'google/protobuf/proto3_arena_lite_unittest.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/proto3_arena_lite_unittest.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_test-proto3_arena_lite_unittest.Tpo google/protobuf/$(DEPDIR)/protobuf_test-proto3_arena_lite_unittest.Po
+#	$(AM_V_CXX)source='google/protobuf/proto3_arena_lite_unittest.cc' object='google/protobuf/protobuf_test-proto3_arena_lite_unittest.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_test-proto3_arena_lite_unittest.obj `if test -f 'google/protobuf/proto3_arena_lite_unittest.cc'; then $(CYGPATH_W) 'google/protobuf/proto3_arena_lite_unittest.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/proto3_arena_lite_unittest.cc'; fi`
+
+google/protobuf/protobuf_test-proto3_lite_unittest.o: google/protobuf/proto3_lite_unittest.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_test-proto3_lite_unittest.o -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_test-proto3_lite_unittest.Tpo -c -o google/protobuf/protobuf_test-proto3_lite_unittest.o `test -f 'google/protobuf/proto3_lite_unittest.cc' || echo '$(srcdir)/'`google/protobuf/proto3_lite_unittest.cc
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_test-proto3_lite_unittest.Tpo google/protobuf/$(DEPDIR)/protobuf_test-proto3_lite_unittest.Po
+#	$(AM_V_CXX)source='google/protobuf/proto3_lite_unittest.cc' object='google/protobuf/protobuf_test-proto3_lite_unittest.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_test-proto3_lite_unittest.o `test -f 'google/protobuf/proto3_lite_unittest.cc' || echo '$(srcdir)/'`google/protobuf/proto3_lite_unittest.cc
+
+google/protobuf/protobuf_test-proto3_lite_unittest.obj: google/protobuf/proto3_lite_unittest.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_test-proto3_lite_unittest.obj -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_test-proto3_lite_unittest.Tpo -c -o google/protobuf/protobuf_test-proto3_lite_unittest.obj `if test -f 'google/protobuf/proto3_lite_unittest.cc'; then $(CYGPATH_W) 'google/protobuf/proto3_lite_unittest.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/proto3_lite_unittest.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_test-proto3_lite_unittest.Tpo google/protobuf/$(DEPDIR)/protobuf_test-proto3_lite_unittest.Po
+#	$(AM_V_CXX)source='google/protobuf/proto3_lite_unittest.cc' object='google/protobuf/protobuf_test-proto3_lite_unittest.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_test-proto3_lite_unittest.obj `if test -f 'google/protobuf/proto3_lite_unittest.cc'; then $(CYGPATH_W) 'google/protobuf/proto3_lite_unittest.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/proto3_lite_unittest.cc'; fi`
+
 google/protobuf/protobuf_test-reflection_ops_unittest.o: google/protobuf/reflection_ops_unittest.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_test-reflection_ops_unittest.o -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_test-reflection_ops_unittest.Tpo -c -o google/protobuf/protobuf_test-reflection_ops_unittest.o `test -f 'google/protobuf/reflection_ops_unittest.cc' || echo '$(srcdir)/'`google/protobuf/reflection_ops_unittest.cc
 	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_test-reflection_ops_unittest.Tpo google/protobuf/$(DEPDIR)/protobuf_test-reflection_ops_unittest.Po
@@ -5129,6 +5237,20 @@ google/protobuf/compiler/cpp/protobuf_test-cpp_plugin_unittest.obj: google/proto
 #	$(AM_V_CXX)source='google/protobuf/compiler/cpp/cpp_plugin_unittest.cc' object='google/protobuf/compiler/cpp/protobuf_test-cpp_plugin_unittest.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/compiler/cpp/protobuf_test-cpp_plugin_unittest.obj `if test -f 'google/protobuf/compiler/cpp/cpp_plugin_unittest.cc'; then $(CYGPATH_W) 'google/protobuf/compiler/cpp/cpp_plugin_unittest.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/compiler/cpp/cpp_plugin_unittest.cc'; fi`
+
+google/protobuf/compiler/cpp/protobuf_test-metadata_test.o: google/protobuf/compiler/cpp/metadata_test.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/compiler/cpp/protobuf_test-metadata_test.o -MD -MP -MF google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-metadata_test.Tpo -c -o google/protobuf/compiler/cpp/protobuf_test-metadata_test.o `test -f 'google/protobuf/compiler/cpp/metadata_test.cc' || echo '$(srcdir)/'`google/protobuf/compiler/cpp/metadata_test.cc
+	$(AM_V_at)$(am__mv) google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-metadata_test.Tpo google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-metadata_test.Po
+#	$(AM_V_CXX)source='google/protobuf/compiler/cpp/metadata_test.cc' object='google/protobuf/compiler/cpp/protobuf_test-metadata_test.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/compiler/cpp/protobuf_test-metadata_test.o `test -f 'google/protobuf/compiler/cpp/metadata_test.cc' || echo '$(srcdir)/'`google/protobuf/compiler/cpp/metadata_test.cc
+
+google/protobuf/compiler/cpp/protobuf_test-metadata_test.obj: google/protobuf/compiler/cpp/metadata_test.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/compiler/cpp/protobuf_test-metadata_test.obj -MD -MP -MF google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-metadata_test.Tpo -c -o google/protobuf/compiler/cpp/protobuf_test-metadata_test.obj `if test -f 'google/protobuf/compiler/cpp/metadata_test.cc'; then $(CYGPATH_W) 'google/protobuf/compiler/cpp/metadata_test.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/compiler/cpp/metadata_test.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-metadata_test.Tpo google/protobuf/compiler/cpp/$(DEPDIR)/protobuf_test-metadata_test.Po
+#	$(AM_V_CXX)source='google/protobuf/compiler/cpp/metadata_test.cc' object='google/protobuf/compiler/cpp/protobuf_test-metadata_test.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/compiler/cpp/protobuf_test-metadata_test.obj `if test -f 'google/protobuf/compiler/cpp/metadata_test.cc'; then $(CYGPATH_W) 'google/protobuf/compiler/cpp/metadata_test.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/compiler/cpp/metadata_test.cc'; fi`
 
 google/protobuf/compiler/java/protobuf_test-java_plugin_unittest.o: google/protobuf/compiler/java/java_plugin_unittest.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/compiler/java/protobuf_test-java_plugin_unittest.o -MD -MP -MF google/protobuf/compiler/java/$(DEPDIR)/protobuf_test-java_plugin_unittest.Tpo -c -o google/protobuf/compiler/java/protobuf_test-java_plugin_unittest.o `test -f 'google/protobuf/compiler/java/java_plugin_unittest.cc' || echo '$(srcdir)/'`google/protobuf/compiler/java/java_plugin_unittest.cc
@@ -5871,6 +5993,34 @@ google/protobuf/protobuf_test-unittest_proto3_arena.pb.obj: google/protobuf/unit
 #	$(AM_V_CXX)source='google/protobuf/unittest_proto3_arena.pb.cc' object='google/protobuf/protobuf_test-unittest_proto3_arena.pb.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_test-unittest_proto3_arena.pb.obj `if test -f 'google/protobuf/unittest_proto3_arena.pb.cc'; then $(CYGPATH_W) 'google/protobuf/unittest_proto3_arena.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/unittest_proto3_arena.pb.cc'; fi`
+
+google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.o: google/protobuf/unittest_proto3_arena_lite.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.o -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_arena_lite.pb.Tpo -c -o google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.o `test -f 'google/protobuf/unittest_proto3_arena_lite.pb.cc' || echo '$(srcdir)/'`google/protobuf/unittest_proto3_arena_lite.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_arena_lite.pb.Tpo google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_arena_lite.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/unittest_proto3_arena_lite.pb.cc' object='google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.o `test -f 'google/protobuf/unittest_proto3_arena_lite.pb.cc' || echo '$(srcdir)/'`google/protobuf/unittest_proto3_arena_lite.pb.cc
+
+google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.obj: google/protobuf/unittest_proto3_arena_lite.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.obj -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_arena_lite.pb.Tpo -c -o google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.obj `if test -f 'google/protobuf/unittest_proto3_arena_lite.pb.cc'; then $(CYGPATH_W) 'google/protobuf/unittest_proto3_arena_lite.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/unittest_proto3_arena_lite.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_arena_lite.pb.Tpo google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_arena_lite.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/unittest_proto3_arena_lite.pb.cc' object='google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_test-unittest_proto3_arena_lite.pb.obj `if test -f 'google/protobuf/unittest_proto3_arena_lite.pb.cc'; then $(CYGPATH_W) 'google/protobuf/unittest_proto3_arena_lite.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/unittest_proto3_arena_lite.pb.cc'; fi`
+
+google/protobuf/protobuf_test-unittest_proto3_lite.pb.o: google/protobuf/unittest_proto3_lite.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_test-unittest_proto3_lite.pb.o -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_lite.pb.Tpo -c -o google/protobuf/protobuf_test-unittest_proto3_lite.pb.o `test -f 'google/protobuf/unittest_proto3_lite.pb.cc' || echo '$(srcdir)/'`google/protobuf/unittest_proto3_lite.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_lite.pb.Tpo google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_lite.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/unittest_proto3_lite.pb.cc' object='google/protobuf/protobuf_test-unittest_proto3_lite.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_test-unittest_proto3_lite.pb.o `test -f 'google/protobuf/unittest_proto3_lite.pb.cc' || echo '$(srcdir)/'`google/protobuf/unittest_proto3_lite.pb.cc
+
+google/protobuf/protobuf_test-unittest_proto3_lite.pb.obj: google/protobuf/unittest_proto3_lite.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_test-unittest_proto3_lite.pb.obj -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_lite.pb.Tpo -c -o google/protobuf/protobuf_test-unittest_proto3_lite.pb.obj `if test -f 'google/protobuf/unittest_proto3_lite.pb.cc'; then $(CYGPATH_W) 'google/protobuf/unittest_proto3_lite.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/unittest_proto3_lite.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_lite.pb.Tpo google/protobuf/$(DEPDIR)/protobuf_test-unittest_proto3_lite.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/unittest_proto3_lite.pb.cc' object='google/protobuf/protobuf_test-unittest_proto3_lite.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/protobuf_test-unittest_proto3_lite.pb.obj `if test -f 'google/protobuf/unittest_proto3_lite.pb.cc'; then $(CYGPATH_W) 'google/protobuf/unittest_proto3_lite.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/unittest_proto3_lite.pb.cc'; fi`
 
 google/protobuf/protobuf_test-unittest_well_known_types.pb.o: google/protobuf/unittest_well_known_types.pb.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/protobuf_test-unittest_well_known_types.pb.o -MD -MP -MF google/protobuf/$(DEPDIR)/protobuf_test-unittest_well_known_types.pb.Tpo -c -o google/protobuf/protobuf_test-unittest_well_known_types.pb.o `test -f 'google/protobuf/unittest_well_known_types.pb.cc' || echo '$(srcdir)/'`google/protobuf/unittest_well_known_types.pb.cc

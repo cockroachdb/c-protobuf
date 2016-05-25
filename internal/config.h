@@ -96,7 +96,7 @@
 #define PACKAGE_NAME "Protocol Buffers"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Protocol Buffers 3.0.0-beta-2"
+#define PACKAGE_STRING "Protocol Buffers 3.0.0-beta-3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "protobuf"
@@ -105,14 +105,11 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "3.0.0-beta-2"
+#define PACKAGE_VERSION "3.0.0-beta-3"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
 /* #undef PTHREAD_CREATE_JOINABLE */
-
-/* 64bit enabled */
-/* #undef SOLARIS_64BIT_ENABLED */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -140,7 +137,7 @@
 
 
 /* Version number of package */
-#define VERSION "3.0.0-beta-2"
+#define VERSION "3.0.0-beta-3"
 
 /* Define to 1 if on MINIX. */
 /* #undef _MINIX */

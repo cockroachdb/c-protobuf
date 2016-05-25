@@ -1,1 +1,0 @@
-../internal/src/google/protobuf/compiler/zip_writer.cc
