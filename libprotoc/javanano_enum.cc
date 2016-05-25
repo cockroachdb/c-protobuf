@@ -1,1 +1,0 @@
-../internal/src/google/protobuf/compiler/javanano/javanano_enum.cc
