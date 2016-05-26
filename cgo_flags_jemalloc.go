@@ -18,4 +18,4 @@
 
 package protobuf
 
-import _ "github.com/cockroachdb/c-jemalloc
+import _ "github.com/cockroachdb/c-jemalloc"
