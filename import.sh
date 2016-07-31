@@ -5,7 +5,7 @@ set -eu
 rm -rf internal/*
 find . -type l -not -path './.git/*' | xargs rm
 
-curl -sL https://github.com/google/protobuf/releases/download/v3.0.0-beta-3/protobuf-cpp-3.0.0-beta-3.tar.gz | tar vzxf - -C internal/ --strip-components=1
+curl -sL https://github.com/google/protobuf/releases/download/v3.0.0/protobuf-cpp-3.0.0.tar.gz | tar vzxf - -C internal/ --strip-components=1
 
 cd internal
 ./configure

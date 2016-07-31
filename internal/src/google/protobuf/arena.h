@@ -213,7 +213,7 @@ struct ArenaOptions {
 // well as RepeatedPtrField.
 
 #if __cplusplus >= 201103L
-class Arena final {
+class LIBPROTOBUF_EXPORT Arena final {
 #else
 class LIBPROTOBUF_EXPORT Arena {
 #endif
@@ -801,7 +801,7 @@ class LIBPROTOBUF_EXPORT Arena {
   template <typename T>
   static void CreateInArenaStorageInternal(
       T* ptr, Arena* arena, google::protobuf::internal::false_type) {
-    new (ptr) T;
+    new (ptr) T();
   }
 
   template <typename T>

@@ -520,7 +520,7 @@ class Map {
   typedef size_t size_type;
   typedef hash<Key> hasher;
 
-  Map(bool old_style = true)
+  explicit Map(bool old_style = true)
       : arena_(NULL),
         default_enum_value_(0),
         old_style_(old_style) {
@@ -587,7 +587,7 @@ class Map {
     explicit MapAllocator(Arena* arena) : arena_(arena) {}
     template <typename X>
     MapAllocator(const MapAllocator<X>& allocator)
-        : arena_(allocator.arena_) {}
+        : arena_(allocator.arena()) {}
 
     pointer allocate(size_type n, const_pointer hint = 0) {
       // If arena is not given, malloc needs to be called which doesn't
@@ -650,12 +650,15 @@ class Map {
       return std::numeric_limits<size_type>::max();
     }
 
+    // To support gcc-4.4, which does not properly
+    // support templated friend classes
+    Arena* arena() const {
+      return arena_;
+    }
+
    private:
     typedef void DestructorSkippable_;
     Arena* const arena_;
-
-    template <typename X>
-    friend class MapAllocator;
   };
 
   // InnerMap's key type is Key and its value type is value_type*.  We use a
@@ -1247,7 +1250,7 @@ class Map {
     // Return whether table_[b] is a linked list that seems awfully long.
     // Requires table_[b] to point to a non-empty linked list.
     bool TableEntryIsTooLong(size_type b) {
-      const int kMaxLength = 8;
+      const size_type kMaxLength = 8;
       size_type count = 0;
       Node* node = static_cast<Node*>(table_[b]);
       do {
@@ -1616,6 +1619,24 @@ class Map {
       insert(other.begin(), other.end());
     }
     return *this;
+  }
+
+  void swap(Map& other) {
+    if (arena_ == other.arena_ && old_style_ == other.old_style_) {
+      std::swap(default_enum_value_, other.default_enum_value_);
+      if (old_style_) {
+        std::swap(deprecated_elements_, other.deprecated_elements_);
+      } else {
+        std::swap(elements_, other.elements_);
+      }
+    } else {
+      // TODO(zuguang): optimize this. The temporary copy can be allocated
+      // in the same arena as the other message, and the "other = copy" can
+      // be replaced with the fast-path swap above.
+      Map copy = *this;
+      *this = other;
+      other = copy;
+    }
   }
 
   // Access to hasher.  Currently this returns a copy, but it may
