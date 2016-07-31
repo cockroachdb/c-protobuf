@@ -7,9 +7,6 @@
 FieldMaskNumbersDontRoundTrip.JsonOutput
 FieldMaskPathsDontRoundTrip.JsonOutput
 FieldMaskTooManyUnderscore.JsonOutput
-JsonInput.AnyWithFieldMask.ProtobufOutput
-JsonInput.AnyWithValueForInteger.JsonOutput
-JsonInput.AnyWithValueForJsonObject.JsonOutput
 JsonInput.BoolFieldAllCapitalFalse
 JsonInput.BoolFieldAllCapitalTrue
 JsonInput.BoolFieldCamelCaseFalse
@@ -21,7 +18,6 @@ JsonInput.DoubleFieldInfinityNotQuoted
 JsonInput.DoubleFieldNanNotQuoted
 JsonInput.DoubleFieldNegativeInfinityNotQuoted
 JsonInput.EnumFieldNotQuoted
-JsonInput.FieldMask.ProtobufOutput
 JsonInput.FieldMaskInvalidCharacter
 JsonInput.FieldNameDuplicate
 JsonInput.FieldNameInSnakeCase.JsonOutput
@@ -30,8 +26,6 @@ JsonInput.FloatFieldInfinityNotQuoted
 JsonInput.FloatFieldNanNotQuoted
 JsonInput.FloatFieldNegativeInfinityNotQuoted
 JsonInput.Int32FieldLeadingZero
-JsonInput.Int32FieldMinFloatValue.JsonOutput
-JsonInput.Int32FieldMinValue.JsonOutput
 JsonInput.Int32FieldNegativeWithLeadingZero
 JsonInput.Int32FieldPlusSign
 JsonInput.Int32MapFieldKeyNotQuoted

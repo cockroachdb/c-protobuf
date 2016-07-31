@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # libtool - Provide generalized library-building support services.
-# Generated automatically by config.status (protobuf) 3.0.0-beta-3
+# Generated automatically by config.status (protobuf) 3.0.0
 # Libtool was configured on host Tamirs-MacBook-Pro.local:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #
@@ -66,13 +66,13 @@ PATH_SEPARATOR=":"
 
 # The host system.
 host_alias=
-host=x86_64-apple-darwin15.5.0
-host_os=darwin15.5.0
+host=x86_64-apple-darwin15.6.0
+host_os=darwin15.6.0
 
 # The build system.
 build_alias=
-build=x86_64-apple-darwin15.5.0
-build_os=darwin15.5.0
+build=x86_64-apple-darwin15.6.0
+build_os=darwin15.6.0
 
 # A sed program that does not truncate output.
 SED="/usr/bin/sed"

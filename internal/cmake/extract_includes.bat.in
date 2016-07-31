@@ -50,7 +50,6 @@ copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\metadata.h include\goo
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobufeflection.h include\google\protobufeflection.h
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobufeflection_ops.h include\google\protobufeflection_ops.h
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobufepeated_field.h include\google\protobufepeated_field.h
-copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobufepeated_field_reflection.h include\google\protobufepeated_field_reflection.h
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\service.h include\google\protobuf\service.h
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\source_context.pb.h include\google\protobuf\source_context.pb.h
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\struct.pb.h include\google\protobuf\struct.pb.h
@@ -65,6 +64,7 @@ copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\stubstomicops_interna
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\stubstomicops_internals_mips_gcc.h include\google\protobuf\stubstomicops_internals_mips_gcc.h
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\stubstomicops_internals_pnacl.h include\google\protobuf\stubstomicops_internals_pnacl.h
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\stubstomicops_internals_power.h include\google\protobuf\stubstomicops_internals_power.h
+copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\stubstomicops_internals_ppc_gcc.h include\google\protobuf\stubstomicops_internals_ppc_gcc.h
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\stubstomicops_internals_solaris.h include\google\protobuf\stubstomicops_internals_solaris.h
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\stubstomicops_internals_tsan.h include\google\protobuf\stubstomicops_internals_tsan.h
 copy ${PROTOBUF_SOURCE_WIN32_PATH}\..\src\google\protobuf\stubstomicops_internals_x86_gcc.h include\google\protobuf\stubstomicops_internals_x86_gcc.h
