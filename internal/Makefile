@@ -76,9 +76,9 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-apple-darwin15.6.0
-host_triplet = x86_64-apple-darwin15.6.0
-target_triplet = x86_64-apple-darwin15.6.0
+build_triplet = x86_64-apple-darwin16.1.0
+host_triplet = x86_64-apple-darwin16.1.0
+target_triplet = x86_64-apple-darwin16.1.0
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
@@ -280,17 +280,17 @@ NMEDIT = nmedit
 OBJC = gcc
 OBJCDEPMODE = depmode=gcc3
 OBJCFLAGS = -g -O2
-OBJDUMP = false
+OBJDUMP = objdump
 OBJEXT = o
 OTOOL = otool
 OTOOL64 = :
 PACKAGE = protobuf
 PACKAGE_BUGREPORT = protobuf@googlegroups.com
 PACKAGE_NAME = Protocol Buffers
-PACKAGE_STRING = Protocol Buffers 3.0.0
+PACKAGE_STRING = Protocol Buffers 3.1.0
 PACKAGE_TARNAME = protobuf
 PACKAGE_URL = 
-PACKAGE_VERSION = 3.0.0
+PACKAGE_VERSION = 3.1.0
 PATH_SEPARATOR = :
 POW_LIB = 
 PROTOBUF_OPT_FLAG = -O2
@@ -303,7 +303,7 @@ SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 3.0.0
+VERSION = 3.1.0
 abs_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
 abs_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
 abs_top_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
@@ -320,10 +320,10 @@ am__quote =
 am__tar = tar --format=ustar -chf - "$$tardir"
 am__untar = tar -xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-apple-darwin15.6.0
+build = x86_64-apple-darwin16.1.0
 build_alias = 
 build_cpu = x86_64
-build_os = darwin15.6.0
+build_os = darwin16.1.0
 build_vendor = apple
 builddir = .
 datadir = ${datarootdir}
@@ -331,10 +331,10 @@ datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-apple-darwin15.6.0
+host = x86_64-apple-darwin16.1.0
 host_alias = 
 host_cpu = x86_64
-host_os = darwin15.6.0
+host_os = darwin16.1.0
 host_vendor = apple
 htmldir = ${docdir}
 includedir = ${prefix}/include
@@ -356,10 +356,10 @@ sharedstatedir = ${prefix}/com
 srcdir = .
 subdirs =  gmock
 sysconfdir = ${prefix}/etc
-target = x86_64-apple-darwin15.6.0
+target = x86_64-apple-darwin16.1.0
 target_alias = 
 target_cpu = x86_64
-target_os = darwin15.6.0
+target_os = darwin16.1.0
 target_vendor = apple
 top_build_prefix = 
 top_builddir = .
@@ -861,6 +861,7 @@ objectivec_EXTRA_DIST = \
   objectivec/Tests/GPBTestUtilities.h                                        \
   objectivec/Tests/GPBTestUtilities.m                                        \
   objectivec/Tests/GPBUnittestProtos.m                                       \
+  objectivec/Tests/GPBUnittestProtos2.m                                      \
   objectivec/Tests/GPBUnknownFieldSetTest.m                                  \
   objectivec/Tests/GPBUtilitiesTests.m                                       \
   objectivec/Tests/GPBWellKnownTypesTest.m                                   \
@@ -882,6 +883,13 @@ objectivec_EXTRA_DIST = \
   objectivec/Tests/text_format_map_unittest_data.txt                          \
   objectivec/Tests/text_format_unittest_data.txt                              \
   objectivec/Tests/unittest_cycle.proto                                       \
+  objectivec/Tests/unittest_extension_chain_a.proto                           \
+  objectivec/Tests/unittest_extension_chain_b.proto                           \
+  objectivec/Tests/unittest_extension_chain_c.proto                           \
+  objectivec/Tests/unittest_extension_chain_d.proto                           \
+  objectivec/Tests/unittest_extension_chain_e.proto                           \
+  objectivec/Tests/unittest_extension_chain_f.proto                           \
+  objectivec/Tests/unittest_extension_chain_g.proto                           \
   objectivec/Tests/unittest_objc.proto                                        \
   objectivec/Tests/unittest_objc_startup.proto                                \
   objectivec/Tests/unittest_runtime_proto2.proto                              \
@@ -889,6 +897,57 @@ objectivec_EXTRA_DIST = \
   objectivec/Tests/UnitTests-Bridging-Header.h                                \
   objectivec/Tests/UnitTests-Info.plist                                       \
   Protobuf.podspec
+
+php_EXTRA_DIST = \
+  php/src/phpdoc.dist.xml                                    \
+  php/src/Google/Protobuf/Internal/DescriptorPool.php        \
+  php/src/Google/Protobuf/Internal/OneofField.php            \
+  php/src/Google/Protobuf/Internal/MapEntry.php              \
+  php/src/Google/Protobuf/Internal/Type.php                  \
+  php/src/Google/Protobuf/Internal/InputStream.php           \
+  php/src/Google/Protobuf/Internal/OutputStream.php          \
+  php/src/Google/Protobuf/Internal/MessageBuilderContext.php \
+  php/src/Google/Protobuf/Internal/MapField.php              \
+  php/src/Google/Protobuf/Internal/RepeatedField.php         \
+  php/src/Google/Protobuf/Internal/Message.php               \
+  php/src/Google/Protobuf/Internal/GPBWire.php               \
+  php/src/Google/Protobuf/Internal/GPBType.php               \
+  php/src/Google/Protobuf/Internal/GPBLabel.php              \
+  php/src/Google/Protobuf/Internal/EnumBuilderContext.php    \
+  php/src/Google/Protobuf/Internal/GPBUtil.php               \
+  php/src/Google/Protobuf/descriptor_internal.pb.php         \
+  php/src/Google/Protobuf/descriptor.php                     \
+  php/tests/encode_decode_test.php                           \
+  php/tests/test.sh                                          \
+  php/tests/generated_class_test.php                         \
+  php/tests/array_test.php                                   \
+  php/tests/php_implementation_test.php                      \
+  php/tests/test_include.proto                               \
+  php/tests/test_include.pb.php                              \
+  php/tests/map_field_test.php                               \
+  php/tests/test_base.php                                    \
+  php/tests/test_util.php                                    \
+  php/tests/test.proto                                       \
+  php/tests/test.pb.php                                      \
+  php/tests/memory_leak_test.php                             \
+  php/README.md                                              \
+  php/ext/google/protobuf/utf8.h                             \
+  php/ext/google/protobuf/message.c                          \
+  php/ext/google/protobuf/utf8.c                             \
+  php/ext/google/protobuf/package.xml                        \
+  php/ext/google/protobuf/upb.h                              \
+  php/ext/google/protobuf/array.c                            \
+  php/ext/google/protobuf/encode_decode.c                    \
+  php/ext/google/protobuf/protobuf.h                         \
+  php/ext/google/protobuf/type_check.c                       \
+  php/ext/google/protobuf/def.c                              \
+  php/ext/google/protobuf/storage.c                          \
+  php/ext/google/protobuf/map.c                              \
+  php/ext/google/protobuf/config.m4                          \
+  php/ext/google/protobuf/upb.c                              \
+  php/ext/google/protobuf/protobuf.c                         \
+  phpunit.xml                                                \
+  composer.json
 
 python_EXTRA_DIST = \
   python/MANIFEST.in                                                         \
@@ -936,6 +995,7 @@ python_EXTRA_DIST = \
   python/google/protobuf/internal/symbol_database_test.py                    \
   python/google/protobuf/internal/test_bad_identifiers.proto                 \
   python/google/protobuf/internal/test_util.py                               \
+  python/google/protobuf/internal/testing_refleaks.py                        \
   python/google/protobuf/internal/text_encoding_test.py                      \
   python/google/protobuf/internal/text_format_test.py                        \
   python/google/protobuf/internal/type_checkers.py                           \
@@ -967,6 +1027,8 @@ python_EXTRA_DIST = \
   python/google/protobuf/pyext/map_container.h                               \
   python/google/protobuf/pyext/message.cc                                    \
   python/google/protobuf/pyext/message.h                                     \
+  python/google/protobuf/pyext/message_factory.cc                            \
+  python/google/protobuf/pyext/message_factory.h                             \
   python/google/protobuf/pyext/message_module.cc                             \
   python/google/protobuf/pyext/proto2_api_test.proto                         \
   python/google/protobuf/pyext/python.proto                                  \
@@ -983,6 +1045,7 @@ python_EXTRA_DIST = \
   python/google/protobuf/text_encoding.py                                    \
   python/google/protobuf/text_format.py                                      \
   python/mox.py                                                              \
+  python/setup.cfg                                                           \
   python/setup.py                                                            \
   python/stubout.py                                                          \
   python/tox.ini                                                             \
@@ -1008,6 +1071,7 @@ ruby_EXTRA_DIST = \
   ruby/google-protobuf.gemspec                                               \
   ruby/lib/google/protobuf/message_exts.rb                                   \
   ruby/lib/google/protobuf/repeated_field.rb                                 \
+  ruby/lib/google/protobuf/well_known_types.rb                               \
   ruby/lib/google/protobuf.rb                                                \
   ruby/pom.xml                                                               \
   ruby/src/main/java/com/google/protobuf/jruby/RubyBuilder.java              \
@@ -1034,6 +1098,7 @@ ruby_EXTRA_DIST = \
   ruby/tests/generated_code.proto                                            \
   ruby/tests/test_import.proto                                               \
   ruby/tests/generated_code_test.rb                                          \
+  ruby/tests/well_known_types_test.rb                                        \
   ruby/travis-test.sh
 
 js_EXTRA_DIST = \
@@ -1065,6 +1130,7 @@ js_EXTRA_DIST = \
   js/gulpfile.js                            \
   js/jasmine.json                           \
   js/map.js                                 \
+  js/maps_test.js                           \
   js/message.js                             \
   js/message_test.js                        \
   js/node_loader.js                         \
@@ -1080,7 +1146,7 @@ js_EXTRA_DIST = \
   js/testbinary.proto                       \
   js/testempty.proto
 
-all_EXTRA_DIST = $(csharp_EXTRA_DIST) $(java_EXTRA_DIST) $(javanano_EXTRA_DIST) $(objectivec_EXTRA_DIST) $(python_EXTRA_DIST) $(ruby_EXTRA_DIST) $(js_EXTRA_DIST)
+all_EXTRA_DIST = $(csharp_EXTRA_DIST) $(java_EXTRA_DIST) $(javanano_EXTRA_DIST) $(objectivec_EXTRA_DIST) $(php_EXTRA_DIST) $(python_EXTRA_DIST) $(ruby_EXTRA_DIST) $(js_EXTRA_DIST)
 EXTRA_DIST = $(all_EXTRA_DIST)   \
   autogen.sh                             \
   generate_descriptor_proto.sh           \
