@@ -76,9 +76,9 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-apple-darwin15.6.0
-host_triplet = x86_64-apple-darwin15.6.0
-target_triplet = x86_64-apple-darwin15.6.0
+build_triplet = x86_64-apple-darwin16.1.0
+host_triplet = x86_64-apple-darwin16.1.0
+target_triplet = x86_64-apple-darwin16.1.0
 bin_PROGRAMS = generate-datasets$(EXEEXT)
 subdir = benchmarks
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -245,17 +245,17 @@ NMEDIT = nmedit
 OBJC = gcc
 OBJCDEPMODE = depmode=gcc3
 OBJCFLAGS = -g -O2
-OBJDUMP = false
+OBJDUMP = objdump
 OBJEXT = o
 OTOOL = otool
 OTOOL64 = :
 PACKAGE = protobuf
 PACKAGE_BUGREPORT = protobuf@googlegroups.com
 PACKAGE_NAME = Protocol Buffers
-PACKAGE_STRING = Protocol Buffers 3.0.0
+PACKAGE_STRING = Protocol Buffers 3.1.0
 PACKAGE_TARNAME = protobuf
 PACKAGE_URL = 
-PACKAGE_VERSION = 3.0.0
+PACKAGE_VERSION = 3.1.0
 PATH_SEPARATOR = :
 POW_LIB = 
 PROTOBUF_OPT_FLAG = -O2
@@ -268,7 +268,7 @@ SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 3.0.0
+VERSION = 3.1.0
 abs_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/benchmarks
 abs_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/benchmarks
 abs_top_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
@@ -285,10 +285,10 @@ am__quote =
 am__tar = tar --format=ustar -chf - "$$tardir"
 am__untar = tar -xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-apple-darwin15.6.0
+build = x86_64-apple-darwin16.1.0
 build_alias = 
 build_cpu = x86_64
-build_os = darwin15.6.0
+build_os = darwin16.1.0
 build_vendor = apple
 builddir = .
 datadir = ${datarootdir}
@@ -296,10 +296,10 @@ datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-apple-darwin15.6.0
+host = x86_64-apple-darwin16.1.0
 host_alias = 
 host_cpu = x86_64
-host_os = darwin15.6.0
+host_os = darwin16.1.0
 host_vendor = apple
 htmldir = ${docdir}
 includedir = ${prefix}/include
@@ -321,10 +321,10 @@ sharedstatedir = ${prefix}/com
 srcdir = .
 subdirs =  gmock
 sysconfdir = ${prefix}/etc
-target = x86_64-apple-darwin15.6.0
+target = x86_64-apple-darwin16.1.0
 target_alias = 
 target_cpu = x86_64
-target_os = darwin15.6.0
+target_os = darwin16.1.0
 target_vendor = apple
 top_build_prefix = ../
 top_builddir = ..
@@ -376,9 +376,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign benchmarks/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu benchmarks/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign benchmarks/Makefile
+	  $(AUTOMAKE) --gnu benchmarks/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

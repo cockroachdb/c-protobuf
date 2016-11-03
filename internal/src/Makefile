@@ -79,9 +79,9 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-apple-darwin15.6.0
-host_triplet = x86_64-apple-darwin15.6.0
-target_triplet = x86_64-apple-darwin15.6.0
+build_triplet = x86_64-apple-darwin16.1.0
+host_triplet = x86_64-apple-darwin16.1.0
+target_triplet = x86_64-apple-darwin16.1.0
 bin_PROGRAMS = protoc$(EXEEXT)
 check_PROGRAMS = protoc$(EXEEXT) protobuf-test$(EXEEXT) \
 	protobuf-lazy-descriptor-test$(EXEEXT) \
@@ -320,6 +320,7 @@ am_libprotoc_la_OBJECTS = google/protobuf/compiler/code_generator.lo \
 	google/protobuf/compiler/objectivec/objectivec_message_field.lo \
 	google/protobuf/compiler/objectivec/objectivec_oneof.lo \
 	google/protobuf/compiler/objectivec/objectivec_primitive_field.lo \
+	google/protobuf/compiler/php/php_generator.lo \
 	google/protobuf/compiler/python/python_generator.lo \
 	google/protobuf/compiler/ruby/ruby_generator.lo \
 	google/protobuf/compiler/csharp/csharp_doc_comment.lo \
@@ -385,8 +386,10 @@ am__objects_3 = $(am__objects_2) \
 	google/protobuf/util/internal/testdata/no_warning_test-field_mask.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/no_warning_test-maps.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/no_warning_test-oneofs.pb.$(OBJEXT) \
+	google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/no_warning_test-struct.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/no_warning_test-timestamp_duration.pb.$(OBJEXT) \
+	google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.$(OBJEXT) \
 	google/protobuf/util/no_warning_test-json_format_proto3.pb.$(OBJEXT) \
 	google/protobuf/util/no_warning_test-message_differencer_unittest.pb.$(OBJEXT)
 nodist_no_warning_test_OBJECTS =  \
@@ -447,8 +450,10 @@ am__objects_6 = $(am__objects_5) \
 	google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-field_mask.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-maps.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-oneofs.pb.$(OBJEXT) \
+	google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-struct.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-timestamp_duration.pb.$(OBJEXT) \
+	google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.$(OBJEXT) \
 	google/protobuf/util/protobuf_lazy_descriptor_test-json_format_proto3.pb.$(OBJEXT) \
 	google/protobuf/util/protobuf_lazy_descriptor_test-message_differencer_unittest.pb.$(OBJEXT)
 nodist_protobuf_lazy_descriptor_test_OBJECTS = $(am__objects_6)
@@ -620,8 +625,10 @@ am__objects_13 = $(am__objects_12) \
 	google/protobuf/util/internal/testdata/protobuf_test-field_mask.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_test-maps.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_test-oneofs.pb.$(OBJEXT) \
+	google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_test-struct.pb.$(OBJEXT) \
 	google/protobuf/util/internal/testdata/protobuf_test-timestamp_duration.pb.$(OBJEXT) \
+	google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.$(OBJEXT) \
 	google/protobuf/util/protobuf_test-json_format_proto3.pb.$(OBJEXT) \
 	google/protobuf/util/protobuf_test-message_differencer_unittest.pb.$(OBJEXT)
 nodist_protobuf_test_OBJECTS = $(am__objects_13)
@@ -777,8 +784,9 @@ am__nobase_include_HEADERS_DIST =  \
 	google/protobuf/generated_enum_util.h \
 	google/protobuf/generated_message_reflection.h \
 	google/protobuf/generated_message_util.h \
-	google/protobuf/map_entry.h google/protobuf/map_entry_lite.h \
-	google/protobuf/map_field.h google/protobuf/map_field_inl.h \
+	google/protobuf/has_bits.h google/protobuf/map_entry.h \
+	google/protobuf/map_entry_lite.h google/protobuf/map_field.h \
+	google/protobuf/map_field_inl.h \
 	google/protobuf/map_field_lite.h google/protobuf/map.h \
 	google/protobuf/map_type_handler.h google/protobuf/message.h \
 	google/protobuf/message_lite.h google/protobuf/metadata.h \
@@ -813,6 +821,7 @@ am__nobase_include_HEADERS_DIST =  \
 	google/protobuf/compiler/js/js_generator.h \
 	google/protobuf/compiler/objectivec/objectivec_generator.h \
 	google/protobuf/compiler/objectivec/objectivec_helpers.h \
+	google/protobuf/compiler/php/php_generator.h \
 	google/protobuf/compiler/python/python_generator.h \
 	google/protobuf/compiler/ruby/ruby_generator.h \
 	google/protobuf/util/type_resolver.h \
@@ -1075,17 +1084,17 @@ NMEDIT = nmedit
 OBJC = gcc
 OBJCDEPMODE = depmode=gcc3
 OBJCFLAGS = -g -O2
-OBJDUMP = false
+OBJDUMP = objdump
 OBJEXT = o
 OTOOL = otool
 OTOOL64 = :
 PACKAGE = protobuf
 PACKAGE_BUGREPORT = protobuf@googlegroups.com
 PACKAGE_NAME = Protocol Buffers
-PACKAGE_STRING = Protocol Buffers 3.0.0
+PACKAGE_STRING = Protocol Buffers 3.1.0
 PACKAGE_TARNAME = protobuf
 PACKAGE_URL = 
-PACKAGE_VERSION = 3.0.0
+PACKAGE_VERSION = 3.1.0
 PATH_SEPARATOR = :
 POW_LIB = 
 PROTOBUF_OPT_FLAG = -O2
@@ -1098,7 +1107,7 @@ SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 3.0.0
+VERSION = 3.1.0
 abs_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/src
 abs_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/src
 abs_top_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
@@ -1115,10 +1124,10 @@ am__quote =
 am__tar = tar --format=ustar -chf - "$$tardir"
 am__untar = tar -xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-apple-darwin15.6.0
+build = x86_64-apple-darwin16.1.0
 build_alias = 
 build_cpu = x86_64
-build_os = darwin15.6.0
+build_os = darwin16.1.0
 build_vendor = apple
 builddir = .
 datadir = ${datarootdir}
@@ -1126,10 +1135,10 @@ datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-apple-darwin15.6.0
+host = x86_64-apple-darwin16.1.0
 host_alias = 
 host_cpu = x86_64
-host_os = darwin15.6.0
+host_os = darwin16.1.0
 host_vendor = apple
 htmldir = ${docdir}
 includedir = ${prefix}/include
@@ -1151,10 +1160,10 @@ sharedstatedir = ${prefix}/com
 srcdir = .
 subdirs =  gmock
 sysconfdir = ${prefix}/etc
-target = x86_64-apple-darwin15.6.0
+target = x86_64-apple-darwin16.1.0
 target_alias = 
 target_cpu = x86_64
-target_os = darwin15.6.0
+target_os = darwin16.1.0
 target_vendor = apple
 top_build_prefix = ../
 top_builddir = ..
@@ -1180,6 +1189,10 @@ AM_LDFLAGS = $(PTHREAD_CFLAGS)
 # If I say "dist_include_DATA", automake complains that $(includedir) is not
 # a "legitimate" directory for DATA.  Screw you, automake.
 protodir = $(includedir)
+
+# If you are adding new files here, also remember to change the build files for
+# all other languages, //protoc-artifacts/build-zip.sh and run
+# //update_file_list.sh for bazel.
 nobase_dist_proto_DATA = google/protobuf/descriptor.proto     \
                          google/protobuf/any.proto            \
                          google/protobuf/api.proto            \
@@ -1254,6 +1267,7 @@ nobase_include_HEADERS = \
   google/protobuf/generated_enum_util.h                         \
   google/protobuf/generated_message_reflection.h                \
   google/protobuf/generated_message_util.h                      \
+  google/protobuf/has_bits.h                                    \
   google/protobuf/map_entry.h                                   \
   google/protobuf/map_entry_lite.h                              \
   google/protobuf/map_field.h                                   \
@@ -1301,6 +1315,7 @@ nobase_include_HEADERS = \
   google/protobuf/compiler/js/js_generator.h                    \
   google/protobuf/compiler/objectivec/objectivec_generator.h    \
   google/protobuf/compiler/objectivec/objectivec_helpers.h      \
+  google/protobuf/compiler/php/php_generator.h                  \
   google/protobuf/compiler/python/python_generator.h            \
   google/protobuf/compiler/ruby/ruby_generator.h                \
   google/protobuf/util/type_resolver.h                          \
@@ -1313,7 +1328,7 @@ nobase_include_HEADERS = \
 
 lib_LTLIBRARIES = libprotobuf-lite.la libprotobuf.la libprotoc.la
 libprotobuf_lite_la_LIBADD = $(PTHREAD_LIBS)
-libprotobuf_lite_la_LDFLAGS = -version-info 10:0:0 -export-dynamic -no-undefined
+libprotobuf_lite_la_LDFLAGS = -version-info 11:0:0 -export-dynamic -no-undefined
 libprotobuf_lite_la_SOURCES = \
   google/protobuf/stubs/atomicops_internals_x86_gcc.cc         \
   google/protobuf/stubs/atomicops_internals_x86_msvc.cc        \
@@ -1354,7 +1369,7 @@ libprotobuf_lite_la_SOURCES = \
   google/protobuf/io/zero_copy_stream_impl_lite.cc
 
 libprotobuf_la_LIBADD = $(PTHREAD_LIBS)
-libprotobuf_la_LDFLAGS = -version-info 10:0:0 -export-dynamic -no-undefined
+libprotobuf_la_LDFLAGS = -version-info 11:0:0 -export-dynamic -no-undefined
 libprotobuf_la_SOURCES = \
   $(libprotobuf_lite_la_SOURCES)                               \
   google/protobuf/any.pb.cc                                    \
@@ -1437,7 +1452,7 @@ libprotobuf_la_SOURCES = \
 
 nodist_libprotobuf_la_SOURCES = $(nodist_libprotobuf_lite_la_SOURCES)
 libprotoc_la_LIBADD = $(PTHREAD_LIBS) libprotobuf.la
-libprotoc_la_LDFLAGS = -version-info 10:0:0 -export-dynamic -no-undefined
+libprotoc_la_LDFLAGS = -version-info 11:0:0 -export-dynamic -no-undefined
 libprotoc_la_SOURCES = \
   google/protobuf/compiler/code_generator.cc                   \
   google/protobuf/compiler/command_line_interface.cc           \
@@ -1580,6 +1595,7 @@ libprotoc_la_SOURCES = \
   google/protobuf/compiler/objectivec/objectivec_oneof.h       \
   google/protobuf/compiler/objectivec/objectivec_primitive_field.cc \
   google/protobuf/compiler/objectivec/objectivec_primitive_field.h \
+  google/protobuf/compiler/php/php_generator.cc                \
   google/protobuf/compiler/python/python_generator.cc          \
   google/protobuf/compiler/ruby/ruby_generator.cc              \
   google/protobuf/compiler/csharp/csharp_doc_comment.cc        \
@@ -1659,8 +1675,10 @@ protoc_inputs = \
   google/protobuf/util/internal/testdata/field_mask.proto         \
   google/protobuf/util/internal/testdata/maps.proto               \
   google/protobuf/util/internal/testdata/oneofs.proto             \
+  google/protobuf/util/internal/testdata/proto3.proto             \
   google/protobuf/util/internal/testdata/struct.proto             \
   google/protobuf/util/internal/testdata/timestamp_duration.proto \
+  google/protobuf/util/internal/testdata/wrappers.proto           \
   google/protobuf/util/json_format_proto3.proto                   \
   google/protobuf/util/message_differencer_unittest.proto         \
   google/protobuf/compiler/cpp/cpp_test_large_enum_value.proto
@@ -1685,6 +1703,7 @@ EXTRA_DIST = \
   google/protobuf/testdata/text_format_unittest_extensions_data_pointy.txt  \
   google/protobuf/package_info.h                               \
   google/protobuf/io/package_info.h                            \
+  google/protobuf/util/package_info.h                          \
   google/protobuf/compiler/ruby/ruby_generated_code.proto      \
   google/protobuf/compiler/ruby/ruby_generated_code_pb.rb      \
   google/protobuf/compiler/package_info.h                      \
@@ -1775,10 +1794,14 @@ protoc_outputs = \
   google/protobuf/util/internal/testdata/maps.pb.h                \
   google/protobuf/util/internal/testdata/oneofs.pb.cc             \
   google/protobuf/util/internal/testdata/oneofs.pb.h              \
+  google/protobuf/util/internal/testdata/proto3.pb.cc             \
+  google/protobuf/util/internal/testdata/proto3.pb.h              \
   google/protobuf/util/internal/testdata/struct.pb.cc             \
   google/protobuf/util/internal/testdata/struct.pb.h              \
   google/protobuf/util/internal/testdata/timestamp_duration.pb.cc \
   google/protobuf/util/internal/testdata/timestamp_duration.pb.h  \
+  google/protobuf/util/internal/testdata/wrappers.pb.cc           \
+  google/protobuf/util/internal/testdata/wrappers.pb.h            \
   google/protobuf/util/json_format_proto3.pb.cc                   \
   google/protobuf/util/json_format_proto3.pb.h                    \
   google/protobuf/util/message_differencer_unittest.pb.cc         \
@@ -1978,9 +2001,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/Makefile
+	  $(AUTOMAKE) --gnu src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -2520,6 +2543,15 @@ google/protobuf/compiler/objectivec/objectivec_oneof.lo:  \
 google/protobuf/compiler/objectivec/objectivec_primitive_field.lo:  \
 	google/protobuf/compiler/objectivec/$(am__dirstamp) \
 	google/protobuf/compiler/objectivec/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/compiler/php/$(am__dirstamp):
+	@$(MKDIR_P) google/protobuf/compiler/php
+	@: > google/protobuf/compiler/php/$(am__dirstamp)
+google/protobuf/compiler/php/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) google/protobuf/compiler/php/$(DEPDIR)
+	@: > google/protobuf/compiler/php/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/compiler/php/php_generator.lo:  \
+	google/protobuf/compiler/php/$(am__dirstamp) \
+	google/protobuf/compiler/php/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/compiler/python/$(am__dirstamp):
 	@$(MKDIR_P) google/protobuf/compiler/python
 	@: > google/protobuf/compiler/python/$(am__dirstamp)
@@ -2779,10 +2811,16 @@ google/protobuf/util/internal/testdata/no_warning_test-maps.pb.$(OBJEXT):  \
 google/protobuf/util/internal/testdata/no_warning_test-oneofs.pb.$(OBJEXT):  \
 	google/protobuf/util/internal/testdata/$(am__dirstamp) \
 	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.$(OBJEXT):  \
+	google/protobuf/util/internal/testdata/$(am__dirstamp) \
+	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/util/internal/testdata/no_warning_test-struct.pb.$(OBJEXT):  \
 	google/protobuf/util/internal/testdata/$(am__dirstamp) \
 	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/util/internal/testdata/no_warning_test-timestamp_duration.pb.$(OBJEXT):  \
+	google/protobuf/util/internal/testdata/$(am__dirstamp) \
+	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.$(OBJEXT):  \
 	google/protobuf/util/internal/testdata/$(am__dirstamp) \
 	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/util/no_warning_test-json_format_proto3.pb.$(OBJEXT):  \
@@ -2939,10 +2977,16 @@ google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-maps.pb.$(O
 google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-oneofs.pb.$(OBJEXT):  \
 	google/protobuf/util/internal/testdata/$(am__dirstamp) \
 	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.$(OBJEXT):  \
+	google/protobuf/util/internal/testdata/$(am__dirstamp) \
+	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-struct.pb.$(OBJEXT):  \
 	google/protobuf/util/internal/testdata/$(am__dirstamp) \
 	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-timestamp_duration.pb.$(OBJEXT):  \
+	google/protobuf/util/internal/testdata/$(am__dirstamp) \
+	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.$(OBJEXT):  \
 	google/protobuf/util/internal/testdata/$(am__dirstamp) \
 	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/util/protobuf_lazy_descriptor_test-json_format_proto3.pb.$(OBJEXT):  \
@@ -3353,10 +3397,16 @@ google/protobuf/util/internal/testdata/protobuf_test-maps.pb.$(OBJEXT):  \
 google/protobuf/util/internal/testdata/protobuf_test-oneofs.pb.$(OBJEXT):  \
 	google/protobuf/util/internal/testdata/$(am__dirstamp) \
 	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.$(OBJEXT):  \
+	google/protobuf/util/internal/testdata/$(am__dirstamp) \
+	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/util/internal/testdata/protobuf_test-struct.pb.$(OBJEXT):  \
 	google/protobuf/util/internal/testdata/$(am__dirstamp) \
 	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/util/internal/testdata/protobuf_test-timestamp_duration.pb.$(OBJEXT):  \
+	google/protobuf/util/internal/testdata/$(am__dirstamp) \
+	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.$(OBJEXT):  \
 	google/protobuf/util/internal/testdata/$(am__dirstamp) \
 	google/protobuf/util/internal/testdata/$(DEPDIR)/$(am__dirstamp)
 google/protobuf/util/protobuf_test-json_format_proto3.pb.$(OBJEXT):  \
@@ -3422,6 +3472,8 @@ mostlyclean-compile:
 	-rm -f google/protobuf/compiler/js/*.lo
 	-rm -f google/protobuf/compiler/objectivec/*.$(OBJEXT)
 	-rm -f google/protobuf/compiler/objectivec/*.lo
+	-rm -f google/protobuf/compiler/php/*.$(OBJEXT)
+	-rm -f google/protobuf/compiler/php/*.lo
 	-rm -f google/protobuf/compiler/python/*.$(OBJEXT)
 	-rm -f google/protobuf/compiler/python/*.lo
 	-rm -f google/protobuf/compiler/ruby/*.$(OBJEXT)
@@ -3726,6 +3778,7 @@ include google/protobuf/compiler/objectivec/$(DEPDIR)/objectivec_message_field.P
 include google/protobuf/compiler/objectivec/$(DEPDIR)/objectivec_oneof.Plo
 include google/protobuf/compiler/objectivec/$(DEPDIR)/objectivec_primitive_field.Plo
 include google/protobuf/compiler/objectivec/$(DEPDIR)/protobuf_test-objectivec_helpers_unittest.Po
+include google/protobuf/compiler/php/$(DEPDIR)/php_generator.Plo
 include google/protobuf/compiler/python/$(DEPDIR)/protobuf_test-python_plugin_unittest.Po
 include google/protobuf/compiler/python/$(DEPDIR)/python_generator.Plo
 include google/protobuf/compiler/ruby/$(DEPDIR)/protobuf_test-ruby_generator_unittest.Po
@@ -3822,8 +3875,10 @@ include google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-default
 include google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-field_mask.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-maps.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-oneofs.pb.Po
+include google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-proto3.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-struct.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-timestamp_duration.pb.Po
+include google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-wrappers.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-anys.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-books.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-default_value.pb.Po
@@ -3831,8 +3886,10 @@ include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descripto
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-field_mask.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-maps.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-oneofs.pb.Po
+include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-proto3.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-struct.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-timestamp_duration.pb.Po
+include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-wrappers.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-anys.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-books.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-default_value.pb.Po
@@ -3840,8 +3897,10 @@ include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-default_v
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-field_mask.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-maps.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-oneofs.pb.Po
+include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-proto3.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-struct.pb.Po
 include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-timestamp_duration.pb.Po
+include google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-wrappers.pb.Po
 
 .cc.o:
 	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -4441,6 +4500,20 @@ google/protobuf/util/internal/testdata/no_warning_test-oneofs.pb.obj: google/pro
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/no_warning_test-oneofs.pb.obj `if test -f 'google/protobuf/util/internal/testdata/oneofs.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/oneofs.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/oneofs.pb.cc'; fi`
 
+google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.o: google/protobuf/util/internal/testdata/proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.o -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-proto3.pb.Tpo -c -o google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.o `test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/proto3.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-proto3.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-proto3.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/proto3.pb.cc' object='google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.o `test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/proto3.pb.cc
+
+google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.obj: google/protobuf/util/internal/testdata/proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.obj -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-proto3.pb.Tpo -c -o google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.obj `if test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/proto3.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-proto3.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-proto3.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/proto3.pb.cc' object='google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/no_warning_test-proto3.pb.obj `if test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/proto3.pb.cc'; fi`
+
 google/protobuf/util/internal/testdata/no_warning_test-struct.pb.o: google/protobuf/util/internal/testdata/struct.pb.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/no_warning_test-struct.pb.o -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-struct.pb.Tpo -c -o google/protobuf/util/internal/testdata/no_warning_test-struct.pb.o `test -f 'google/protobuf/util/internal/testdata/struct.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/struct.pb.cc
 	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-struct.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-struct.pb.Po
@@ -4468,6 +4541,20 @@ google/protobuf/util/internal/testdata/no_warning_test-timestamp_duration.pb.obj
 #	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/timestamp_duration.pb.cc' object='google/protobuf/util/internal/testdata/no_warning_test-timestamp_duration.pb.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/no_warning_test-timestamp_duration.pb.obj `if test -f 'google/protobuf/util/internal/testdata/timestamp_duration.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/timestamp_duration.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/timestamp_duration.pb.cc'; fi`
+
+google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.o: google/protobuf/util/internal/testdata/wrappers.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.o -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-wrappers.pb.Tpo -c -o google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.o `test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/wrappers.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-wrappers.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-wrappers.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/wrappers.pb.cc' object='google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.o `test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/wrappers.pb.cc
+
+google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.obj: google/protobuf/util/internal/testdata/wrappers.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.obj -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-wrappers.pb.Tpo -c -o google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.obj `if test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/wrappers.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-wrappers.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/no_warning_test-wrappers.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/wrappers.pb.cc' object='google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/no_warning_test-wrappers.pb.obj `if test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/wrappers.pb.cc'; fi`
 
 google/protobuf/util/no_warning_test-json_format_proto3.pb.o: google/protobuf/util/json_format_proto3.pb.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(no_warning_test_CPPFLAGS) $(CPPFLAGS) $(no_warning_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/no_warning_test-json_format_proto3.pb.o -MD -MP -MF google/protobuf/util/$(DEPDIR)/no_warning_test-json_format_proto3.pb.Tpo -c -o google/protobuf/util/no_warning_test-json_format_proto3.pb.o `test -f 'google/protobuf/util/json_format_proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/json_format_proto3.pb.cc
@@ -5141,6 +5228,20 @@ google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-oneofs.pb.o
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-oneofs.pb.obj `if test -f 'google/protobuf/util/internal/testdata/oneofs.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/oneofs.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/oneofs.pb.cc'; fi`
 
+google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.o: google/protobuf/util/internal/testdata/proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.o -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-proto3.pb.Tpo -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.o `test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/proto3.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-proto3.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-proto3.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/proto3.pb.cc' object='google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.o `test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/proto3.pb.cc
+
+google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.obj: google/protobuf/util/internal/testdata/proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.obj -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-proto3.pb.Tpo -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.obj `if test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/proto3.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-proto3.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-proto3.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/proto3.pb.cc' object='google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-proto3.pb.obj `if test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/proto3.pb.cc'; fi`
+
 google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-struct.pb.o: google/protobuf/util/internal/testdata/struct.pb.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-struct.pb.o -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-struct.pb.Tpo -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-struct.pb.o `test -f 'google/protobuf/util/internal/testdata/struct.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/struct.pb.cc
 	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-struct.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-struct.pb.Po
@@ -5168,6 +5269,20 @@ google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-timestamp_d
 #	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/timestamp_duration.pb.cc' object='google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-timestamp_duration.pb.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-timestamp_duration.pb.obj `if test -f 'google/protobuf/util/internal/testdata/timestamp_duration.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/timestamp_duration.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/timestamp_duration.pb.cc'; fi`
+
+google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.o: google/protobuf/util/internal/testdata/wrappers.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.o -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-wrappers.pb.Tpo -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.o `test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/wrappers.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-wrappers.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-wrappers.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/wrappers.pb.cc' object='google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.o `test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/wrappers.pb.cc
+
+google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.obj: google/protobuf/util/internal/testdata/wrappers.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.obj -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-wrappers.pb.Tpo -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.obj `if test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/wrappers.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-wrappers.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_lazy_descriptor_test-wrappers.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/wrappers.pb.cc' object='google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_lazy_descriptor_test-wrappers.pb.obj `if test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/wrappers.pb.cc'; fi`
 
 google/protobuf/util/protobuf_lazy_descriptor_test-json_format_proto3.pb.o: google/protobuf/util/json_format_proto3.pb.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_lazy_descriptor_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_lazy_descriptor_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/protobuf_lazy_descriptor_test-json_format_proto3.pb.o -MD -MP -MF google/protobuf/util/$(DEPDIR)/protobuf_lazy_descriptor_test-json_format_proto3.pb.Tpo -c -o google/protobuf/util/protobuf_lazy_descriptor_test-json_format_proto3.pb.o `test -f 'google/protobuf/util/json_format_proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/json_format_proto3.pb.cc
@@ -7017,6 +7132,20 @@ google/protobuf/util/internal/testdata/protobuf_test-oneofs.pb.obj: google/proto
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_test-oneofs.pb.obj `if test -f 'google/protobuf/util/internal/testdata/oneofs.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/oneofs.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/oneofs.pb.cc'; fi`
 
+google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.o: google/protobuf/util/internal/testdata/proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.o -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-proto3.pb.Tpo -c -o google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.o `test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/proto3.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-proto3.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-proto3.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/proto3.pb.cc' object='google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.o `test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/proto3.pb.cc
+
+google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.obj: google/protobuf/util/internal/testdata/proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.obj -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-proto3.pb.Tpo -c -o google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.obj `if test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/proto3.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-proto3.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-proto3.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/proto3.pb.cc' object='google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_test-proto3.pb.obj `if test -f 'google/protobuf/util/internal/testdata/proto3.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/proto3.pb.cc'; fi`
+
 google/protobuf/util/internal/testdata/protobuf_test-struct.pb.o: google/protobuf/util/internal/testdata/struct.pb.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/protobuf_test-struct.pb.o -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-struct.pb.Tpo -c -o google/protobuf/util/internal/testdata/protobuf_test-struct.pb.o `test -f 'google/protobuf/util/internal/testdata/struct.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/struct.pb.cc
 	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-struct.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-struct.pb.Po
@@ -7044,6 +7173,20 @@ google/protobuf/util/internal/testdata/protobuf_test-timestamp_duration.pb.obj: 
 #	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/timestamp_duration.pb.cc' object='google/protobuf/util/internal/testdata/protobuf_test-timestamp_duration.pb.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_test-timestamp_duration.pb.obj `if test -f 'google/protobuf/util/internal/testdata/timestamp_duration.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/timestamp_duration.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/timestamp_duration.pb.cc'; fi`
+
+google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.o: google/protobuf/util/internal/testdata/wrappers.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.o -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-wrappers.pb.Tpo -c -o google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.o `test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/wrappers.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-wrappers.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-wrappers.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/wrappers.pb.cc' object='google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.o `test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/internal/testdata/wrappers.pb.cc
+
+google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.obj: google/protobuf/util/internal/testdata/wrappers.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.obj -MD -MP -MF google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-wrappers.pb.Tpo -c -o google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.obj `if test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/wrappers.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-wrappers.pb.Tpo google/protobuf/util/internal/testdata/$(DEPDIR)/protobuf_test-wrappers.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/util/internal/testdata/wrappers.pb.cc' object='google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/util/internal/testdata/protobuf_test-wrappers.pb.obj `if test -f 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; then $(CYGPATH_W) 'google/protobuf/util/internal/testdata/wrappers.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/util/internal/testdata/wrappers.pb.cc'; fi`
 
 google/protobuf/util/protobuf_test-json_format_proto3.pb.o: google/protobuf/util/json_format_proto3.pb.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(protobuf_test_CPPFLAGS) $(CPPFLAGS) $(protobuf_test_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/util/protobuf_test-json_format_proto3.pb.o -MD -MP -MF google/protobuf/util/$(DEPDIR)/protobuf_test-json_format_proto3.pb.Tpo -c -o google/protobuf/util/protobuf_test-json_format_proto3.pb.o `test -f 'google/protobuf/util/json_format_proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/util/json_format_proto3.pb.cc
@@ -7128,6 +7271,7 @@ clean-libtool:
 	-rm -rf google/protobuf/compiler/javanano/.libs google/protobuf/compiler/javanano/_libs
 	-rm -rf google/protobuf/compiler/js/.libs google/protobuf/compiler/js/_libs
 	-rm -rf google/protobuf/compiler/objectivec/.libs google/protobuf/compiler/objectivec/_libs
+	-rm -rf google/protobuf/compiler/php/.libs google/protobuf/compiler/php/_libs
 	-rm -rf google/protobuf/compiler/python/.libs google/protobuf/compiler/python/_libs
 	-rm -rf google/protobuf/compiler/ruby/.libs google/protobuf/compiler/ruby/_libs
 	-rm -rf google/protobuf/io/.libs google/protobuf/io/_libs
@@ -7529,6 +7673,8 @@ distclean-generic:
 	-rm -f google/protobuf/compiler/js/$(am__dirstamp)
 	-rm -f google/protobuf/compiler/objectivec/$(DEPDIR)/$(am__dirstamp)
 	-rm -f google/protobuf/compiler/objectivec/$(am__dirstamp)
+	-rm -f google/protobuf/compiler/php/$(DEPDIR)/$(am__dirstamp)
+	-rm -f google/protobuf/compiler/php/$(am__dirstamp)
 	-rm -f google/protobuf/compiler/python/$(DEPDIR)/$(am__dirstamp)
 	-rm -f google/protobuf/compiler/python/$(am__dirstamp)
 	-rm -f google/protobuf/compiler/ruby/$(DEPDIR)/$(am__dirstamp)
@@ -7557,7 +7703,7 @@ clean-am: clean-binPROGRAMS clean-checkPROGRAMS clean-generic \
 	clean-libLTLIBRARIES clean-libtool clean-local mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) google/protobuf/$(DEPDIR) google/protobuf/compiler/$(DEPDIR) google/protobuf/compiler/cpp/$(DEPDIR) google/protobuf/compiler/csharp/$(DEPDIR) google/protobuf/compiler/java/$(DEPDIR) google/protobuf/compiler/javanano/$(DEPDIR) google/protobuf/compiler/js/$(DEPDIR) google/protobuf/compiler/objectivec/$(DEPDIR) google/protobuf/compiler/python/$(DEPDIR) google/protobuf/compiler/ruby/$(DEPDIR) google/protobuf/io/$(DEPDIR) google/protobuf/stubs/$(DEPDIR) google/protobuf/testing/$(DEPDIR) google/protobuf/util/$(DEPDIR) google/protobuf/util/internal/$(DEPDIR) google/protobuf/util/internal/testdata/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) google/protobuf/$(DEPDIR) google/protobuf/compiler/$(DEPDIR) google/protobuf/compiler/cpp/$(DEPDIR) google/protobuf/compiler/csharp/$(DEPDIR) google/protobuf/compiler/java/$(DEPDIR) google/protobuf/compiler/javanano/$(DEPDIR) google/protobuf/compiler/js/$(DEPDIR) google/protobuf/compiler/objectivec/$(DEPDIR) google/protobuf/compiler/php/$(DEPDIR) google/protobuf/compiler/python/$(DEPDIR) google/protobuf/compiler/ruby/$(DEPDIR) google/protobuf/io/$(DEPDIR) google/protobuf/stubs/$(DEPDIR) google/protobuf/testing/$(DEPDIR) google/protobuf/util/$(DEPDIR) google/protobuf/util/internal/$(DEPDIR) google/protobuf/util/internal/testdata/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -7604,7 +7750,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) google/protobuf/$(DEPDIR) google/protobuf/compiler/$(DEPDIR) google/protobuf/compiler/cpp/$(DEPDIR) google/protobuf/compiler/csharp/$(DEPDIR) google/protobuf/compiler/java/$(DEPDIR) google/protobuf/compiler/javanano/$(DEPDIR) google/protobuf/compiler/js/$(DEPDIR) google/protobuf/compiler/objectivec/$(DEPDIR) google/protobuf/compiler/python/$(DEPDIR) google/protobuf/compiler/ruby/$(DEPDIR) google/protobuf/io/$(DEPDIR) google/protobuf/stubs/$(DEPDIR) google/protobuf/testing/$(DEPDIR) google/protobuf/util/$(DEPDIR) google/protobuf/util/internal/$(DEPDIR) google/protobuf/util/internal/testdata/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) google/protobuf/$(DEPDIR) google/protobuf/compiler/$(DEPDIR) google/protobuf/compiler/cpp/$(DEPDIR) google/protobuf/compiler/csharp/$(DEPDIR) google/protobuf/compiler/java/$(DEPDIR) google/protobuf/compiler/javanano/$(DEPDIR) google/protobuf/compiler/js/$(DEPDIR) google/protobuf/compiler/objectivec/$(DEPDIR) google/protobuf/compiler/php/$(DEPDIR) google/protobuf/compiler/python/$(DEPDIR) google/protobuf/compiler/ruby/$(DEPDIR) google/protobuf/io/$(DEPDIR) google/protobuf/stubs/$(DEPDIR) google/protobuf/testing/$(DEPDIR) google/protobuf/util/$(DEPDIR) google/protobuf/util/internal/$(DEPDIR) google/protobuf/util/internal/testdata/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

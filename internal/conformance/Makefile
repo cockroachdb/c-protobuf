@@ -76,9 +76,9 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-apple-darwin15.6.0
-host_triplet = x86_64-apple-darwin15.6.0
-target_triplet = x86_64-apple-darwin15.6.0
+build_triplet = x86_64-apple-darwin16.1.0
+host_triplet = x86_64-apple-darwin16.1.0
+target_triplet = x86_64-apple-darwin16.1.0
 bin_PROGRAMS = conformance-test-runner$(EXEEXT) \
 	conformance-cpp$(EXEEXT) $(am__EXEEXT_1)
 am__append_1 = conformance-objc
@@ -294,17 +294,17 @@ NMEDIT = nmedit
 OBJC = gcc
 OBJCDEPMODE = depmode=gcc3
 OBJCFLAGS = -g -O2
-OBJDUMP = false
+OBJDUMP = objdump
 OBJEXT = o
 OTOOL = otool
 OTOOL64 = :
 PACKAGE = protobuf
 PACKAGE_BUGREPORT = protobuf@googlegroups.com
 PACKAGE_NAME = Protocol Buffers
-PACKAGE_STRING = Protocol Buffers 3.0.0
+PACKAGE_STRING = Protocol Buffers 3.1.0
 PACKAGE_TARNAME = protobuf
 PACKAGE_URL = 
-PACKAGE_VERSION = 3.0.0
+PACKAGE_VERSION = 3.1.0
 PATH_SEPARATOR = :
 POW_LIB = 
 PROTOBUF_OPT_FLAG = -O2
@@ -317,7 +317,7 @@ SED = /usr/bin/sed
 SET_MAKE = 
 SHELL = /bin/sh
 STRIP = strip
-VERSION = 3.0.0
+VERSION = 3.1.0
 abs_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/conformance
 abs_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/conformance
 abs_top_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
@@ -334,10 +334,10 @@ am__quote =
 am__tar = tar --format=ustar -chf - "$$tardir"
 am__untar = tar -xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-apple-darwin15.6.0
+build = x86_64-apple-darwin16.1.0
 build_alias = 
 build_cpu = x86_64
-build_os = darwin15.6.0
+build_os = darwin16.1.0
 build_vendor = apple
 builddir = .
 datadir = ${datarootdir}
@@ -345,10 +345,10 @@ datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-apple-darwin15.6.0
+host = x86_64-apple-darwin16.1.0
 host_alias = 
 host_cpu = x86_64
-host_os = darwin15.6.0
+host_os = darwin16.1.0
 host_vendor = apple
 htmldir = ${docdir}
 includedir = ${prefix}/include
@@ -370,10 +370,10 @@ sharedstatedir = ${prefix}/com
 srcdir = .
 subdirs =  gmock
 sysconfdir = ${prefix}/etc
-target = x86_64-apple-darwin15.6.0
+target = x86_64-apple-darwin16.1.0
 target_alias = 
 target_cpu = x86_64
-target_os = darwin15.6.0
+target_os = darwin16.1.0
 target_vendor = apple
 top_build_prefix = ../
 top_builddir = ..
@@ -397,7 +397,7 @@ other_language_protoc_outputs = \
   conformance_pb2.py                                           \
   Conformance.pbobjc.h                                         \
   Conformance.pbobjc.m                                         \
-  conformance.rb                                               \
+  conformance_pb.rb                                            \
   com/google/protobuf/Any.java                                 \
   com/google/protobuf/AnyOrBuilder.java                        \
   com/google/protobuf/AnyProto.java                            \
@@ -523,9 +523,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign conformance/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu conformance/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign conformance/Makefile
+	  $(AUTOMAKE) --gnu conformance/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -1160,30 +1160,30 @@ conformance-csharp: $(other_language_protoc_outputs)
 
 # Targets for actually running tests.
 test_cpp: protoc_middleman conformance-test-runner conformance-cpp
-	./conformance-test-runner --failure_list failure_list_cpp.txt ./conformance-cpp
+	./conformance-test-runner --enforce_recommended --failure_list failure_list_cpp.txt ./conformance-cpp
 
 test_java: protoc_middleman conformance-test-runner conformance-java
-	./conformance-test-runner --failure_list failure_list_java.txt ./conformance-java
+	./conformance-test-runner --enforce_recommended --failure_list failure_list_java.txt ./conformance-java
 
 test_java_lite: protoc_middleman conformance-test-runner conformance-java-lite
-	./conformance-test-runner ./conformance-java-lite
+	./conformance-test-runner --enforce_recommended ./conformance-java-lite
 
 test_csharp: protoc_middleman conformance-test-runner conformance-csharp
-	./conformance-test-runner --failure_list failure_list_csharp.txt ./conformance-csharp
+	./conformance-test-runner --enforce_recommended --failure_list failure_list_csharp.txt ./conformance-csharp
 
 test_ruby: protoc_middleman conformance-test-runner $(other_language_protoc_outputs)
-	RUBYLIB=../ruby/lib:. ./conformance-test-runner --failure_list failure_list_ruby.txt ./conformance_ruby.rb
+	RUBYLIB=../ruby/lib:. ./conformance-test-runner --enforce_recommended --failure_list failure_list_ruby.txt ./conformance_ruby.rb
 
 # These depend on library paths being properly set up.  The easiest way to
 # run them is to just use "tox" from the python dir.
 test_python: protoc_middleman conformance-test-runner
-	./conformance-test-runner --failure_list failure_list_python.txt ./conformance_python.py
+	./conformance-test-runner --enforce_recommended --failure_list failure_list_python.txt ./conformance_python.py
 
 test_python_cpp: protoc_middleman conformance-test-runner
-	./conformance-test-runner --failure_list failure_list_python_cpp.txt ./conformance_python.py
+	./conformance-test-runner --enforce_recommended --failure_list failure_list_python_cpp.txt ./conformance_python.py
 
 test_objc: protoc_middleman conformance-test-runner conformance-objc
-	./conformance-test-runner --failure_list failure_list_objc.txt ./conformance-objc
+	./conformance-test-runner --enforce_recommended --failure_list failure_list_objc.txt ./conformance-objc
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
