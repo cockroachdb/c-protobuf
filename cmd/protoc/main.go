@@ -9,8 +9,8 @@ import (
 
 // #cgo CXXFLAGS: -std=c++11
 // #cgo CPPFLAGS: -I../.. -I../../internal/src
-// #cgo darwin LDFLAGS: -Wl,-undefined -Wl,dynamic_lookup
-// #cgo !darwin LDFLAGS: -Wl,-unresolved-symbols=ignore-all
+// #cgo !strictld,darwin LDFLAGS: -Wl,-undefined -Wl,dynamic_lookup
+// #cgo !strictld,!darwin LDFLAGS: -Wl,-unresolved-symbols=ignore-all
 //
 // int cmain(int argc, char* argv[]);
 import "C"
