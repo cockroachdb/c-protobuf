@@ -16,6 +16,9 @@
 /* the location of <unordered_set> or <hash_set> */
 #define HASH_SET_H <unordered_set>
 
+/* define if the compiler supports basic C++11 syntax */
+#define HAVE_CXX11 1
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
 
@@ -80,7 +83,7 @@
 #define HAVE_UNISTD_H 1
 
 /* Enable classes using zlib compression. */
-#define HAVE_ZLIB 1
+/* #undef HAVE_ZLIB */
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -96,7 +99,7 @@
 #define PACKAGE_NAME "Protocol Buffers"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Protocol Buffers 3.1.0"
+#define PACKAGE_STRING "Protocol Buffers 3.2.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "protobuf"
@@ -105,7 +108,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "3.1.0"
+#define PACKAGE_VERSION "3.2.0"
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
@@ -137,7 +140,7 @@
 
 
 /* Version number of package */
-#define VERSION "3.1.0"
+#define VERSION "3.2.0"
 
 /* Define to 1 if on MINIX. */
 /* #undef _MINIX */

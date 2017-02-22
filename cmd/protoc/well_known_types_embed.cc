@@ -1,0 +1,1 @@
+../../internal/src/google/protobuf/compiler/js/well_known_types_embed.cc

@@ -76,20 +76,24 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-apple-darwin16.1.0
-host_triplet = x86_64-apple-darwin16.1.0
-target_triplet = x86_64-apple-darwin16.1.0
-bin_PROGRAMS = generate-datasets$(EXEEXT)
+build_triplet = x86_64-unknown-linux-gnu
+host_triplet = x86_64-unknown-linux-gnu
+target_triplet = x86_64-unknown-linux-gnu
+bin_PROGRAMS = generate-datasets$(EXEEXT) cpp-benchmark$(EXEEXT)
 subdir = benchmarks
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_system_extensions.m4 \
 	$(top_srcdir)/m4/acx_check_suncc.m4 \
-	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/stl_hash.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/acx_pthread.m4 \
+	$(top_srcdir)/m4/ax_cxx_compile_stdcxx.m4 \
+	$(top_srcdir)/m4/ax_prog_cc_for_build.m4 \
+	$(top_srcdir)/m4/ax_prog_cxx_for_build.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/stl_hash.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -98,20 +102,29 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_generate_datasets_OBJECTS =  \
-	generate_datasets-generate_datasets.$(OBJEXT)
-am__objects_1 = generate_datasets-benchmarks.pb.$(OBJEXT) \
-	generate_datasets-benchmark_messages_proto3.pb.$(OBJEXT)
-am__objects_2 =  \
-	generate_datasets-benchmark_messages_proto2.pb.$(OBJEXT)
-nodist_generate_datasets_OBJECTS = $(am__objects_1) $(am__objects_2)
-generate_datasets_OBJECTS = $(am_generate_datasets_OBJECTS) \
-	$(nodist_generate_datasets_OBJECTS)
-generate_datasets_DEPENDENCIES = $(top_srcdir)/src/libprotobuf.la
+am_cpp_benchmark_OBJECTS = cpp_benchmark-cpp_benchmark.$(OBJEXT)
+am__objects_1 = cpp_benchmark-benchmarks.pb.$(OBJEXT) \
+	cpp_benchmark-benchmark_messages_proto3.pb.$(OBJEXT)
+am__objects_2 = cpp_benchmark-benchmark_messages_proto2.pb.$(OBJEXT)
+nodist_cpp_benchmark_OBJECTS = $(am__objects_1) $(am__objects_2)
+cpp_benchmark_OBJECTS = $(am_cpp_benchmark_OBJECTS) \
+	$(nodist_cpp_benchmark_OBJECTS)
+cpp_benchmark_DEPENDENCIES = $(top_srcdir)/src/libprotobuf.la \
+	$(top_srcdir)/third_party/benchmark/src/libbenchmark.a
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+am_generate_datasets_OBJECTS =  \
+	generate_datasets-generate_datasets.$(OBJEXT)
+am__objects_3 = generate_datasets-benchmarks.pb.$(OBJEXT) \
+	generate_datasets-benchmark_messages_proto3.pb.$(OBJEXT)
+am__objects_4 =  \
+	generate_datasets-benchmark_messages_proto2.pb.$(OBJEXT)
+nodist_generate_datasets_OBJECTS = $(am__objects_3) $(am__objects_4)
+generate_datasets_OBJECTS = $(am_generate_datasets_OBJECTS) \
+	$(nodist_generate_datasets_OBJECTS)
+generate_datasets_DEPENDENCIES = $(top_srcdir)/src/libprotobuf.la
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -164,9 +177,10 @@ AM_V_CCLD = $(am__v_CCLD_$(V))
 am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(generate_datasets_SOURCES) \
+SOURCES = $(cpp_benchmark_SOURCES) $(nodist_cpp_benchmark_SOURCES) \
+	$(generate_datasets_SOURCES) \
 	$(nodist_generate_datasets_SOURCES)
-DIST_SOURCES = $(generate_datasets_SOURCES)
+DIST_SOURCES = $(cpp_benchmark_SOURCES) $(generate_datasets_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -192,92 +206,107 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing aclocal-1.14
+ACLOCAL = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
-AUTOCONF = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing autoconf
-AUTOHEADER = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing autoheader
-AUTOMAKE = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing automake-1.14
-AWK = awk
-CC = gcc
+AUTOCONF = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing autoconf
+AUTOHEADER = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing autoheader
+AUTOMAKE = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing automake-1.14
+AWK = gawk
+BUILD_EXEEXT = 
+BUILD_OBJEXT = 
+CC = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc
 CCDEPMODE = depmode=gcc3
+CC_FOR_BUILD = cc
 CFLAGS = 
+CFLAGS_FOR_BUILD = -g -O2
+CPP = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc -E
 CPPFLAGS = 
-CXX = g++
-CXXCPP = g++ -E
+CPPFLAGS_FOR_BUILD = 
+CPP_FOR_BUILD = cc -E
+CXX = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-g++
+CXXCPP = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-g++ -E
+CXXCPPFLAGS_FOR_BUILD = 
+CXXCPP_FOR_BUILD = c++ -E
 CXXDEPMODE = depmode=gcc3
 CXXFLAGS =  -g -DNDEBUG
+CXXFLAGS_FOR_BUILD = -g -O2
+CXX_FOR_BUILD = c++
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DIST_LANG = all
 DLLTOOL = false
-DSYMUTIL = dsymutil
+DSYMUTIL = 
 DUMPBIN = 
-ECHO_C = \c
-ECHO_N = 
+ECHO_C = 
+ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-FGREP = /usr/bin/grep -F
-GREP = /usr/bin/grep
+FGREP = /bin/grep -F
+GREP = /bin/grep
+HAVE_CXX11 = 1
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 ISAINFO = 
-LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
+LD = /x-tools/x86_64-unknown-linux-gnu/x86_64-unknown-linux-gnu/bin/ld -m elf_x86_64
 LDFLAGS = 
+LDFLAGS_FOR_BUILD = 
 LIBOBJS = 
-LIBS = -lz 
+LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
-LIPO = lipo
+LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 MAINT = 
-MAKEINFO = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing makeinfo
+MAKEINFO = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing makeinfo
 MANIFEST_TOOL = :
-MKDIR_P = .././install-sh -c -d
+MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
-NMEDIT = nmedit
-OBJC = gcc
+NMEDIT = 
+OBJC = cc
 OBJCDEPMODE = depmode=gcc3
 OBJCFLAGS = -g -O2
 OBJDUMP = objdump
 OBJEXT = o
-OTOOL = otool
-OTOOL64 = :
+OTOOL = 
+OTOOL64 = 
 PACKAGE = protobuf
 PACKAGE_BUGREPORT = protobuf@googlegroups.com
 PACKAGE_NAME = Protocol Buffers
-PACKAGE_STRING = Protocol Buffers 3.1.0
+PACKAGE_STRING = Protocol Buffers 3.2.0
 PACKAGE_TARNAME = protobuf
 PACKAGE_URL = 
-PACKAGE_VERSION = 3.1.0
+PACKAGE_VERSION = 3.2.0
 PATH_SEPARATOR = :
 POW_LIB = 
 PROTOBUF_OPT_FLAG = -O2
 PROTOC = 
-PTHREAD_CC = gcc
-PTHREAD_CFLAGS = -D_THREAD_SAFE 
-PTHREAD_LIBS = 
+PTHREAD_CC = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc
+PTHREAD_CFLAGS = -pthread
+PTHREAD_LIBS =  -lpthread
 RANLIB = ranlib
-SED = /usr/bin/sed
+SED = /bin/sed
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 STRIP = strip
-VERSION = 3.1.0
-abs_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/benchmarks
-abs_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/benchmarks
-abs_top_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
-abs_top_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
+VERSION = 3.2.0
+abs_builddir = /go/src/github.com/cockroachdb/c-protobuf/internal/benchmarks
+abs_srcdir = /go/src/github.com/cockroachdb/c-protobuf/internal/benchmarks
+abs_top_builddir = /go/src/github.com/cockroachdb/c-protobuf/internal
+abs_top_srcdir = /go/src/github.com/cockroachdb/c-protobuf/internal
 ac_ct_AR = ar
-ac_ct_CC = gcc
-ac_ct_CXX = g++
+ac_ct_CC = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc
+ac_ct_CC_FOR_BUILD = 
+ac_ct_CXX = 
+ac_ct_CXX_FOR_BUILD = c++
 ac_ct_DUMPBIN = 
-ac_ct_OBJC = gcc
+ac_ct_OBJC = cc
 acx_pthread_config = 
 am__include = include
 am__leading_dot = .
@@ -285,26 +314,26 @@ am__quote =
 am__tar = tar --format=ustar -chf - "$$tardir"
 am__untar = tar -xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-apple-darwin16.1.0
+build = x86_64-unknown-linux-gnu
 build_alias = 
 build_cpu = x86_64
-build_os = darwin16.1.0
-build_vendor = apple
+build_os = linux-gnu
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-apple-darwin16.1.0
+host = x86_64-unknown-linux-gnu
 host_alias = 
 host_cpu = x86_64
-host_os = darwin16.1.0
-host_vendor = apple
+host_os = linux-gnu
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/install-sh
+install_sh = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -321,11 +350,11 @@ sharedstatedir = ${prefix}/com
 srcdir = .
 subdirs =  gmock
 sysconfdir = ${prefix}/etc
-target = x86_64-apple-darwin16.1.0
+target = x86_64-unknown-linux-gnu
 target_alias = 
 target_cpu = x86_64
-target_os = darwin16.1.0
-target_vendor = apple
+target_os = linux-gnu
+target_vendor = unknown
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
@@ -346,10 +375,18 @@ benchmarks_protoc_outputs_proto2 = \
   benchmark_messages_proto2.pb.cc                              \
   benchmark_messages_proto2.pb.h
 
+AM_CXXFLAGS = $(NO_OPT_CXXFLAGS) $(PROTOBUF_OPT_FLAG) -Wall -Wwrite-strings -Woverloaded-virtual -Wno-sign-compare
 generate_datasets_LDADD = $(top_srcdir)/src/libprotobuf.la
 generate_datasets_SOURCES = generate_datasets.cc
 generate_datasets_CPPFLAGS = -I$(top_srcdir)/src -I$(srcdir)
 nodist_generate_datasets_SOURCES = \
+  $(benchmarks_protoc_outputs)                                 \
+  $(benchmarks_protoc_outputs_proto2)
+
+cpp_benchmark_LDADD = $(top_srcdir)/src/libprotobuf.la $(top_srcdir)/third_party/benchmark/src/libbenchmark.a
+cpp_benchmark_SOURCES = cpp_benchmark.cc
+cpp_benchmark_CPPFLAGS = -I$(top_srcdir)/src -I$(srcdir) -I$(top_srcdir)/third_party/benchmark/include
+nodist_cpp_benchmark_SOURCES = \
   $(benchmarks_protoc_outputs)                                 \
   $(benchmarks_protoc_outputs_proto2)
 
@@ -447,6 +484,10 @@ clean-binPROGRAMS:
 	echo " rm -f" $$list; \
 	rm -f $$list
 
+cpp-benchmark$(EXEEXT): $(cpp_benchmark_OBJECTS) $(cpp_benchmark_DEPENDENCIES) $(EXTRA_cpp_benchmark_DEPENDENCIES) 
+	@rm -f cpp-benchmark$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(cpp_benchmark_OBJECTS) $(cpp_benchmark_LDADD) $(LIBS)
+
 generate-datasets$(EXEEXT): $(generate_datasets_OBJECTS) $(generate_datasets_DEPENDENCIES) $(EXTRA_generate_datasets_DEPENDENCIES) 
 	@rm -f generate-datasets$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(generate_datasets_OBJECTS) $(generate_datasets_LDADD) $(LIBS)
@@ -457,6 +498,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/cpp_benchmark-benchmark_messages_proto2.pb.Po
+include ./$(DEPDIR)/cpp_benchmark-benchmark_messages_proto3.pb.Po
+include ./$(DEPDIR)/cpp_benchmark-benchmarks.pb.Po
+include ./$(DEPDIR)/cpp_benchmark-cpp_benchmark.Po
 include ./$(DEPDIR)/generate_datasets-benchmark_messages_proto2.pb.Po
 include ./$(DEPDIR)/generate_datasets-benchmark_messages_proto3.pb.Po
 include ./$(DEPDIR)/generate_datasets-benchmarks.pb.Po
@@ -485,6 +530,62 @@ include ./$(DEPDIR)/generate_datasets-generate_datasets.Po
 #	$(AM_V_CXX)source='$<' object='$@' libtool=yes \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(LTCXXCOMPILE) -c -o $@ $<
+
+cpp_benchmark-cpp_benchmark.o: cpp_benchmark.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cpp_benchmark-cpp_benchmark.o -MD -MP -MF $(DEPDIR)/cpp_benchmark-cpp_benchmark.Tpo -c -o cpp_benchmark-cpp_benchmark.o `test -f 'cpp_benchmark.cc' || echo '$(srcdir)/'`cpp_benchmark.cc
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cpp_benchmark-cpp_benchmark.Tpo $(DEPDIR)/cpp_benchmark-cpp_benchmark.Po
+#	$(AM_V_CXX)source='cpp_benchmark.cc' object='cpp_benchmark-cpp_benchmark.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cpp_benchmark-cpp_benchmark.o `test -f 'cpp_benchmark.cc' || echo '$(srcdir)/'`cpp_benchmark.cc
+
+cpp_benchmark-cpp_benchmark.obj: cpp_benchmark.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cpp_benchmark-cpp_benchmark.obj -MD -MP -MF $(DEPDIR)/cpp_benchmark-cpp_benchmark.Tpo -c -o cpp_benchmark-cpp_benchmark.obj `if test -f 'cpp_benchmark.cc'; then $(CYGPATH_W) 'cpp_benchmark.cc'; else $(CYGPATH_W) '$(srcdir)/cpp_benchmark.cc'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cpp_benchmark-cpp_benchmark.Tpo $(DEPDIR)/cpp_benchmark-cpp_benchmark.Po
+#	$(AM_V_CXX)source='cpp_benchmark.cc' object='cpp_benchmark-cpp_benchmark.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cpp_benchmark-cpp_benchmark.obj `if test -f 'cpp_benchmark.cc'; then $(CYGPATH_W) 'cpp_benchmark.cc'; else $(CYGPATH_W) '$(srcdir)/cpp_benchmark.cc'; fi`
+
+cpp_benchmark-benchmarks.pb.o: benchmarks.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cpp_benchmark-benchmarks.pb.o -MD -MP -MF $(DEPDIR)/cpp_benchmark-benchmarks.pb.Tpo -c -o cpp_benchmark-benchmarks.pb.o `test -f 'benchmarks.pb.cc' || echo '$(srcdir)/'`benchmarks.pb.cc
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cpp_benchmark-benchmarks.pb.Tpo $(DEPDIR)/cpp_benchmark-benchmarks.pb.Po
+#	$(AM_V_CXX)source='benchmarks.pb.cc' object='cpp_benchmark-benchmarks.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cpp_benchmark-benchmarks.pb.o `test -f 'benchmarks.pb.cc' || echo '$(srcdir)/'`benchmarks.pb.cc
+
+cpp_benchmark-benchmarks.pb.obj: benchmarks.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cpp_benchmark-benchmarks.pb.obj -MD -MP -MF $(DEPDIR)/cpp_benchmark-benchmarks.pb.Tpo -c -o cpp_benchmark-benchmarks.pb.obj `if test -f 'benchmarks.pb.cc'; then $(CYGPATH_W) 'benchmarks.pb.cc'; else $(CYGPATH_W) '$(srcdir)/benchmarks.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cpp_benchmark-benchmarks.pb.Tpo $(DEPDIR)/cpp_benchmark-benchmarks.pb.Po
+#	$(AM_V_CXX)source='benchmarks.pb.cc' object='cpp_benchmark-benchmarks.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cpp_benchmark-benchmarks.pb.obj `if test -f 'benchmarks.pb.cc'; then $(CYGPATH_W) 'benchmarks.pb.cc'; else $(CYGPATH_W) '$(srcdir)/benchmarks.pb.cc'; fi`
+
+cpp_benchmark-benchmark_messages_proto3.pb.o: benchmark_messages_proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cpp_benchmark-benchmark_messages_proto3.pb.o -MD -MP -MF $(DEPDIR)/cpp_benchmark-benchmark_messages_proto3.pb.Tpo -c -o cpp_benchmark-benchmark_messages_proto3.pb.o `test -f 'benchmark_messages_proto3.pb.cc' || echo '$(srcdir)/'`benchmark_messages_proto3.pb.cc
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cpp_benchmark-benchmark_messages_proto3.pb.Tpo $(DEPDIR)/cpp_benchmark-benchmark_messages_proto3.pb.Po
+#	$(AM_V_CXX)source='benchmark_messages_proto3.pb.cc' object='cpp_benchmark-benchmark_messages_proto3.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cpp_benchmark-benchmark_messages_proto3.pb.o `test -f 'benchmark_messages_proto3.pb.cc' || echo '$(srcdir)/'`benchmark_messages_proto3.pb.cc
+
+cpp_benchmark-benchmark_messages_proto3.pb.obj: benchmark_messages_proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cpp_benchmark-benchmark_messages_proto3.pb.obj -MD -MP -MF $(DEPDIR)/cpp_benchmark-benchmark_messages_proto3.pb.Tpo -c -o cpp_benchmark-benchmark_messages_proto3.pb.obj `if test -f 'benchmark_messages_proto3.pb.cc'; then $(CYGPATH_W) 'benchmark_messages_proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/benchmark_messages_proto3.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cpp_benchmark-benchmark_messages_proto3.pb.Tpo $(DEPDIR)/cpp_benchmark-benchmark_messages_proto3.pb.Po
+#	$(AM_V_CXX)source='benchmark_messages_proto3.pb.cc' object='cpp_benchmark-benchmark_messages_proto3.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cpp_benchmark-benchmark_messages_proto3.pb.obj `if test -f 'benchmark_messages_proto3.pb.cc'; then $(CYGPATH_W) 'benchmark_messages_proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/benchmark_messages_proto3.pb.cc'; fi`
+
+cpp_benchmark-benchmark_messages_proto2.pb.o: benchmark_messages_proto2.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cpp_benchmark-benchmark_messages_proto2.pb.o -MD -MP -MF $(DEPDIR)/cpp_benchmark-benchmark_messages_proto2.pb.Tpo -c -o cpp_benchmark-benchmark_messages_proto2.pb.o `test -f 'benchmark_messages_proto2.pb.cc' || echo '$(srcdir)/'`benchmark_messages_proto2.pb.cc
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cpp_benchmark-benchmark_messages_proto2.pb.Tpo $(DEPDIR)/cpp_benchmark-benchmark_messages_proto2.pb.Po
+#	$(AM_V_CXX)source='benchmark_messages_proto2.pb.cc' object='cpp_benchmark-benchmark_messages_proto2.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cpp_benchmark-benchmark_messages_proto2.pb.o `test -f 'benchmark_messages_proto2.pb.cc' || echo '$(srcdir)/'`benchmark_messages_proto2.pb.cc
+
+cpp_benchmark-benchmark_messages_proto2.pb.obj: benchmark_messages_proto2.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT cpp_benchmark-benchmark_messages_proto2.pb.obj -MD -MP -MF $(DEPDIR)/cpp_benchmark-benchmark_messages_proto2.pb.Tpo -c -o cpp_benchmark-benchmark_messages_proto2.pb.obj `if test -f 'benchmark_messages_proto2.pb.cc'; then $(CYGPATH_W) 'benchmark_messages_proto2.pb.cc'; else $(CYGPATH_W) '$(srcdir)/benchmark_messages_proto2.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/cpp_benchmark-benchmark_messages_proto2.pb.Tpo $(DEPDIR)/cpp_benchmark-benchmark_messages_proto2.pb.Po
+#	$(AM_V_CXX)source='benchmark_messages_proto2.pb.cc' object='cpp_benchmark-benchmark_messages_proto2.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(cpp_benchmark_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o cpp_benchmark-benchmark_messages_proto2.pb.obj `if test -f 'benchmark_messages_proto2.pb.cc'; then $(CYGPATH_W) 'benchmark_messages_proto2.pb.cc'; else $(CYGPATH_W) '$(srcdir)/benchmark_messages_proto2.pb.cc'; fi`
 
 generate_datasets-generate_datasets.o: generate_datasets.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(generate_datasets_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT generate_datasets-generate_datasets.o -MD -MP -MF $(DEPDIR)/generate_datasets-generate_datasets.Tpo -c -o generate_datasets-generate_datasets.o `test -f 'generate_datasets.cc' || echo '$(srcdir)/'`generate_datasets.cc
