@@ -76,22 +76,26 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-apple-darwin16.1.0
-host_triplet = x86_64-apple-darwin16.1.0
-target_triplet = x86_64-apple-darwin16.1.0
+build_triplet = x86_64-unknown-linux-gnu
+host_triplet = x86_64-unknown-linux-gnu
+target_triplet = x86_64-unknown-linux-gnu
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in $(srcdir)/protobuf.pc.in \
 	$(srcdir)/protobuf-lite.pc.in ar-lib compile config.guess \
-	config.sub depcomp install-sh missing ltmain.sh
+	config.sub install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_system_extensions.m4 \
 	$(top_srcdir)/m4/acx_check_suncc.m4 \
-	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/stl_hash.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/acx_pthread.m4 \
+	$(top_srcdir)/m4/ax_cxx_compile_stdcxx.m4 \
+	$(top_srcdir)/m4/ax_prog_cc_for_build.m4 \
+	$(top_srcdir)/m4/ax_prog_cxx_for_build.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/stl_hash.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -227,92 +231,107 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing aclocal-1.14
+ACLOCAL = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
-AUTOCONF = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing autoconf
-AUTOHEADER = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing autoheader
-AUTOMAKE = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing automake-1.14
-AWK = awk
-CC = gcc
+AUTOCONF = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing autoconf
+AUTOHEADER = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing autoheader
+AUTOMAKE = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing automake-1.14
+AWK = gawk
+BUILD_EXEEXT = 
+BUILD_OBJEXT = 
+CC = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc
 CCDEPMODE = depmode=gcc3
+CC_FOR_BUILD = cc
 CFLAGS = 
+CFLAGS_FOR_BUILD = -g -O2
+CPP = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc -E
 CPPFLAGS = 
-CXX = g++
-CXXCPP = g++ -E
+CPPFLAGS_FOR_BUILD = 
+CPP_FOR_BUILD = cc -E
+CXX = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-g++
+CXXCPP = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-g++ -E
+CXXCPPFLAGS_FOR_BUILD = 
+CXXCPP_FOR_BUILD = c++ -E
 CXXDEPMODE = depmode=gcc3
 CXXFLAGS =  -g -DNDEBUG
+CXXFLAGS_FOR_BUILD = -g -O2
+CXX_FOR_BUILD = c++
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DIST_LANG = all
 DLLTOOL = false
-DSYMUTIL = dsymutil
+DSYMUTIL = 
 DUMPBIN = 
-ECHO_C = \c
-ECHO_N = 
+ECHO_C = 
+ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-FGREP = /usr/bin/grep -F
-GREP = /usr/bin/grep
+FGREP = /bin/grep -F
+GREP = /bin/grep
+HAVE_CXX11 = 1
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 ISAINFO = 
-LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
+LD = /x-tools/x86_64-unknown-linux-gnu/x86_64-unknown-linux-gnu/bin/ld -m elf_x86_64
 LDFLAGS = 
+LDFLAGS_FOR_BUILD = 
 LIBOBJS = 
-LIBS = -lz 
+LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
-LIPO = lipo
+LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 MAINT = 
-MAKEINFO = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing makeinfo
+MAKEINFO = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing makeinfo
 MANIFEST_TOOL = :
-MKDIR_P = ./install-sh -c -d
+MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
-NMEDIT = nmedit
-OBJC = gcc
+NMEDIT = 
+OBJC = cc
 OBJCDEPMODE = depmode=gcc3
 OBJCFLAGS = -g -O2
 OBJDUMP = objdump
 OBJEXT = o
-OTOOL = otool
-OTOOL64 = :
+OTOOL = 
+OTOOL64 = 
 PACKAGE = protobuf
 PACKAGE_BUGREPORT = protobuf@googlegroups.com
 PACKAGE_NAME = Protocol Buffers
-PACKAGE_STRING = Protocol Buffers 3.1.0
+PACKAGE_STRING = Protocol Buffers 3.2.0
 PACKAGE_TARNAME = protobuf
 PACKAGE_URL = 
-PACKAGE_VERSION = 3.1.0
+PACKAGE_VERSION = 3.2.0
 PATH_SEPARATOR = :
 POW_LIB = 
 PROTOBUF_OPT_FLAG = -O2
 PROTOC = 
-PTHREAD_CC = gcc
-PTHREAD_CFLAGS = -D_THREAD_SAFE 
-PTHREAD_LIBS = 
+PTHREAD_CC = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc
+PTHREAD_CFLAGS = -pthread
+PTHREAD_LIBS =  -lpthread
 RANLIB = ranlib
-SED = /usr/bin/sed
+SED = /bin/sed
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 STRIP = strip
-VERSION = 3.1.0
-abs_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
-abs_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
-abs_top_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
-abs_top_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
+VERSION = 3.2.0
+abs_builddir = /go/src/github.com/cockroachdb/c-protobuf/internal
+abs_srcdir = /go/src/github.com/cockroachdb/c-protobuf/internal
+abs_top_builddir = /go/src/github.com/cockroachdb/c-protobuf/internal
+abs_top_srcdir = /go/src/github.com/cockroachdb/c-protobuf/internal
 ac_ct_AR = ar
-ac_ct_CC = gcc
-ac_ct_CXX = g++
+ac_ct_CC = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc
+ac_ct_CC_FOR_BUILD = 
+ac_ct_CXX = 
+ac_ct_CXX_FOR_BUILD = c++
 ac_ct_DUMPBIN = 
-ac_ct_OBJC = gcc
+ac_ct_OBJC = cc
 acx_pthread_config = 
 am__include = include
 am__leading_dot = .
@@ -320,26 +339,26 @@ am__quote =
 am__tar = tar --format=ustar -chf - "$$tardir"
 am__untar = tar -xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-apple-darwin16.1.0
+build = x86_64-unknown-linux-gnu
 build_alias = 
 build_cpu = x86_64
-build_os = darwin16.1.0
-build_vendor = apple
+build_os = linux-gnu
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-apple-darwin16.1.0
+host = x86_64-unknown-linux-gnu
 host_alias = 
 host_cpu = x86_64
-host_os = darwin16.1.0
-host_vendor = apple
+host_os = linux-gnu
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/install-sh
+install_sh = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -356,11 +375,11 @@ sharedstatedir = ${prefix}/com
 srcdir = .
 subdirs =  gmock
 sysconfdir = ${prefix}/etc
-target = x86_64-apple-darwin16.1.0
+target = x86_64-unknown-linux-gnu
 target_alias = 
 target_cpu = x86_64
-target_os = darwin16.1.0
-target_vendor = apple
+target_os = linux-gnu
+target_vendor = unknown
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
@@ -381,6 +400,7 @@ csharp_EXTRA_DIST = \
   csharp/Google.Protobuf.Tools.nuspec                                        \
   csharp/README.md                                                           \
   csharp/build_packages.bat                                                  \
+  csharp/build_tools.sh                                                      \
   csharp/buildall.sh                                                         \
   csharp/generate_protos.sh                                                  \
   csharp/keys/Google.Protobuf.public.snk                                     \
@@ -426,6 +446,7 @@ csharp_EXTRA_DIST = \
   csharp/src/Google.Protobuf.Test/TestCornerCases.cs                         \
   csharp/src/Google.Protobuf.Test/TestProtos/ForeignMessagePartial.cs        \
   csharp/src/Google.Protobuf.Test/TestProtos/MapUnittestProto3.cs            \
+  csharp/src/Google.Protobuf.Test/TestProtos/TestMessagesProto3.cs           \
   csharp/src/Google.Protobuf.Test/TestProtos/UnittestImportProto3.cs         \
   csharp/src/Google.Protobuf.Test/TestProtos/UnittestImportPublicProto3.cs   \
   csharp/src/Google.Protobuf.Test/TestProtos/UnittestIssues.cs               \
@@ -850,6 +871,7 @@ objectivec_EXTRA_DIST = \
   objectivec/Tests/GPBDictionaryTests+String.m                               \
   objectivec/Tests/GPBDictionaryTests+UInt32.m                               \
   objectivec/Tests/GPBDictionaryTests+UInt64.m                               \
+  objectivec/Tests/GPBDictionaryTests.m                                      \
   objectivec/Tests/GPBDictionaryTests.pddm                                   \
   objectivec/Tests/GPBMessageTests+Merge.m                                   \
   objectivec/Tests/GPBMessageTests+Runtime.m                                 \
@@ -883,6 +905,8 @@ objectivec_EXTRA_DIST = \
   objectivec/Tests/text_format_map_unittest_data.txt                          \
   objectivec/Tests/text_format_unittest_data.txt                              \
   objectivec/Tests/unittest_cycle.proto                                       \
+  objectivec/Tests/unittest_deprecated.proto                                  \
+  objectivec/Tests/unittest_deprecated_file.proto                             \
   objectivec/Tests/unittest_extension_chain_a.proto                           \
   objectivec/Tests/unittest_extension_chain_b.proto                           \
   objectivec/Tests/unittest_extension_chain_c.proto                           \
@@ -899,54 +923,87 @@ objectivec_EXTRA_DIST = \
   Protobuf.podspec
 
 php_EXTRA_DIST = \
-  php/src/phpdoc.dist.xml                                    \
-  php/src/Google/Protobuf/Internal/DescriptorPool.php        \
-  php/src/Google/Protobuf/Internal/OneofField.php            \
-  php/src/Google/Protobuf/Internal/MapEntry.php              \
-  php/src/Google/Protobuf/Internal/Type.php                  \
-  php/src/Google/Protobuf/Internal/InputStream.php           \
-  php/src/Google/Protobuf/Internal/OutputStream.php          \
-  php/src/Google/Protobuf/Internal/MessageBuilderContext.php \
-  php/src/Google/Protobuf/Internal/MapField.php              \
-  php/src/Google/Protobuf/Internal/RepeatedField.php         \
-  php/src/Google/Protobuf/Internal/Message.php               \
-  php/src/Google/Protobuf/Internal/GPBWire.php               \
-  php/src/Google/Protobuf/Internal/GPBType.php               \
-  php/src/Google/Protobuf/Internal/GPBLabel.php              \
-  php/src/Google/Protobuf/Internal/EnumBuilderContext.php    \
-  php/src/Google/Protobuf/Internal/GPBUtil.php               \
-  php/src/Google/Protobuf/descriptor_internal.pb.php         \
-  php/src/Google/Protobuf/descriptor.php                     \
-  php/tests/encode_decode_test.php                           \
-  php/tests/test.sh                                          \
-  php/tests/generated_class_test.php                         \
-  php/tests/array_test.php                                   \
-  php/tests/php_implementation_test.php                      \
-  php/tests/test_include.proto                               \
-  php/tests/test_include.pb.php                              \
-  php/tests/map_field_test.php                               \
-  php/tests/test_base.php                                    \
-  php/tests/test_util.php                                    \
-  php/tests/test.proto                                       \
-  php/tests/test.pb.php                                      \
-  php/tests/memory_leak_test.php                             \
-  php/README.md                                              \
-  php/ext/google/protobuf/utf8.h                             \
-  php/ext/google/protobuf/message.c                          \
-  php/ext/google/protobuf/utf8.c                             \
-  php/ext/google/protobuf/package.xml                        \
-  php/ext/google/protobuf/upb.h                              \
-  php/ext/google/protobuf/array.c                            \
-  php/ext/google/protobuf/encode_decode.c                    \
-  php/ext/google/protobuf/protobuf.h                         \
-  php/ext/google/protobuf/type_check.c                       \
-  php/ext/google/protobuf/def.c                              \
-  php/ext/google/protobuf/storage.c                          \
-  php/ext/google/protobuf/map.c                              \
-  php/ext/google/protobuf/config.m4                          \
-  php/ext/google/protobuf/upb.c                              \
-  php/ext/google/protobuf/protobuf.c                         \
-  phpunit.xml                                                \
+  php/src/phpdoc.dist.xml                                             \
+  php/src/Google/Protobuf/Internal/DescriptorPool.php                 \
+  php/src/Google/Protobuf/Internal/GeneratedCodeInfo.php              \
+  php/src/Google/Protobuf/Internal/OneofField.php                     \
+  php/src/Google/Protobuf/Internal/MessageOptions.php                 \
+  php/src/Google/Protobuf/Internal/FileDescriptorProto.php            \
+  php/src/Google/Protobuf/Internal/MapEntry.php                       \
+  php/src/Google/Protobuf/Internal/FieldDescriptorProto.php           \
+  php/src/Google/Protobuf/Internal/InputStream.php                    \
+  php/src/Google/Protobuf/Internal/UninterpretedOption.php            \
+  php/src/Google/Protobuf/Internal/ServiceOptions.php                 \
+  php/src/Google/Protobuf/Internal/MethodOptions_IdempotencyLevel.php \
+  php/src/Google/Protobuf/Internal/ServiceDescriptorProto.php         \
+  php/src/Google/Protobuf/Internal/OneofDescriptorProto.php           \
+  php/src/Google/Protobuf/Internal/UninterpretedOption_NamePart.php   \
+  php/src/Google/Protobuf/Internal/OutputStream.php                   \
+  php/src/Google/Protobuf/Internal/MessageBuilderContext.php          \
+  php/src/Google/Protobuf/Internal/EnumValueDescriptorProto.php       \
+  php/src/Google/Protobuf/Internal/FileOptions_OptimizeMode.php       \
+  php/src/Google/Protobuf/Internal/DescriptorProto.php                \
+  php/src/Google/Protobuf/Internal/MapField.php                       \
+  php/src/Google/Protobuf/Internal/MethodDescriptorProto.php          \
+  php/src/Google/Protobuf/Internal/DescriptorProto_ExtensionRange.php \
+  php/src/Google/Protobuf/Internal/DescriptorProto_ReservedRange.php  \
+  php/src/Google/Protobuf/Internal/RepeatedField.php                  \
+  php/src/Google/Protobuf/Internal/EnumValueOptions.php               \
+  php/src/Google/Protobuf/Internal/MethodOptions.php                  \
+  php/src/Google/Protobuf/Internal/OneofOptions.php                   \
+  php/src/Google/Protobuf/Internal/Message.php                        \
+  php/src/Google/Protobuf/Internal/FileOptions.php                    \
+  php/src/Google/Protobuf/Internal/FileDescriptorSet.php              \
+  php/src/Google/Protobuf/Internal/EnumDescriptorProto.php            \
+  php/src/Google/Protobuf/Internal/GPBWire.php                        \
+  php/src/Google/Protobuf/Internal/FieldDescriptorProto_Label.php     \
+  php/src/Google/Protobuf/Internal/FieldOptions.php                   \
+  php/src/Google/Protobuf/Internal/GeneratedCodeInfo_Annotation.php   \
+  php/src/Google/Protobuf/Internal/FieldDescriptorProto_Type.php      \
+  php/src/Google/Protobuf/Internal/GPBType.php                        \
+  php/src/Google/Protobuf/Internal/FieldOptions_JSType.php            \
+  php/src/Google/Protobuf/Internal/SourceCodeInfo_Location.php        \
+  php/src/Google/Protobuf/Internal/SourceCodeInfo.php                 \
+  php/src/Google/Protobuf/Internal/EnumOptions.php                    \
+  php/src/Google/Protobuf/Internal/GPBLabel.php                       \
+  php/src/Google/Protobuf/Internal/EnumBuilderContext.php             \
+  php/src/Google/Protobuf/Internal/GPBUtil.php                        \
+  php/src/Google/Protobuf/Internal/FieldOptions_CType.php             \
+  php/src/Google/Protobuf/descriptor.php                              \
+  php/src/GPBMetadata/Google/Protobuf/Internal/Descriptor.php         \
+  php/tests/autoload.php                                              \
+  php/tests/encode_decode_test.php                                    \
+  php/tests/test.sh                                                   \
+  php/tests/gdb_test.sh                                               \
+  php/tests/generated_class_test.php                                  \
+  php/tests/array_test.php                                            \
+  php/tests/php_implementation_test.php                               \
+  php/tests/proto/test_include.proto                                  \
+  php/tests/map_field_test.php                                        \
+  php/tests/test_base.php                                             \
+  php/tests/proto/test_no_namespace.proto                             \
+  php/tests/test_util.php                                             \
+  php/tests/proto/test.proto                                          \
+  php/tests/memory_leak_test.php                                      \
+  php/tests/well_known_test.php                                       \
+  php/README.md                                                       \
+  php/ext/google/protobuf/utf8.h                                      \
+  php/ext/google/protobuf/message.c                                   \
+  php/ext/google/protobuf/utf8.c                                      \
+  php/ext/google/protobuf/package.xml                                 \
+  php/ext/google/protobuf/upb.h                                       \
+  php/ext/google/protobuf/array.c                                     \
+  php/ext/google/protobuf/encode_decode.c                             \
+  php/ext/google/protobuf/protobuf.h                                  \
+  php/ext/google/protobuf/type_check.c                                \
+  php/ext/google/protobuf/def.c                                       \
+  php/ext/google/protobuf/storage.c                                   \
+  php/ext/google/protobuf/map.c                                       \
+  php/ext/google/protobuf/config.m4                                   \
+  php/ext/google/protobuf/upb.c                                       \
+  php/ext/google/protobuf/protobuf.c                                  \
+  php/phpunit.xml                                                     \
+  php/composer.json                                                   \
   composer.json
 
 python_EXTRA_DIST = \
@@ -1037,6 +1094,7 @@ python_EXTRA_DIST = \
   python/google/protobuf/pyext/repeated_composite_container.h                \
   python/google/protobuf/pyext/repeated_scalar_container.cc                  \
   python/google/protobuf/pyext/repeated_scalar_container.h                   \
+  python/google/protobuf/pyext/safe_numerics.h                               \
   python/google/protobuf/pyext/scoped_pyobject_ptr.h                         \
   python/google/protobuf/reflection.py                                       \
   python/google/protobuf/service.py                                          \
@@ -1053,7 +1111,6 @@ python_EXTRA_DIST = \
 
 ruby_EXTRA_DIST = \
   ruby/Gemfile                                                               \
-  ruby/Gemfile.lock                                                          \
   ruby/.gitignore                                                            \
   ruby/README.md                                                             \
   ruby/Rakefile                                                              \
@@ -1109,6 +1166,7 @@ js_EXTRA_DIST = \
   js/binary/decoder.js                      \
   js/binary/decoder_test.js                 \
   js/binary/encoder.js                      \
+  js/binary/message_test.js                 \
   js/binary/proto_test.js                   \
   js/binary/reader.js                       \
   js/binary/reader_test.js                  \
@@ -1142,6 +1200,7 @@ js_EXTRA_DIST = \
   js/test3.proto                            \
   js/test4.proto                            \
   js/test5.proto                            \
+  js/test8.proto                            \
   js/test_bootstrap.js                      \
   js/testbinary.proto                       \
   js/testempty.proto

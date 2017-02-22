@@ -76,35 +76,41 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-apple-darwin16.1.0
-host_triplet = x86_64-apple-darwin16.1.0
-target_triplet = x86_64-apple-darwin16.1.0
+build_triplet = x86_64-unknown-linux-gnu
+host_triplet = x86_64-unknown-linux-gnu
+target_triplet = x86_64-unknown-linux-gnu
 bin_PROGRAMS = conformance-test-runner$(EXEEXT) \
 	conformance-cpp$(EXEEXT) $(am__EXEEXT_1)
-am__append_1 = conformance-objc
+#am__append_1 = conformance-objc
 subdir = conformance
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_system_extensions.m4 \
 	$(top_srcdir)/m4/acx_check_suncc.m4 \
-	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/stl_hash.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/acx_pthread.m4 \
+	$(top_srcdir)/m4/ax_cxx_compile_stdcxx.m4 \
+	$(top_srcdir)/m4/ax_prog_cc_for_build.m4 \
+	$(top_srcdir)/m4/ax_prog_cxx_for_build.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/stl_hash.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__EXEEXT_1 = conformance-objc$(EXEEXT)
+#am__EXEEXT_1 = conformance-objc$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_conformance_cpp_OBJECTS =  \
 	conformance_cpp-conformance_cpp.$(OBJEXT)
+am__dirstamp = $(am__leading_dot)dirstamp
 nodist_conformance_cpp_OBJECTS =  \
-	conformance_cpp-conformance.pb.$(OBJEXT)
+	conformance_cpp-conformance.pb.$(OBJEXT) \
+	google/protobuf/conformance_cpp-test_messages_proto3.pb.$(OBJEXT)
 conformance_cpp_OBJECTS = $(am_conformance_cpp_OBJECTS) \
 	$(nodist_conformance_cpp_OBJECTS)
 conformance_cpp_DEPENDENCIES = $(top_srcdir)/src/libprotobuf.la
@@ -114,10 +120,10 @@ am__v_lt_0 = --silent
 am__v_lt_1 = 
 am__conformance_objc_SOURCES_DIST = conformance_objc.m \
 	../objectivec/GPBProtocolBuffers.m
-am__dirstamp = $(am__leading_dot)dirstamp
-am_conformance_objc_OBJECTS = conformance_objc-conformance_objc.$(OBJEXT) \
-	../objectivec/conformance_objc-GPBProtocolBuffers.$(OBJEXT)
-nodist_conformance_objc_OBJECTS = conformance_objc-Conformance.pbobjc.$(OBJEXT)
+#am_conformance_objc_OBJECTS = conformance_objc-conformance_objc.$(OBJEXT) \
+#	../objectivec/conformance_objc-GPBProtocolBuffers.$(OBJEXT)
+#nodist_conformance_objc_OBJECTS = conformance_objc-Conformance.pbobjc.$(OBJEXT) \
+#	google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.$(OBJEXT)
 conformance_objc_OBJECTS = $(am_conformance_objc_OBJECTS) \
 	$(nodist_conformance_objc_OBJECTS)
 conformance_objc_LDADD = $(LDADD)
@@ -129,7 +135,8 @@ am_conformance_test_runner_OBJECTS =  \
 	conformance_test_runner-conformance_test_runner.$(OBJEXT) \
 	third_party/jsoncpp/conformance_test_runner-jsoncpp.$(OBJEXT)
 nodist_conformance_test_runner_OBJECTS =  \
-	conformance_test_runner-conformance.pb.$(OBJEXT)
+	conformance_test_runner-conformance.pb.$(OBJEXT) \
+	google/protobuf/conformance_test_runner-test_messages_proto3.pb.$(OBJEXT)
 conformance_test_runner_OBJECTS =  \
 	$(am_conformance_test_runner_OBJECTS) \
 	$(nodist_conformance_test_runner_OBJECTS)
@@ -241,92 +248,107 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing aclocal-1.14
+ACLOCAL = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AR = ar
-AUTOCONF = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing autoconf
-AUTOHEADER = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing autoheader
-AUTOMAKE = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing automake-1.14
-AWK = awk
-CC = gcc
+AUTOCONF = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing autoconf
+AUTOHEADER = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing autoheader
+AUTOMAKE = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing automake-1.14
+AWK = gawk
+BUILD_EXEEXT = 
+BUILD_OBJEXT = 
+CC = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc
 CCDEPMODE = depmode=gcc3
+CC_FOR_BUILD = cc
 CFLAGS = 
+CFLAGS_FOR_BUILD = -g -O2
+CPP = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc -E
 CPPFLAGS = 
-CXX = g++
-CXXCPP = g++ -E
+CPPFLAGS_FOR_BUILD = 
+CPP_FOR_BUILD = cc -E
+CXX = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-g++
+CXXCPP = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-g++ -E
+CXXCPPFLAGS_FOR_BUILD = 
+CXXCPP_FOR_BUILD = c++ -E
 CXXDEPMODE = depmode=gcc3
 CXXFLAGS =  -g -DNDEBUG
+CXXFLAGS_FOR_BUILD = -g -O2
+CXX_FOR_BUILD = c++
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DIST_LANG = all
 DLLTOOL = false
-DSYMUTIL = dsymutil
+DSYMUTIL = 
 DUMPBIN = 
-ECHO_C = \c
-ECHO_N = 
+ECHO_C = 
+ECHO_N = -n
 ECHO_T = 
-EGREP = /usr/bin/grep -E
+EGREP = /bin/grep -E
 EXEEXT = 
-FGREP = /usr/bin/grep -F
-GREP = /usr/bin/grep
+FGREP = /bin/grep -F
+GREP = /bin/grep
+HAVE_CXX11 = 1
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 ISAINFO = 
-LD = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld
+LD = /x-tools/x86_64-unknown-linux-gnu/x86_64-unknown-linux-gnu/bin/ld -m elf_x86_64
 LDFLAGS = 
+LDFLAGS_FOR_BUILD = 
 LIBOBJS = 
-LIBS = -lz 
+LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
-LIPO = lipo
+LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
 MAINT = 
-MAKEINFO = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/missing makeinfo
+MAKEINFO = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/missing makeinfo
 MANIFEST_TOOL = :
-MKDIR_P = .././install-sh -c -d
+MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
-NMEDIT = nmedit
-OBJC = gcc
+NMEDIT = 
+OBJC = cc
 OBJCDEPMODE = depmode=gcc3
 OBJCFLAGS = -g -O2
 OBJDUMP = objdump
 OBJEXT = o
-OTOOL = otool
-OTOOL64 = :
+OTOOL = 
+OTOOL64 = 
 PACKAGE = protobuf
 PACKAGE_BUGREPORT = protobuf@googlegroups.com
 PACKAGE_NAME = Protocol Buffers
-PACKAGE_STRING = Protocol Buffers 3.1.0
+PACKAGE_STRING = Protocol Buffers 3.2.0
 PACKAGE_TARNAME = protobuf
 PACKAGE_URL = 
-PACKAGE_VERSION = 3.1.0
+PACKAGE_VERSION = 3.2.0
 PATH_SEPARATOR = :
 POW_LIB = 
 PROTOBUF_OPT_FLAG = -O2
 PROTOC = 
-PTHREAD_CC = gcc
-PTHREAD_CFLAGS = -D_THREAD_SAFE 
-PTHREAD_LIBS = 
+PTHREAD_CC = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc
+PTHREAD_CFLAGS = -pthread
+PTHREAD_LIBS =  -lpthread
 RANLIB = ranlib
-SED = /usr/bin/sed
+SED = /bin/sed
 SET_MAKE = 
-SHELL = /bin/sh
+SHELL = /bin/bash
 STRIP = strip
-VERSION = 3.1.0
-abs_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/conformance
-abs_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/conformance
-abs_top_builddir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
-abs_top_srcdir = /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal
+VERSION = 3.2.0
+abs_builddir = /go/src/github.com/cockroachdb/c-protobuf/internal/conformance
+abs_srcdir = /go/src/github.com/cockroachdb/c-protobuf/internal/conformance
+abs_top_builddir = /go/src/github.com/cockroachdb/c-protobuf/internal
+abs_top_srcdir = /go/src/github.com/cockroachdb/c-protobuf/internal
 ac_ct_AR = ar
-ac_ct_CC = gcc
-ac_ct_CXX = g++
+ac_ct_CC = /x-tools/x86_64-unknown-linux-gnu/bin/x86_64-unknown-linux-gnu-gcc
+ac_ct_CC_FOR_BUILD = 
+ac_ct_CXX = 
+ac_ct_CXX_FOR_BUILD = c++
 ac_ct_DUMPBIN = 
-ac_ct_OBJC = gcc
+ac_ct_OBJC = cc
 acx_pthread_config = 
 am__include = include
 am__leading_dot = .
@@ -334,26 +356,26 @@ am__quote =
 am__tar = tar --format=ustar -chf - "$$tardir"
 am__untar = tar -xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-apple-darwin16.1.0
+build = x86_64-unknown-linux-gnu
 build_alias = 
 build_cpu = x86_64
-build_os = darwin16.1.0
-build_vendor = apple
+build_os = linux-gnu
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = x86_64-apple-darwin16.1.0
+host = x86_64-unknown-linux-gnu
 host_alias = 
 host_cpu = x86_64
-host_os = darwin16.1.0
-host_vendor = apple
+host_os = linux-gnu
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /Users/tamird/src/go/src/github.com/cockroachdb/c-protobuf/internal/install-sh
+install_sh = ${SHELL} /go/src/github.com/cockroachdb/c-protobuf/internal/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -370,16 +392,17 @@ sharedstatedir = ${prefix}/com
 srcdir = .
 subdirs =  gmock
 sysconfdir = ${prefix}/etc
-target = x86_64-apple-darwin16.1.0
+target = x86_64-unknown-linux-gnu
 target_alias = 
 target_cpu = x86_64
-target_os = darwin16.1.0
-target_vendor = apple
+target_os = linux-gnu
+target_vendor = unknown
 top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
 conformance_protoc_inputs = \
-  conformance.proto
+  conformance.proto                                            \
+  $(top_srcdir)/src/google/protobuf/test_messages_proto3.proto
 
 well_known_type_protoc_inputs = \
   $(top_srcdir)/src/google/protobuf/any.proto                  \
@@ -438,6 +461,7 @@ other_language_protoc_outputs = \
   com/google/protobuf/Value.java                               \
   com/google/protobuf/ValueOrBuilder.java                      \
   com/google/protobuf/WrappersProto.java                       \
+  com/google/protobuf_test_messages/proto3/TestMessagesProto3.java \
   google/protobuf/any.pb.cc                                    \
   google/protobuf/any.pb.h                                     \
   google/protobuf/any.rb                                       \
@@ -454,6 +478,12 @@ other_language_protoc_outputs = \
   google/protobuf/struct.pb.h                                  \
   google/protobuf/struct.rb                                    \
   google/protobuf/struct_pb2.py                                \
+  google/protobuf/TestMessagesProto3.pbobjc.h                  \
+  google/protobuf/TestMessagesProto3.pbobjc.m                  \
+  google/protobuf/test_messages_proto3.pb.cc                   \
+  google/protobuf/test_messages_proto3.pb.h                    \
+  google/protobuf/test_messages_proto3_pb.rb                   \
+  google/protobuf/test_messages_proto3_pb2.py                  \
   google/protobuf/timestamp.pb.cc                              \
   google/protobuf/timestamp.pb.h                               \
   google/protobuf/timestamp.rb                                 \
@@ -489,21 +519,21 @@ conformance_test_runner_SOURCES = conformance_test.h conformance_test.cc \
                                   third_party/jsoncpp/json.h             \
                                   third_party/jsoncpp/jsoncpp.cpp
 
-nodist_conformance_test_runner_SOURCES = conformance.pb.cc
+nodist_conformance_test_runner_SOURCES = conformance.pb.cc google/protobuf/test_messages_proto3.pb.cc
 conformance_test_runner_CPPFLAGS = -I$(top_srcdir)/src -I$(srcdir)
 conformance_test_runner_CXXFLAGS = -std=c++11
 conformance_cpp_LDADD = $(top_srcdir)/src/libprotobuf.la
 conformance_cpp_SOURCES = conformance_cpp.cc
-nodist_conformance_cpp_SOURCES = conformance.pb.cc
+nodist_conformance_cpp_SOURCES = conformance.pb.cc google/protobuf/test_messages_proto3.pb.cc
 conformance_cpp_CPPFLAGS = -I$(top_srcdir)/src
-conformance_objc_SOURCES = conformance_objc.m ../objectivec/GPBProtocolBuffers.m
-nodist_conformance_objc_SOURCES = Conformance.pbobjc.m
+#conformance_objc_SOURCES = conformance_objc.m ../objectivec/GPBProtocolBuffers.m
+#nodist_conformance_objc_SOURCES = Conformance.pbobjc.m google/protobuf/TestMessagesProto3.pbobjc.m
 # On travis, the build fails without the isysroot because whatever system
 # headers are being found don't include generics support for
 # NSArray/NSDictionary, the only guess is their image at one time had an odd
 # setup for Xcode and old frameworks are being found.
-conformance_objc_CPPFLAGS = -I$(top_srcdir)/objectivec -isysroot `xcrun --sdk macosx --show-sdk-path`
-conformance_objc_LDFLAGS = -framework Foundation
+#conformance_objc_CPPFLAGS = -I$(top_srcdir)/objectivec -isysroot `xcrun --sdk macosx --show-sdk-path`
+#conformance_objc_LDFLAGS = -framework Foundation
 BUILT_SOURCES = $(protoc_outputs) $(other_language_protoc_outputs)
 CLEANFILES = $(protoc_outputs) protoc_middleman javac_middleman conformance-java javac_middleman_lite conformance-java-lite conformance-csharp $(other_language_protoc_outputs)
 MAINTAINERCLEANFILES = \
@@ -593,6 +623,15 @@ clean-binPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+google/protobuf/$(am__dirstamp):
+	@$(MKDIR_P) google/protobuf
+	@: > google/protobuf/$(am__dirstamp)
+google/protobuf/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) google/protobuf/$(DEPDIR)
+	@: > google/protobuf/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/conformance_cpp-test_messages_proto3.pb.$(OBJEXT):  \
+	google/protobuf/$(am__dirstamp) \
+	google/protobuf/$(DEPDIR)/$(am__dirstamp)
 
 conformance-cpp$(EXEEXT): $(conformance_cpp_OBJECTS) $(conformance_cpp_DEPENDENCIES) $(EXTRA_conformance_cpp_DEPENDENCIES) 
 	@rm -f conformance-cpp$(EXEEXT)
@@ -606,6 +645,9 @@ conformance-cpp$(EXEEXT): $(conformance_cpp_OBJECTS) $(conformance_cpp_DEPENDENC
 ../objectivec/conformance_objc-GPBProtocolBuffers.$(OBJEXT):  \
 	../objectivec/$(am__dirstamp) \
 	../objectivec/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.$(OBJEXT):  \
+	google/protobuf/$(am__dirstamp) \
+	google/protobuf/$(DEPDIR)/$(am__dirstamp)
 
 conformance-objc$(EXEEXT): $(conformance_objc_OBJECTS) $(conformance_objc_DEPENDENCIES) $(EXTRA_conformance_objc_DEPENDENCIES) 
 	@rm -f conformance-objc$(EXEEXT)
@@ -619,6 +661,9 @@ third_party/jsoncpp/$(DEPDIR)/$(am__dirstamp):
 third_party/jsoncpp/conformance_test_runner-jsoncpp.$(OBJEXT):  \
 	third_party/jsoncpp/$(am__dirstamp) \
 	third_party/jsoncpp/$(DEPDIR)/$(am__dirstamp)
+google/protobuf/conformance_test_runner-test_messages_proto3.pb.$(OBJEXT):  \
+	google/protobuf/$(am__dirstamp) \
+	google/protobuf/$(DEPDIR)/$(am__dirstamp)
 
 conformance-test-runner$(EXEEXT): $(conformance_test_runner_OBJECTS) $(conformance_test_runner_DEPENDENCIES) $(EXTRA_conformance_test_runner_DEPENDENCIES) 
 	@rm -f conformance-test-runner$(EXEEXT)
@@ -627,6 +672,7 @@ conformance-test-runner$(EXEEXT): $(conformance_test_runner_OBJECTS) $(conforman
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ../objectivec/*.$(OBJEXT)
+	-rm -f google/protobuf/*.$(OBJEXT)
 	-rm -f third_party/jsoncpp/*.$(OBJEXT)
 
 distclean-compile:
@@ -640,6 +686,9 @@ include ./$(DEPDIR)/conformance_objc-conformance_objc.Po
 include ./$(DEPDIR)/conformance_test_runner-conformance.pb.Po
 include ./$(DEPDIR)/conformance_test_runner-conformance_test.Po
 include ./$(DEPDIR)/conformance_test_runner-conformance_test_runner.Po
+include google/protobuf/$(DEPDIR)/conformance_cpp-test_messages_proto3.pb.Po
+include google/protobuf/$(DEPDIR)/conformance_objc-TestMessagesProto3.pbobjc.Po
+include google/protobuf/$(DEPDIR)/conformance_test_runner-test_messages_proto3.pb.Po
 include third_party/jsoncpp/$(DEPDIR)/conformance_test_runner-jsoncpp.Po
 
 .cc.o:
@@ -693,6 +742,20 @@ conformance_cpp-conformance.pb.obj: conformance.pb.cc
 #	$(AM_V_CXX)source='conformance.pb.cc' object='conformance_cpp-conformance.pb.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_cpp_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o conformance_cpp-conformance.pb.obj `if test -f 'conformance.pb.cc'; then $(CYGPATH_W) 'conformance.pb.cc'; else $(CYGPATH_W) '$(srcdir)/conformance.pb.cc'; fi`
+
+google/protobuf/conformance_cpp-test_messages_proto3.pb.o: google/protobuf/test_messages_proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_cpp_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/conformance_cpp-test_messages_proto3.pb.o -MD -MP -MF google/protobuf/$(DEPDIR)/conformance_cpp-test_messages_proto3.pb.Tpo -c -o google/protobuf/conformance_cpp-test_messages_proto3.pb.o `test -f 'google/protobuf/test_messages_proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/test_messages_proto3.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/conformance_cpp-test_messages_proto3.pb.Tpo google/protobuf/$(DEPDIR)/conformance_cpp-test_messages_proto3.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/test_messages_proto3.pb.cc' object='google/protobuf/conformance_cpp-test_messages_proto3.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_cpp_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/conformance_cpp-test_messages_proto3.pb.o `test -f 'google/protobuf/test_messages_proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/test_messages_proto3.pb.cc
+
+google/protobuf/conformance_cpp-test_messages_proto3.pb.obj: google/protobuf/test_messages_proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_cpp_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/conformance_cpp-test_messages_proto3.pb.obj -MD -MP -MF google/protobuf/$(DEPDIR)/conformance_cpp-test_messages_proto3.pb.Tpo -c -o google/protobuf/conformance_cpp-test_messages_proto3.pb.obj `if test -f 'google/protobuf/test_messages_proto3.pb.cc'; then $(CYGPATH_W) 'google/protobuf/test_messages_proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/test_messages_proto3.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/conformance_cpp-test_messages_proto3.pb.Tpo google/protobuf/$(DEPDIR)/conformance_cpp-test_messages_proto3.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/test_messages_proto3.pb.cc' object='google/protobuf/conformance_cpp-test_messages_proto3.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_cpp_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/conformance_cpp-test_messages_proto3.pb.obj `if test -f 'google/protobuf/test_messages_proto3.pb.cc'; then $(CYGPATH_W) 'google/protobuf/test_messages_proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/test_messages_proto3.pb.cc'; fi`
 
 conformance_test_runner-conformance_test.o: conformance_test.cc
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_test_runner_CPPFLAGS) $(CPPFLAGS) $(conformance_test_runner_CXXFLAGS) $(CXXFLAGS) -MT conformance_test_runner-conformance_test.o -MD -MP -MF $(DEPDIR)/conformance_test_runner-conformance_test.Tpo -c -o conformance_test_runner-conformance_test.o `test -f 'conformance_test.cc' || echo '$(srcdir)/'`conformance_test.cc
@@ -749,6 +812,20 @@ conformance_test_runner-conformance.pb.obj: conformance.pb.cc
 #	$(AM_V_CXX)source='conformance.pb.cc' object='conformance_test_runner-conformance.pb.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_test_runner_CPPFLAGS) $(CPPFLAGS) $(conformance_test_runner_CXXFLAGS) $(CXXFLAGS) -c -o conformance_test_runner-conformance.pb.obj `if test -f 'conformance.pb.cc'; then $(CYGPATH_W) 'conformance.pb.cc'; else $(CYGPATH_W) '$(srcdir)/conformance.pb.cc'; fi`
+
+google/protobuf/conformance_test_runner-test_messages_proto3.pb.o: google/protobuf/test_messages_proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_test_runner_CPPFLAGS) $(CPPFLAGS) $(conformance_test_runner_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/conformance_test_runner-test_messages_proto3.pb.o -MD -MP -MF google/protobuf/$(DEPDIR)/conformance_test_runner-test_messages_proto3.pb.Tpo -c -o google/protobuf/conformance_test_runner-test_messages_proto3.pb.o `test -f 'google/protobuf/test_messages_proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/test_messages_proto3.pb.cc
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/conformance_test_runner-test_messages_proto3.pb.Tpo google/protobuf/$(DEPDIR)/conformance_test_runner-test_messages_proto3.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/test_messages_proto3.pb.cc' object='google/protobuf/conformance_test_runner-test_messages_proto3.pb.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_test_runner_CPPFLAGS) $(CPPFLAGS) $(conformance_test_runner_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/conformance_test_runner-test_messages_proto3.pb.o `test -f 'google/protobuf/test_messages_proto3.pb.cc' || echo '$(srcdir)/'`google/protobuf/test_messages_proto3.pb.cc
+
+google/protobuf/conformance_test_runner-test_messages_proto3.pb.obj: google/protobuf/test_messages_proto3.pb.cc
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_test_runner_CPPFLAGS) $(CPPFLAGS) $(conformance_test_runner_CXXFLAGS) $(CXXFLAGS) -MT google/protobuf/conformance_test_runner-test_messages_proto3.pb.obj -MD -MP -MF google/protobuf/$(DEPDIR)/conformance_test_runner-test_messages_proto3.pb.Tpo -c -o google/protobuf/conformance_test_runner-test_messages_proto3.pb.obj `if test -f 'google/protobuf/test_messages_proto3.pb.cc'; then $(CYGPATH_W) 'google/protobuf/test_messages_proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/test_messages_proto3.pb.cc'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/conformance_test_runner-test_messages_proto3.pb.Tpo google/protobuf/$(DEPDIR)/conformance_test_runner-test_messages_proto3.pb.Po
+#	$(AM_V_CXX)source='google/protobuf/test_messages_proto3.pb.cc' object='google/protobuf/conformance_test_runner-test_messages_proto3.pb.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_test_runner_CPPFLAGS) $(CPPFLAGS) $(conformance_test_runner_CXXFLAGS) $(CXXFLAGS) -c -o google/protobuf/conformance_test_runner-test_messages_proto3.pb.obj `if test -f 'google/protobuf/test_messages_proto3.pb.cc'; then $(CYGPATH_W) 'google/protobuf/test_messages_proto3.pb.cc'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/test_messages_proto3.pb.cc'; fi`
 
 .cpp.o:
 	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -839,6 +916,20 @@ conformance_objc-Conformance.pbobjc.obj: Conformance.pbobjc.m
 #	$(AM_V_OBJC)source='Conformance.pbobjc.m' object='conformance_objc-Conformance.pbobjc.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(OBJCDEPMODE) $(depcomp) \
 #	$(AM_V_OBJC_no)$(OBJC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_objc_CPPFLAGS) $(CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) -c -o conformance_objc-Conformance.pbobjc.obj `if test -f 'Conformance.pbobjc.m'; then $(CYGPATH_W) 'Conformance.pbobjc.m'; else $(CYGPATH_W) '$(srcdir)/Conformance.pbobjc.m'; fi`
+
+google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.o: google/protobuf/TestMessagesProto3.pbobjc.m
+	$(AM_V_OBJC)$(OBJC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_objc_CPPFLAGS) $(CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) -MT google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.o -MD -MP -MF google/protobuf/$(DEPDIR)/conformance_objc-TestMessagesProto3.pbobjc.Tpo -c -o google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.o `test -f 'google/protobuf/TestMessagesProto3.pbobjc.m' || echo '$(srcdir)/'`google/protobuf/TestMessagesProto3.pbobjc.m
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/conformance_objc-TestMessagesProto3.pbobjc.Tpo google/protobuf/$(DEPDIR)/conformance_objc-TestMessagesProto3.pbobjc.Po
+#	$(AM_V_OBJC)source='google/protobuf/TestMessagesProto3.pbobjc.m' object='google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(OBJCDEPMODE) $(depcomp) \
+#	$(AM_V_OBJC_no)$(OBJC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_objc_CPPFLAGS) $(CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) -c -o google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.o `test -f 'google/protobuf/TestMessagesProto3.pbobjc.m' || echo '$(srcdir)/'`google/protobuf/TestMessagesProto3.pbobjc.m
+
+google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.obj: google/protobuf/TestMessagesProto3.pbobjc.m
+	$(AM_V_OBJC)$(OBJC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_objc_CPPFLAGS) $(CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) -MT google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.obj -MD -MP -MF google/protobuf/$(DEPDIR)/conformance_objc-TestMessagesProto3.pbobjc.Tpo -c -o google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.obj `if test -f 'google/protobuf/TestMessagesProto3.pbobjc.m'; then $(CYGPATH_W) 'google/protobuf/TestMessagesProto3.pbobjc.m'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/TestMessagesProto3.pbobjc.m'; fi`
+	$(AM_V_at)$(am__mv) google/protobuf/$(DEPDIR)/conformance_objc-TestMessagesProto3.pbobjc.Tpo google/protobuf/$(DEPDIR)/conformance_objc-TestMessagesProto3.pbobjc.Po
+#	$(AM_V_OBJC)source='google/protobuf/TestMessagesProto3.pbobjc.m' object='google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(OBJCDEPMODE) $(depcomp) \
+#	$(AM_V_OBJC_no)$(OBJC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(conformance_objc_CPPFLAGS) $(CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) -c -o google/protobuf/conformance_objc-TestMessagesProto3.pbobjc.obj `if test -f 'google/protobuf/TestMessagesProto3.pbobjc.m'; then $(CYGPATH_W) 'google/protobuf/TestMessagesProto3.pbobjc.m'; else $(CYGPATH_W) '$(srcdir)/google/protobuf/TestMessagesProto3.pbobjc.m'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -966,6 +1057,8 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f ../objectivec/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ../objectivec/$(am__dirstamp)
+	-rm -f google/protobuf/$(DEPDIR)/$(am__dirstamp)
+	-rm -f google/protobuf/$(am__dirstamp)
 	-rm -f third_party/jsoncpp/$(DEPDIR)/$(am__dirstamp)
 	-rm -f third_party/jsoncpp/$(am__dirstamp)
 
@@ -979,7 +1072,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ../objectivec/$(DEPDIR) ./$(DEPDIR) third_party/jsoncpp/$(DEPDIR)
+	-rm -rf ../objectivec/$(DEPDIR) ./$(DEPDIR) google/protobuf/$(DEPDIR) third_party/jsoncpp/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1025,7 +1118,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ../objectivec/$(DEPDIR) ./$(DEPDIR) third_party/jsoncpp/$(DEPDIR)
+	-rm -rf ../objectivec/$(DEPDIR) ./$(DEPDIR) google/protobuf/$(DEPDIR) third_party/jsoncpp/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -1109,7 +1202,7 @@ conformance_test_runner-conformance_test_runner.$(OBJEXT): conformance.pb.h
 conformance_cpp-conformance_cpp.$(OBJEXT): conformance.pb.h
 # Explicit dep beacuse BUILT_SOURCES are only done before a "make all/check"
 # so a direct "make test_objc" could fail if parallel enough.
-conformance_objc-conformance_objc.$(OBJEXT): Conformance.pbobjc.h
+#conformance_objc-conformance_objc.$(OBJEXT): Conformance.pbobjc.h google/protobuf/TestMessagesProto3.pbobjc.h
 
 # Some implementations include pre-generated versions of well-known types.
 #protoc_middleman: $(conformance_protoc_inputs) $(well_known_type_protoc_inputs)
@@ -1130,7 +1223,7 @@ $(protoc_outputs): protoc_middleman
 $(other_language_protoc_outputs): protoc_middleman
 
 javac_middleman: ConformanceJava.java protoc_middleman $(other_language_protoc_outputs)
-	jar=`ls ../java/util/target/*jar-with-dependencies.jar` && javac -classpath ../java/target/classes:$$jar ConformanceJava.java com/google/protobuf/conformance/Conformance.java
+	jar=`ls ../java/util/target/*jar-with-dependencies.jar` && javac -classpath ../java/target/classes:$$jar ConformanceJava.java com/google/protobuf/conformance/Conformance.java com/google/protobuf_test_messages/proto3/TestMessagesProto3.java
 	@touch javac_middleman
 
 conformance-java: javac_middleman
@@ -1182,8 +1275,8 @@ test_python: protoc_middleman conformance-test-runner
 test_python_cpp: protoc_middleman conformance-test-runner
 	./conformance-test-runner --enforce_recommended --failure_list failure_list_python_cpp.txt ./conformance_python.py
 
-test_objc: protoc_middleman conformance-test-runner conformance-objc
-	./conformance-test-runner --enforce_recommended --failure_list failure_list_objc.txt ./conformance-objc
+#test_objc: protoc_middleman conformance-test-runner conformance-objc
+#	./conformance-test-runner --enforce_recommended --failure_list failure_list_objc.txt ./conformance-objc
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
